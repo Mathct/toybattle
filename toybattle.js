@@ -219,7 +219,6 @@ return you;
 
 divActPlayer : function() {        	
 var color = this.players[this.getActivePlayerId()].color;
-console.warn(color)
 var name = this.players[this.getActivePlayerId()].name;
 var color_bg = "";
 var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + name + "</span>";
