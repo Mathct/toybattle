@@ -59,12 +59,19 @@ setup: function( gamedatas )
 
     
 
+
+
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
 
-    // CONNECTS
 
+    // CONNECTS GAMEDATAS
     dojo.query(".carre").connect('onclick', this, 'onSelect' )
+
+
+
+
+
 
     console.log( "Ending game setup" );
 },
