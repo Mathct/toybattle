@@ -62,30 +62,25 @@ $machinestates = [
         "transitions" => ["" => 2]
     ),
 
-    // Note: ID=2 => your first state
-
-    2 => [
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "args" => "argPlayerTurn",
-        "possibleactions" => [
-            // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
-            "actPlayCard", 
-            "actPass",
-        ],
-        "transitions" => ["playCard" => 3, "pass" => 3]
-    ],
-
-    3 => [
-        "name" => "nextPlayer",
+    
+    2 => array(
+        "name" => "pending",
         "description" => '',
         "type" => "game",
-        "action" => "stNextPlayer",
+        "action" => "stPending",
         "updateGameProgression" => true,
-        "transitions" => ["endGame" => 99, "nextPlayer" => 2]
-    ],
+        "transitions" => array("end" => 99, "player"=> 3, "same" => 2)
+    ),
+    
+    3 => array(
+        "name" => "playerTurn",
+        "description" => clienttranslate('${actplayer} must take an action'),
+        "descriptionmyturn" => clienttranslate('${you} must take an action'),
+        "type" => "activeplayer",
+        "args" => "argPlayerTurn",
+        "possibleactions" => array( "actSelect", "actButton"),
+        "transitions" => array( "next" => 2, "zombiePass" => 2, "end" => 99)
+    ), 
 
     // Final state.
     // Please do not modify (and do not overload action/args methods).
@@ -98,6 +93,3 @@ $machinestates = [
     ],
 
 ];
-
-
-

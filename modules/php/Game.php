@@ -20,9 +20,13 @@ namespace Bga\Games\toybattle;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
+include('Pending.php');
+
 class Game extends \Table
 {
-    private static array $CARD_TYPES;
+    private static array $CARD_TYPES; // ATTENTION
+
+    public static $instance = null;  // ATTENTION
 
     /**
      * Your global variables labels:
@@ -38,183 +42,21 @@ class Game extends \Table
     {
         parent::__construct();
 
+        require 'material.inc.php';
+
         $this->initGameStateLabels([
-            "my_first_global_variable" => 10,
+            /*"my_first_global_variable" => 10,
             "my_second_global_variable" => 11,
             "my_first_game_variant" => 100,
-            "my_second_game_variant" => 101,
-        ]);        
-
-        self::$CARD_TYPES = [
-            1 => [
-                "card_name" => clienttranslate('Troll'), // ...
-            ],
-            2 => [
-                "card_name" => clienttranslate('Goblin'), // ...
-            ],
-            // ...
-        ];
-    }
-
-    /**
-     * Player action, example content.
-     *
-     * In this scenario, each time a player plays a card, this method will be called. This method is called directly
-     * by the action trigger on the front side with `bgaPerformAction`.
-     *
-     * @throws BgaUserException
-     */
-    public function actPlayCard(int $card_id): void
-    {
-        // Retrieve the active player ID.
-        $player_id = (int)$this->getActivePlayerId();
-
-        // check input values
-        $args = $this->argPlayerTurn();
-        $playableCardsIds = $args['playableCardsIds'];
-        if (!in_array($card_id, $playableCardsIds)) {
-            throw new \BgaUserException('Invalid card choice');
-        }
-
-        // Add your game logic to play a card here.
-        $card_name = self::$CARD_TYPES[$card_id]['card_name'];
-
-        // Notify all players about the card played.
-        $this->notifyAllPlayers("cardPlayed", clienttranslate('${player_name} plays ${card_name}'), [
-            "player_id" => $player_id,
-            "player_name" => $this->getActivePlayerName(),
-            "card_name" => $card_name,
-            "card_id" => $card_id,
-            "i18n" => ['card_name'],
-        ]);
-
-        // at the end of the action, move to the next state
-        $this->gamestate->nextState("playCard");
-    }
-
-    public function actPass(): void
-    {
-        // Retrieve the active player ID.
-        $player_id = (int)$this->getActivePlayerId();
-
-        // Notify all players about the choice to pass.
-        $this->notifyAllPlayers("cardPlayed", clienttranslate('${player_name} passes'), [
-            "player_id" => $player_id,
-            "player_name" => $this->getActivePlayerName(),
-        ]);
-
-        // at the end of the action, move to the next state
-        $this->gamestate->nextState("pass");
-    }
-
-    /**
-     * Game state arguments, example content.
-     *
-     * This method returns some additional information that is very specific to the `playerTurn` game state.
-     *
-     * @return array
-     * @see ./states.inc.php
-     */
-    public function argPlayerTurn(): array
-    {
-        // Get some values from the current game situation from the database.
-
-        return [
-            "playableCardsIds" => [1, 2],
-        ];
-    }
-
-    /**
-     * Compute and return the current game progression.
-     *
-     * The number returned must be an integer between 0 and 100.
-     *
-     * This method is called each time we are in a game state with the "updateGameProgression" property set to true.
-     *
-     * @return int
-     * @see ./states.inc.php
-     */
-    public function getGameProgression()
-    {
-        // TODO: compute and return the game progression
-
-        return 0;
-    }
-
-    /**
-     * Game state action, example content.
-     *
-     * The action method of state `nextPlayer` is called everytime the current game state is set to `nextPlayer`.
-     */
-    public function stNextPlayer(): void {
-        // Retrieve the active player ID.
-        $player_id = (int)$this->getActivePlayerId();
-
-        // Give some extra time to the active player when he completed an action
-        $this->giveExtraTime($player_id);
+            "my_second_game_variant" => 101,*/
+        ]);  
         
-        $this->activeNextPlayer();
+        
+        self::$instance = $this; // ATTENTION
 
-        // Go to another gamestate
-        // Here, we would detect if the game is over, and in this case use "endGame" transition instead 
-        $this->gamestate->nextState("nextPlayer");
+        
     }
 
-    /**
-     * Migrate database.
-     *
-     * You don't have to care about this until your game has been published on BGA. Once your game is on BGA, this
-     * method is called everytime the system detects a game running with your old database scheme. In this case, if you
-     * change your database scheme, you just have to apply the needed changes in order to update the game database and
-     * allow the game to continue to run with your new version.
-     *
-     * @param int $from_version
-     * @return void
-     */
-    public function upgradeTableDb($from_version)
-    {
-//       if ($from_version <= 1404301345)
-//       {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            $this->applyDbUpgradeToAllDB( $sql );
-//       }
-//
-//       if ($from_version <= 1405061421)
-//       {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            $this->applyDbUpgradeToAllDB( $sql );
-//       }
-    }
-
-    /*
-     * Gather all information about current game situation (visible by the current player).
-     *
-     * The method is called each time the game interface is displayed to a player, i.e.:
-     *
-     * - when the game starts
-     * - when a player refreshes the game page (F5)
-     */
-    protected function getAllDatas()
-    {
-        $result = [];
-
-        // WARNING: We must only return information visible by the current player.
-        $current_player_id = (int) $this->getCurrentPlayerId();
-
-        // Get information about players.
-        // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
-        $result["players"] = $this->getCollectionFromDb(
-            "SELECT `player_id` `id`, `player_score` `score` FROM `player`"
-        );
-
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
-
-        return $result;
-    }
 
     /**
      * Returns the game name.
@@ -226,10 +68,17 @@ class Game extends \Table
         return "toybattle";
     }
 
-    /**
-     * This method is called only once, when a new game is launched. In this method, you must setup the game
-     *  according to the game rules, so that the game is ready to be played.
-     */
+/////////////////////////////////////////////////////////////////////////////////  
+//       _____                        _____       _ _   _       _ _          _   _             
+//      / ____|                      |_   _|     (_) | (_)     | (_)        | | (_)            
+//     | |  __  __ _ _ __ ___   ___    | |  _ __  _| |_ _  __ _| |_ ______ _| |_ _  ___  _ __  
+//     | | |_ |/ _` | '_ ` _ \ / _ \   | | | '_ \| | __| |/ _` | | |_  / _` | __| |/ _ \| '_ \ 
+//     | |__| | (_| | | | | | |  __/  _| |_| | | | | |_| | (_| | | |/ / (_| | |_| | (_) | | | |
+//      \_____|\__,_|_| |_| |_|\___| |_____|_| |_|_|\__|_|\__,_|_|_/___\__,_|\__|_|\___/|_| |_|
+//                                                                                               
+/////////////////////////////////////////////////////////////////////////////////    
+
+
     protected function setupNewGame($players, $options = [])
     {
         // Set the colors of the players with HTML color code. The default below is red/green/blue/orange/brown. The
@@ -265,7 +114,7 @@ class Game extends \Table
         // Init global values with their initial values.
 
         // Dummy content.
-        $this->setGameStateInitialValue("my_first_global_variable", 0);
+        // $this->setGameStateInitialValue("my_first_global_variable", 0);
 
         // Init game statistics.
         //
@@ -278,25 +127,279 @@ class Game extends \Table
         // TODO: Setup the initial game situation here.
 
         // Activate first player once everything has been initialized and ready.
-        $this->activeNextPlayer();
+        ///$this->activeNextPlayer();
+
+        /************ Init Pending *****/
+
+                
+        foreach( $players as $player_id => $player )
+        {
+            $this->addPendingFirst($player_id, "NormalTurn");
+        }
     }
 
-    /**
-     * This method is called each time it is the turn of a player who has quit the game (= "zombie" player).
-     * You can do whatever you want in order to make sure the turn of this player ends appropriately
-     * (ex: pass).
-     *
-     * Important: your zombie code will be called when the player leaves the game. This action is triggered
-     * from the main site and propagated to the gameserver from a server, not from a browser.
-     * As a consequence, there is no current player associated to this action. In your zombieTurn function,
-     * you must _never_ use `getCurrentPlayerId()` or `getCurrentPlayerName()`, otherwise it will fail with a
-     * "Not logged" error message.
-     *
-     * @param array{ type: string, name: string } $state
-     * @param int $active_player
-     * @return void
-     * @throws feException if the zombie mode is not supported at this game state.
-     */
+/////////////////////////////////////////////////////////////////////////////////  
+//               _            _ _ _____        _            
+//              | |     /\   | | |  __ \      | |           
+//     __ _  ___| |_   /  \  | | | |  | | __ _| |_ __ _ ___ 
+//    / _` |/ _ \ __| / /\ \ | | | |  | |/ _` | __/ _` / __|
+//   | (_| |  __/ |_ / ____ \| | | |__| | (_| | || (_| \__ \
+//    \__, |\___|\__/_/    \_\_|_|_____/ \__,_|\__\__,_|___/
+//     __/ |                                                
+//    |___/                                                 
+/////////////////////////////////////////////////////////////////////////////////  
+
+protected function getAllDatas()
+{
+    $result = [];
+
+    // WARNING: We must only return information visible by the current player.
+    $current_player_id = (int) $this->getCurrentPlayerId();
+
+    // Get information about players.
+    // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
+    $result["players"] = $this->getCollectionFromDb(
+        "SELECT `player_id` `id`, `player_score` `score` FROM `player`"
+    );
+
+    // TODO: Gather all information about current game situation (visible by player $current_player_id).
+
+    return $result;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////  
+//     _____                      _____                                   _             
+//    / ____|                    |  __ \                                 (_)            
+//   | |  __  __ _ _ __ ___   ___| |__) | __ ___   __ _ _ __ ___  ___ ___ _  ___  _ __  
+//   | | |_ |/ _` | '_ ` _ \ / _ \  ___/ '__/ _ \ / _` | '__/ _ \/ __/ __| |/ _ \| '_ \ 
+//   | |__| | (_| | | | | | |  __/ |   | | | (_) | (_| | | |  __/\__ \__ \ | (_) | | | |
+//    \_____|\__,_|_| |_| |_|\___|_|   |_|  \___/ \__, |_|  \___||___/___/_|\___/|_| |_|
+//                                                 __/ |                                
+//                                                |___/                                 
+/////////////////////////////////////////////////////////////////////////////////  
+
+public function getGameProgression()
+{
+    // TODO: compute and return the game progression
+
+    return 0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////  
+//     _    _ _   _ _ _ _            __                  _   _                 
+//    | |  | | | (_) (_) |          / _|                | | (_)                
+//    | |  | | |_ _| |_| |_ _   _  | |_ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+//    | |  | | __| | | | __| | | | |  _| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+//    | |__| | |_| | | | |_| |_| | | | | |_| | | | | (__| |_| | (_) | | | \__ \
+//     \____/ \__|_|_|_|\__|\__, | |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+//                           __/ |                                             
+//                          |___/                                              
+/////////////////////////////////////////////////////////////////////////////////  
+
+function addPending($player_id, $function, $arg = NULL, $arg2 = NULL, $arg3 = NULL, $arg4 = NULL) {
+    $sql = "INSERT INTO pending (player_id, function, arg, arg2, arg3, arg4) VALUES (".$player_id.", '".$function."', '".$arg."', '".$arg2."', '".$arg3."', '".$arg4."')";
+    self::DbQuery( $sql );
+}
+
+function addPendingFirst($player_id, $function, $arg = NULL, $arg2 = NULL, $arg3 = NULL, $arg4 = NULL) {
+    $minid = self::getUniqueValueFromDB( "select min(id) from pending")-1;
+    $sql = "INSERT INTO pending (id, player_id, function, arg, arg2) VALUES (".$minid.",".$player_id.", '".$function."', '".$arg."', '".$arg2."')";
+    self::DbQuery( $sql );
+}
+
+function checkArgs($arg1)
+    {
+        $ret = self::argPlayerTurn();
+
+        if(!in_array($arg1,$ret['selectable']) && !in_array($arg1,$ret['buttons']))
+        {
+            throw new feException( "Not a valid selection");
+        }
+        
+    }
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////// 
+//     _____  _                                    _   _                 
+//    |  __ \| |                                  | | (_)                
+//    | |__) | | __ _ _   _  ___ _ __    __ _  ___| |_ _  ___  _ __  ___ 
+//    |  ___/| |/ _` | | | |/ _ \ '__|  / _` |/ __| __| |/ _ \| '_ \/ __|
+//    | |    | | (_| | |_| |  __/ |    | (_| | (__| |_| | (_) | | | \__ \
+//    |_|    |_|\__,_|\__, |\___|_|     \__,_|\___|\__|_|\___/|_| |_|___/
+//                     __/ |                                             
+//                    |___/                                              
+/////////////////////////////////////////////////////////////////////////////////
+
+
+    public function actSelect(string $arg1)
+    {
+    
+        self::checkArgs($arg1);        
+        
+        $pending =  self::getObjectFromDB( "SELECT* FROM pending order by id desc limit 1");
+        $this->callPending($pending, true, $arg1);
+        self::DbQuery("delete from pending where id=".$pending['id']);
+        $this->giveExtraTime(self::getActivePlayerId());
+        $this->gamestate->nextState( 'next');
+        
+    }
+
+    public function actButton(string $arg1)
+    {
+
+        self::checkArgs($arg1);       
+        
+        $pending =  self::getObjectFromDB( "SELECT* FROM pending order by id desc limit 1");
+        $this->callPending($pending, true, $arg1);
+        self::DbQuery("delete from pending where id=".$pending['id']);
+        $this->giveExtraTime(self::getActivePlayerId());
+        $this->gamestate->nextState( 'next');
+        
+    }
+
+///////////////////////////////////////////////////////////////////////////////// 
+//     _____                             _        _                                                    _       
+//    / ____|                           | |      | |                                                  | |      
+//    | |  __  __ _ _ __ ___   ___   ___| |_ __ _| |_ ___    __ _ _ __ __ _ _   _ _ __ ___   ___ _ __ | |_ ___ 
+//    | | |_ |/ _` | '_ ` _ \ / _ \ / __| __/ _` | __/ _ \  / _` | '__/ _` | | | | '_ ` _ \ / _ \ '_ \| __/ __|
+//    | |__| | (_| | | | | | |  __/ \__ \ || (_| | ||  __/ | (_| | | | (_| | |_| | | | | | |  __/ | | | |_\__ \
+//     \_____|\__,_|_| |_| |_|\___| |___/\__\__,_|\__\___|  \__,_|_|  \__, |\__,_|_| |_| |_|\___|_| |_|\__|___/
+//                                                                    __/ |                                   
+//                                                                   |___/                                    
+///////////////////////////////////////////////////////////////////////////////// 
+
+
+    public function argPlayerTurn()
+    {
+        $pending =  self::getObjectFromDB( "SELECT* FROM pending order by id desc limit 1");
+        $arg = $this->callPending($pending, false);
+    
+        return $arg;
+    }
+
+
+///////////////////////////////////////////////////////////////////////////////// 
+//      _____                            _        _                    _   _                 
+//     / ____|                          | |      | |                  | | (_)                
+//    | |  __  __ _ _ __ ___   ___   ___| |_ __ _| |_ ___    __ _  ___| |_ _  ___  _ __  ___ 
+//    | | |_ |/ _` | '_ ` _ \ / _ \ / __| __/ _` | __/ _ \  / _` |/ __| __| |/ _ \| '_ \/ __|
+//    | |__| | (_| | | | | | |  __/ \__ \ || (_| | ||  __/ | (_| | (__| |_| | (_) | | | \__ \
+//     \_____|\__,_|_| |_| |_|\___| |___/\__\__,_|\__\___|  \__,_|\___|\__|_|\___/|_| |_|___/
+//                                                                                       
+/////////////////////////////////////////////////////////////////////////////////     
+
+
+public function callPending($pending, $execute, $arg1 = null, $arg2 = null)
+{
+    
+        $obj = $this;
+        if($pending['player_id'] != null)
+        {
+            $obj = new Pending($pending['player_id']);
+        }
+        
+        $fname ="";
+        if(!$execute)
+        {
+            $fname .= "arg";
+        }
+        $fname .= $pending['function'];
+        
+        $ret = null;
+        if(method_exists($obj, $fname))
+        {
+            $ret = $obj->$fname($pending['arg'], $pending['arg2'], $arg1, $arg2);
+        }
+    
+    return $ret;
+}
+
+
+public function stPending() {
+   
+   $pending =  self::getObjectFromDB( "SELECT * FROM pending order by id desc limit 1");
+   if($pending == null)
+   {
+        
+        $this->gamestate->nextState( 'end' ); 
+   }
+   else
+   {
+       $args = $this->callPending($pending, false);
+
+       if($pending['player_id'] != self::getActivePlayerId())
+            {          
+               
+
+                //change active player      
+                $this->gamestate->changeActivePlayer( $pending['player_id']);    
+                $this->gamestate->nextState( 'same' );
+            }
+              
+       else if($args == null || (count($args['selectable']) == 0 && count($args['buttons']) == 0))
+       {
+           //no args required, execute
+           $this->callPending($pending, true);
+           self::DbQuery("delete from pending where id=".$pending['id']);
+           $this->gamestate->nextState( 'same' );  
+       }
+       
+       else
+       {
+           $this->gamestate->nextState( 'player' ); 
+       }            
+   }
+   
+}
+
+///////////////////////////////////////////////////////////////////////////////// 
+//     _____  ____                                    _      
+//    |  __ \|  _ \                                  | |     
+//    | |  | | |_) |  _   _ _ __   __ _ _ __ __ _  __| | ___ 
+//    | |  | |  _ <  | | | | '_ \ / _` | '__/ _` |/ _` |/ _ \
+//    | |__| | |_) | | |_| | |_) | (_| | | | (_| | (_| |  __/
+//    |_____/|____/   \__,_| .__/ \__, |_|  \__,_|\__,_|\___|
+//                         | |     __/ |                     
+//                         |_|    |___/                      
+/////////////////////////////////////////////////////////////////////////////////  
+
+
+    public function upgradeTableDb($from_version)
+    {
+//       if ($from_version <= 1404301345)
+//       {
+//            // ! important ! Use DBPREFIX_<table_name> for all tables
+//
+//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
+//            $this->applyDbUpgradeToAllDB( $sql );
+//       }
+//
+//       if ($from_version <= 1405061421)
+//       {
+//            // ! important ! Use DBPREFIX_<table_name> for all tables
+//
+//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
+//            $this->applyDbUpgradeToAllDB( $sql );
+//       }
+    }
+
+
+    
+
+/////////////////////////////////////////////////////////////////////////////////
+//    ______               _     _      
+//   |___  /              | |   (_)     
+//      / / ___  _ __ ___ | |__  _  ___ 
+//     / / / _ \| '_ ` _ \| '_ \| |/ _ \
+//    / /_| (_) | | | | | | |_) | |  __/
+//   /_____\___/|_| |_| |_|_.__/|_|\___|
+//                                   
+/////////////////////////////////////////////////////////////////////////////////     
+
     protected function zombieTurn(array $state, int $active_player): void
     {
         $state_name = $state["name"];
@@ -305,6 +408,8 @@ class Game extends \Table
             switch ($state_name) {
                 default:
                 {
+                    $player_id = $this->getActivePlayerId();
+    	            self::DbQuery("delete from pending where player_id = {$player_id}");
                     $this->gamestate->nextState("zombiePass");
                     break;
                 }
