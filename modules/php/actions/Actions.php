@@ -1,8 +1,8 @@
 <?php
 
-namespace Bga\Games\toybattle;
+namespace Bga\Games\toybattle; // ATTENTION
 
-trait ActionsTrait 
+trait ActionsTrait  // ATTENTION
 {
     public function argAction1($parg1, $parg2)
     {

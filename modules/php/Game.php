@@ -20,7 +20,7 @@ namespace Bga\Games\toybattle;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
-include('Pending.php');
+include('Pending.php'); // ATTENTION
 
 class Game extends \Table
 {

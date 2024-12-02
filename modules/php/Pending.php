@@ -1,13 +1,13 @@
 <?php
 
 namespace Bga\Games\toybattle;   // ATTENTION NOM DU JEU
-use APP_GameClass;
+use APP_GameClass; // ATTENTION
 
 require_once 'actions/Actions.php'; // Inclure le fichier contenant les fonctions
 
 class Pending extends APP_GameClass
 {
-    use ActionsTrait; // Utiliser le trait pour importer les méthodes
+    use ActionsTrait; // ATTENTION
 
     public function __construct($player_id)
     {

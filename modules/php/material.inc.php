@@ -1,6 +1,6 @@
 <?php
 
-self::$CARD_TYPES = [
+self::$CARD_TYPES = [           // ATTENTION
     1 => [
         "name" => clienttranslate(''), // ...
     ],
