@@ -114,14 +114,15 @@ onEnteringState: function( stateName, args )
             this.updatePageTitle();*/
 
             if( this.isCurrentPlayerActive() )
-                {
-                    if(args.args.titleyou != null)
+            {
+                if(args.args.titleyou != null)
                 {
                     $('pagemaintitletext').innerHTML = 	this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);   
                 }
-                } 
+            } 
                 
-            else{
+            else
+            {
                 if(args.args.title != null)
                 {
                     $('pagemaintitletext').innerHTML = this.format_string_recursive(_(args.args.title).replace('${actplayer}', this.divActPlayer()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);  
@@ -141,6 +142,7 @@ onEnteringState: function( stateName, args )
 // onLeavingState: this method is called each time we are leaving a game state.
 //                 You can use this method to perform some user interface changes at this moment.
 //
+
 onLeavingState: function( stateName )
 {
     console.log( 'Leaving state: '+stateName );
@@ -148,16 +150,7 @@ onLeavingState: function( stateName )
     switch( stateName )
     {
     
-    /* Example:
-    
-    case 'myGameState':
-    
-        // Hide the HTML block we are displaying only during this game state
-        dojo.style( 'my_html_block_id', 'display', 'none' );
-        
-        break;
-   */
-   
+      
    
     case 'dummy':
         break;
@@ -166,7 +159,8 @@ onLeavingState: function( stateName )
 
 // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
 //                        action status bar (ie: the HTML links in the status bar).
-//        
+//      
+
 onUpdateActionButtons: function( stateName, args )
 {
     console.log( 'onUpdateActionButtons: '+stateName, args );
@@ -212,57 +206,57 @@ onUpdateActionButtons: function( stateName, args )
 
 divYou : function() {
     
-var color = this.players[this.player_id].color;
-var color_bg = "";
-var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + _("You") + "</span>";
-return you;
+    var color = this.players[this.player_id].color;
+    var color_bg = "";
+    var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + _("You") + "</span>";
+    return you;
 },
 
 divActPlayer : function() {        	
-var color = this.players[this.getActivePlayerId()].color;
-var name = this.players[this.getActivePlayerId()].name;
-var color_bg = "";
-var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + name + "</span>";
-return you;
+    var color = this.players[this.getActivePlayerId()].color;
+    var name = this.players[this.getActivePlayerId()].name;
+    var color_bg = "";
+    var you = "<span style=\"font-weight:bold;color:#" + color + ";" + color_bg + "\">" + name + "</span>";
+    return you;
 },
 
 format_string_recursive : function(log, args) {
-try {
-if (log && args && !args.processed) {
-    args.processed = true;
+    try {
+    if (log && args && !args.processed) {
+        args.processed = true;
 
-    
-}
-} catch (e) {
-console.error(log,args,"Exception thrown", e.stack);
-}
-return this.inherited(arguments);
+        
+    }
+    } catch (e) {
+    console.error(log,args,"Exception thrown", e.stack);
+    }
+    return this.inherited(arguments);
 },
 
 attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_position) 
 {
 
-const mobile = $(mobile_in);
-const new_parent = $(new_parent_in);
+    const mobile = $(mobile_in);
+    const new_parent = $(new_parent_in);
 
-var src = dojo.position(mobile);
-if (place_position)
-    mobile.style.position = place_position;
-dojo.place(mobile, new_parent, relation);
-mobile.offsetTop;//force re-flow
-var tgt = dojo.position(mobile);
-var box = dojo.marginBox(mobile);
-var cbox = dojo.contentBox(mobile);
-var left = box.l + src.x - tgt.x;
-var top = box.t + src.y - tgt.y;
+    var src = dojo.position(mobile);
+    if (place_position)
+        mobile.style.position = place_position;
+    dojo.place(mobile, new_parent, relation);
+    mobile.offsetTop;//force re-flow
+    var tgt = dojo.position(mobile);
+    var box = dojo.marginBox(mobile);
+    var cbox = dojo.contentBox(mobile);
+    var left = box.l + src.x - tgt.x;
+    var top = box.t + src.y - tgt.y;
 
-mobile.style.position = "absolute";
-mobile.style.left = left + "px";
-mobile.style.top = top + "px";
-box.l += box.w - cbox.w;
-box.t += box.h - cbox.h;
-mobile.offsetTop;//force re-flow
-return box;
+    mobile.style.position = "absolute";
+    mobile.style.left = left + "px";
+    mobile.style.top = top + "px";
+    box.l += box.w - cbox.w;
+    box.t += box.h - cbox.h;
+    mobile.offsetTop;//force re-flow
+    return box;
 },
 
 
