@@ -65,7 +65,7 @@ setup: function( gamedatas )
     this.setupNotifications();
 
 
-    // CONNECTS GAMEDATAS
+    // RAJOUTER LES CONNECTS GAMEDATAS
     dojo.query(".carre").connect('onclick', this, 'onSelect' )
 
 
