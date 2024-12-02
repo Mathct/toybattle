@@ -25,24 +25,11 @@ function (dojo, declare) {
         constructor: function(){
             console.log('toybattle constructor');
               
-            // Here, you can init the global variables of your user interface
-            // Example:
             // this.myGlobalValue = 0;
 
         },
         
-        /*
-            setup:
-            
-            This method must set up the game user interface according to current game situation specified
-            in parameters.
-            
-            The method is called each time the game interface is displayed to a player, ie:
-            _ when the game starts
-            _ when a player refreshes the game page (F5)
-            
-            "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
-        */
+       
        
 /////////////////////////////////////////////////////////////////////////////////           
 //    _____                      _____        _            
@@ -62,10 +49,20 @@ setup: function( gamedatas )
     // TODO: Set up your game interface here, according to "gamedatas"
 
     this.players = gamedatas.players; // A RAJOUTER
+
+
+
+
+
+
+
+
     
 
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
+
+    // CONNECTS
 
     dojo.query(".carre").connect('onclick', this, 'onSelect' )
 
@@ -82,9 +79,6 @@ setup: function( gamedatas )
 //                                    
 /////////////////////////////////////////////////////////////////////////////////    
 
-
-///////////////////////////////////////////////////
-//// Game & client states
 
 // onEnteringState: this method is called each time we are entering into a new game state.
 //                  You can use this method to perform some user interface changes at this moment.

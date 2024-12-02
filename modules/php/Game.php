@@ -97,10 +97,7 @@ class Game extends \Table
             ]);
         }
 
-        // Create players based on generic information.
-        //
-        // NOTE: You can add extra field on player table in the database (see dbmodel.sql) and initialize
-        // additional fields directly here.
+        
         static::DbQuery(
             sprintf(
                 "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES %s",
@@ -112,23 +109,13 @@ class Game extends \Table
         $this->reloadPlayersBasicInfos();
 
         // Init global values with their initial values.
-
-        // Dummy content.
         // $this->setGameStateInitialValue("my_first_global_variable", 0);
-
-        // Init game statistics.
-        //
-        // NOTE: statistics used in this file must be defined in your `stats.inc.php` file.
-
-        // Dummy content.
         // $this->initStat("table", "table_teststat1", 0);
         // $this->initStat("player", "player_teststat1", 0);
 
-        // TODO: Setup the initial game situation here.
 
-        // Activate first player once everything has been initialized and ready.
-        ///$this->activeNextPlayer();
 
+        
         /************ Init Pending *****/
 
                 
@@ -156,8 +143,6 @@ protected function getAllDatas()
     // WARNING: We must only return information visible by the current player.
     $current_player_id = (int) $this->getCurrentPlayerId();
 
-    // Get information about players.
-    // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
     $result["players"] = $this->getCollectionFromDb(
         "SELECT `player_id` `id`, `player_score` `score` FROM `player`"
     );
@@ -181,7 +166,7 @@ protected function getAllDatas()
 
 public function getGameProgression()
 {
-    // TODO: compute and return the game progression
+    
 
     return 0;
 }
@@ -370,21 +355,8 @@ public function stPending() {
 
     public function upgradeTableDb($from_version)
     {
-//       if ($from_version <= 1404301345)
-//       {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            $this->applyDbUpgradeToAllDB( $sql );
-//       }
-//
-//       if ($from_version <= 1405061421)
-//       {
-//            // ! important ! Use DBPREFIX_<table_name> for all tables
-//
-//            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            $this->applyDbUpgradeToAllDB( $sql );
-//       }
+      
+
     }
 
 
