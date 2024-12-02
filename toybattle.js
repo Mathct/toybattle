@@ -48,7 +48,7 @@ setup: function( gamedatas )
                
     // TODO: Set up your game interface here, according to "gamedatas"
 
-    this.players = gamedatas.players; // A RAJOUTER POUR MOTEUR (UTILITY METHODS)
+    this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
 
 
 
