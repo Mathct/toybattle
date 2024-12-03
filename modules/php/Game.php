@@ -54,6 +54,13 @@ class Game extends \Table
         
         self::$instance = $this; // ATTENTION
 
+        $this->blue = self::getNew( "module.common.deck" );
+        $this->blue->init( "blue" );
+        
+        $this->red = self::getNew( "module.common.deck" );
+        $this->red->init( "red" );
+        
+
         
     }
 
@@ -112,6 +119,32 @@ class Game extends \Table
         // $this->setGameStateInitialValue("my_first_global_variable", 0);
         // $this->initStat("table", "table_teststat1", 0);
         // $this->initStat("player", "player_teststat1", 0);
+
+
+
+
+        $blue = array();
+        for ($i = 0; $i <= 7; $i++)
+        {
+            
+            $blue[] = array( 'type' => $i, 'type_arg' => 0, 'nbr' => 3);
+           
+        }
+
+        $this->blue->createCards( $blue, 'deck' );
+        $this->blue->shuffle( 'deck' );
+
+        $red = array();
+        for ($i = 0; $i <= 7; $i++)
+        {
+            
+            $red[] = array( 'type' => $i, 'type_arg' => 0, 'nbr' => 3);
+           
+        }
+
+        $this->red->createCards( $red, 'deck' );
+        $this->red->shuffle( 'deck' );
+
 
 
 
