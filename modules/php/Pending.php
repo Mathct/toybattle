@@ -17,7 +17,18 @@ class Pending extends APP_GameClass
         $this->player_id = $p['player_id'];
         $this->player_name = $p['player_name'];
         $this->player_score = $p['player_score'];
-        $this->player_color = $p['player_color'];
+        //$this->player_color = $p['player_color'];
+
+        // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
+
+        if ($p['player_color'] == "ff0000")
+        {
+            $this->player_color = "red";
+        }
+        if ($p['player_color'] == "0080ff")
+        {
+            $this->player_color = "blue";
+        }
     }
     
     function argNormalTurn($parg1, $parg2)
