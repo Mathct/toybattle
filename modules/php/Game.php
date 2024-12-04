@@ -121,7 +121,17 @@ class Game extends \Table
         // $this->initStat("player", "player_teststat1", 0);
 
 
+        $red = array();
+        for ($i = 0; $i <= 7; $i++)
+        {
+            
+            $red[] = array( 'type' => $i, 'type_arg' => 0, 'nbr' => 3);
+           
+        }
 
+        $this->red->createCards( $red, 'deck' );
+        $this->red->shuffle( 'deck' );
+        
 
         $blue = array();
         for ($i = 0; $i <= 7; $i++)
@@ -134,16 +144,7 @@ class Game extends \Table
         $this->blue->createCards( $blue, 'deck' );
         $this->blue->shuffle( 'deck' );
 
-        $red = array();
-        for ($i = 0; $i <= 7; $i++)
-        {
-            
-            $red[] = array( 'type' => $i, 'type_arg' => 0, 'nbr' => 3);
-           
-        }
-
-        $this->red->createCards( $red, 'deck' );
-        $this->red->shuffle( 'deck' );
+       
 
 
 

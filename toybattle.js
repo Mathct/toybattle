@@ -182,7 +182,15 @@ onUpdateActionButtons: function( stateName, args )
                              {
                                 this.addActionButton( 'pass', _("Pass") ,'onOpButton', null, null, 'gray' );
                              }
-                    }
+                             if(args.buttons[nb] == "Draw_2")
+                            {
+                                this.addActionButton( 'Draw_2', _("Draw_2") ,'onOpButton', null, null, 'gray' );
+                            }
+                            if(args.buttons[nb] == "Draw_1")
+                            {
+                                this.addActionButton( 'Draw_1', _("Draw_1") ,'onOpButton', null, null, 'gray' );
+                            }
+                }
                               
                     
                     break;

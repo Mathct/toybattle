@@ -3,7 +3,7 @@
 namespace Bga\Games\toybattle;   // ATTENTION NOM DU JEU
 use APP_GameClass; // ATTENTION
 
-require_once 'troupes/ActionsTroupes.php'; // Inclure le fichier contenant les fonctions
+require_once 'troupes/ActionsTroupes.php'; 
 
 class Pending extends APP_GameClass
 {
@@ -38,11 +38,34 @@ class Pending extends APP_GameClass
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} blabla2');
         $ret['titleyou'] = clienttranslate('${you} blabla1');
-
-
-        $ret["selectable"][]='carreid1';
         
+
+        if($this->player_color == 'red')
+        {
+           
+            $counttroop = count(self::getObjectListFromDB("SELECT card_id FROM red WHERE card_location='deck'", true));
+                        
+        }
+
+        if($this->player_color == 'blue')
+        {
+            
+            $counttroop = count(self::getObjectListFromDB("SELECT card_id FROM blue WHERE card_location='deck'", true));
+        }
+
+                
+        if ($counttroop >= 2)
+        {
+            $ret['buttons'][]='Draw_2';
+        }
+
+        if ($counttroop == 1)
+        {
+            $ret['buttons'][]='Draw_1';
+        }
+    
         $ret['buttons'][]='cancel';
+        
         $ret['buttons'][]='pass';
         
         return $ret;
@@ -54,7 +77,11 @@ class Pending extends APP_GameClass
         {
             game::$instance->addPending($this->player_id, "NormalTurn");  
         }
-        if(($varg1 == "pass")||($varg1 == "carreid1"))
+        if($varg1 == "pass")
+        {
+            game::$instance->addPending($this->player_id, "Action1"); 
+        }
+        if(($varg1 == "Draw_1")||($varg1 == "Draw_2"))
         {
             game::$instance->addPending($this->player_id, "Action1"); 
         }
