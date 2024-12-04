@@ -13,17 +13,4 @@
  *
  */
 
-.carre {
-    height: 50px;
-    width: 50px;
-    background-color: red;
-    
-}
-
-.selectable {
-    cursor: pointer;
-    border: solid 2px black;
-}
-
-
 

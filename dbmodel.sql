@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `blue` (
   `card_type_arg` int(11) NOT NULL,
   `card_location` varchar(50) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
+  `ordre` int(2) unsigned DEFAULT 1,
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -60,5 +61,6 @@ CREATE TABLE IF NOT EXISTS `red` (
   `card_type_arg` int(11) NOT NULL,
   `card_location` varchar(50) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
+  `ordre` int(2) unsigned DEFAULT 1,
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

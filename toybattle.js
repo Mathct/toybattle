@@ -66,7 +66,7 @@ setup: function( gamedatas )
 
 
     // RAJOUTER LES CONNECTS GAMEDATAS
-    dojo.query(".carre").connect('onclick', this, 'onSelect' )
+    //dojo.query(".carre").connect('onclick', this, 'onSelect' )
 
 
 
