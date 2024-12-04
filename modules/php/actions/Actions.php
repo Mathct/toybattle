@@ -2,7 +2,7 @@
 
 namespace Bga\Games\toybattle; // ATTENTION
 
-trait ActionsTroupesTrait  // ATTENTION
+trait ActionsTrait  // ATTENTION
 {
     public function argAction1($parg1, $parg2)
     {

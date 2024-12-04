@@ -3,11 +3,11 @@
 namespace Bga\Games\toybattle;   // ATTENTION NOM DU JEU
 use APP_GameClass; // ATTENTION
 
-require_once 'troupes/ActionsTroupes.php'; 
+require_once 'actions/Actions.php'; 
 
 class Pending extends APP_GameClass
 {
-    use ActionsTroupesTrait; // ATTENTION
+    use ActionsTrait; // ATTENTION
 
     public function __construct($player_id)
     {
