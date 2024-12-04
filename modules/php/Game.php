@@ -24,7 +24,13 @@ include('Pending.php'); // ATTENTION
 
 class Game extends \Table
 {
-    private static array $CARD_TYPES; // ATTENTION
+    //private static array $CARD_TYPES; // ATTENTION
+    public $_bases;
+    public $_zones;
+    public $_powers;
+    public $_medals_to_win;
+    
+
 
     public static $instance = null;  // ATTENTION
 

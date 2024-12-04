@@ -67,6 +67,7 @@ class Pending extends APP_GameClass
         if(($varg1 == "draw_1")||($varg1 == "draw_2")||($varg1 == "place_troop"))
         {
             game::$instance->addPending($this->player_id, "Action1"); 
+            
         }
     }
 }
