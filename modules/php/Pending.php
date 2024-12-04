@@ -17,17 +17,17 @@ class Pending extends APP_GameClass
         $this->player_id = $p['player_id'];
         $this->player_name = $p['player_name'];
         $this->player_score = $p['player_score'];
-        //$this->player_color = $p['player_color'];
+        $this->player_color = $p['player_color'];
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
-        if ($p['player_color'] == "ff0000")
+        if ($p['player_color'] == "d1553e")
         {
-            $this->player_color = "red";
+            $this->player_deck = "deckred";
         }
-        if ($p['player_color'] == "0080ff")
+        if ($p['player_color'] == "4f66a2")
         {
-            $this->player_color = "blue";
+            $this->player_deck = "deckblue";
         }
     }
     
@@ -40,48 +40,31 @@ class Pending extends APP_GameClass
         $ret['titleyou'] = clienttranslate('${you} blabla1');
         
 
-        if($this->player_color == 'red')
-        {
-           
-            $counttroop = count(self::getObjectListFromDB("SELECT card_id FROM red WHERE card_location='deck'", true));
-                        
-        }
+        $counttroop = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
 
-        if($this->player_color == 'blue')
-        {
-            
-            $counttroop = count(self::getObjectListFromDB("SELECT card_id FROM blue WHERE card_location='deck'", true));
-        }
-
-                
+                       
         if ($counttroop >= 2)
         {
-            $ret['buttons'][]='Draw_2';
+            $ret['buttons'][]='draw_2';
         }
 
         if ($counttroop == 1)
         {
-            $ret['buttons'][]='Draw_1';
+            $ret['buttons'][]='draw_1';
         }
+
+        // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
+        $ret['buttons'][]='place_troop';
+
     
-        $ret['buttons'][]='cancel';
-        
-        $ret['buttons'][]='pass';
-        
+                
         return $ret;
     }
 
     function NormalTurn($parg1, $parg2, $varg1, $varg2)
     {
-        if($varg1 == "cancel")
-        {
-            game::$instance->addPending($this->player_id, "NormalTurn");  
-        }
-        if($varg1 == "pass")
-        {
-            game::$instance->addPending($this->player_id, "Action1"); 
-        }
-        if(($varg1 == "Draw_1")||($varg1 == "Draw_2"))
+       
+        if(($varg1 == "draw_1")||($varg1 == "draw_2")||($varg1 == "place_troop"))
         {
             game::$instance->addPending($this->player_id, "Action1"); 
         }

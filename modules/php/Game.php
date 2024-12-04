@@ -54,11 +54,10 @@ class Game extends \Table
         
         self::$instance = $this; // ATTENTION
 
-        $this->blue = self::getNew( "module.common.deck" );
-        $this->blue->init( "blue" );
+        $this->troop = self::getNew( "module.common.deck" );
+        $this->troop->init( "troop" );
         
-        $this->red = self::getNew( "module.common.deck" );
-        $this->red->init( "red" );
+        
         
 
         
@@ -120,29 +119,91 @@ class Game extends \Table
         // $this->initStat("table", "table_teststat1", 0);
         // $this->initStat("player", "player_teststat1", 0);
 
-
-        $red = array();
-        for ($i = 0; $i <= 7; $i++)
-        {
+        foreach ($players as $player_id => $player) {
             
-            $red[] = array( 'type' => $i, 'type_arg' => 0, 'nbr' => 3);
-           
+            $color = self::getUniqueValueFromDB("SELECT player_color FROM player WHERE player_id={$player_id}");
+
+            // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
+
+            if($color == 'd1553e')
+            {
+                $red = array();
+                for ($i = 1; $i <= 8; $i++)
+                {
+                    
+                    $red[] = array( 'type' => $i.'1', 'type_arg' => $player_id, 'nbr' => 1);
+                    $red[] = array( 'type' => $i.'2', 'type_arg' => $player_id, 'nbr' => 1);
+                    $red[] = array( 'type' => $i.'3', 'type_arg' => $player_id, 'nbr' => 1);
+                
+                }
+
+                $this->troop->createCards( $red, 'deckred' );
+            }
+
+            if($color == '4f66a2')
+            {
+                $blue = array();
+                for ($i = 1; $i <= 8; $i++)
+                {
+                    
+                    $blue[] = array( 'type' => $i.'1', 'type_arg' => $player_id, 'nbr' => 1);
+                    $blue[] = array( 'type' => $i.'2', 'type_arg' => $player_id, 'nbr' => 1);
+                    $blue[] = array( 'type' => $i.'3', 'type_arg' => $player_id, 'nbr' => 1);
+                
+                }
+
+                $this->troop->createCards( $blue, 'deckblue' );
+            }
+
+
         }
 
-        $this->red->createCards( $red, 'deck' );
-        $this->red->shuffle( 'deck' );
-        
+        $this->troop->shuffle( 'deckred' );
+        $this->troop->shuffle( 'deckblue' );
 
-        $blue = array();
-        for ($i = 0; $i <= 7; $i++)
-        {
-            
-            $blue[] = array( 'type' => $i, 'type_arg' => 0, 'nbr' => 3);
-           
-        }
 
-        $this->blue->createCards( $blue, 'deck' );
-        $this->blue->shuffle( 'deck' );
+            // INIT: 4 TROUPES POUR CHAQUE JOUEUR QUI NE SERONT PAS JOUEES
+
+            $this->troop->pickCardsForLocation( 4, 'deckred', 'noplay' );
+            $this->troop->pickCardsForLocation( 4, 'deckblue', 'noplay' );
+
+            // INIT: 3 TROUPES POUR LE PREMIER JOUEUR ET 4 TROUPES POUR LE SECOND JOUEUR
+
+            foreach ($players as $player_id => $player){
+
+                $numero = self::getUniqueValueFromDB("SELECT player_no FROM player WHERE player_id={$player_id}");
+                $color = self::getUniqueValueFromDB("SELECT player_color FROM player WHERE player_id={$player_id}");
+
+                // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
+
+                if($numero == 1)
+                {
+                    if($color == 'd1553e')
+                    {
+                        $this->troop->pickCardsForLocation( 3, 'deckred', 'hand' );
+                    }
+
+                    if($color == '4f66a2')
+                    {
+                        $this->troop->pickCardsForLocation( 3, 'deckblue', 'hand' );
+                    }
+                    
+                }
+
+                if($numero == 2)
+                {
+                    if($color == 'd1553e')
+                    {
+                        $this->troop->pickCardsForLocation( 4, 'deckred', 'hand' );
+                    }
+
+                    if($color == '4f66a2')
+                    {
+                        $this->troop->pickCardsForLocation( 4, 'deckblue', 'hand' );
+                    }
+                    
+                }
+            }
 
        
 

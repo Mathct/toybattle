@@ -182,14 +182,19 @@ onUpdateActionButtons: function( stateName, args )
                              {
                                 this.addActionButton( 'pass', _("Pass") ,'onOpButton', null, null, 'gray' );
                              }
-                             if(args.buttons[nb] == "Draw_2")
+                             if(args.buttons[nb] == "draw_2")
                             {
-                                this.addActionButton( 'Draw_2', _("Draw_2") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'draw_2', _("Draw 2 Troops") ,'onOpButton', null, null, 'gray' );
                             }
-                            if(args.buttons[nb] == "Draw_1")
+                            if(args.buttons[nb] == "draw_1")
                             {
-                                this.addActionButton( 'Draw_1', _("Draw_1") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'draw_1', _("Draw 1 Troop") ,'onOpButton', null, null, 'gray' );
                             }
+                            if(args.buttons[nb] == "place_troop")
+                            {
+                                this.addActionButton( 'place_troop', _("Place 1 Troop") ,'onOpButton', null, null, 'gray' );
+                            }
+            
                 }
                               
                     
