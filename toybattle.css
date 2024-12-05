@@ -25,6 +25,11 @@ margin-top: 20px;
         
 }
 
+
+.board-inverted {
+    transform: rotate(180deg);
+}
+
 #board_castle {
 
     width: 500px;
@@ -48,7 +53,7 @@ margin-top: 20px;
     -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
-    background-position: 0% -100%;
+    background-position: -100% 0%;
 }
 
 .base_red {

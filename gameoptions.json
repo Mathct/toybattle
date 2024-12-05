@@ -6,13 +6,13 @@
             "1": {
                 "name": "Normal", 
                 "tmdisplay": "Normal", 
-                "description": "Base powers are activated"
+                "description": "Bases powers are activated"
             },
 
             "2": {
                 "name": "Beginners", 
                 "tmdisplay": "Beginners", 
-                "description": "Base powers are deactivated"
+                "description": "Bases powers are deactivated"
             }   
                 
         },

@@ -4,10 +4,10 @@
 $this->_bases = [
     "castle" => [
         1  => ["value" => 1,  "adjacents" => [11, 12],         "power" => 0, "top" => 87.5, "left" => 43.2],
-        11 => ["value" => 11, "adjacents" => [1, 13],          "power" => 0, "top" => 84.8, "left" => 10.2],
-        12 => ["value" => 12, "adjacents" => [1, 14],          "power" => 0, "top" => 84.8, "left" => 76.6],
+        11 => ["value" => 11, "adjacents" => [1, 13],          "power" => 0, "top" => 84.9, "left" => 10.2],
+        12 => ["value" => 12, "adjacents" => [1, 14],          "power" => 0, "top" => 84.9, "left" => 76.6],
         13 => ["value" => 13, "adjacents" => [11, 15, 17, 18], "power" => 0, "top" => 70.5, "left" => 30.4],
-        14 => ["value" => 14, "adjacents" => [12, 16, 18, 19], "power" => 0, "top" => 70.5, "left" => 56],
+        14 => ["value" => 14, "adjacents" => [12, 16, 18, 19], "power" => 0, "top" => 70.6, "left" => 56],
         15 => ["value" => 15, "adjacents" => [13, 17],         "power" => 11, "top" => 63.2, "left" => 8.1],
         16 => ["value" => 16, "adjacents" => [14, 19],         "power" => 11, "top" => 63.2, "left" => 79.1],
         17 => ["value" => 17, "adjacents" => [13, 15, 20, 22], "power" => 0, "top" => 44.2, "left" => 13],

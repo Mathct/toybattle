@@ -54,6 +54,9 @@ setup: function( gamedatas )
     this.zones = gamedatas.zones;
     this.board = gamedatas.board;
 
+    this.BLUE = "4f66a2";
+    this.RED = "d1553e";
+
     this.setupBoard();
 
 
@@ -178,23 +181,23 @@ onUpdateActionButtons: function( stateName, args )
                              
                              if(args.buttons[nb] == "cancel")
                              {
-                                this.addActionButton( 'cancel', _("Cancel") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'cancel', _("Cancel") ,'onOpButton', null, null, 'red' );
                              }
                              if(args.buttons[nb] == "pass")
                              {
-                                this.addActionButton( 'pass', _("Pass") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'pass', _("Pass") ,'onOpButton', null, null, 'red' );
                              }
                              if(args.buttons[nb] == "draw_2")
                             {
-                                this.addActionButton( 'draw_2', _("Draw 2 Troops") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'draw_2', _("Draw 2 Troops") ,'onOpButton', null, null, 'blue' );
                             }
                             if(args.buttons[nb] == "draw_1")
                             {
-                                this.addActionButton( 'draw_1', _("Draw 1 Troop") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'draw_1', _("Draw 1 Troop") ,'onOpButton', null, null, 'blue' );
                             }
                             if(args.buttons[nb] == "place_troop")
                             {
-                                this.addActionButton( 'place_troop', _("Place 1 Troop") ,'onOpButton', null, null, 'gray' );
+                                this.addActionButton( 'place_troop', _("Place 1 Troop") ,'onOpButton', null, null, 'blue' );
                             }
             
                 }
@@ -276,6 +279,12 @@ attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_
 
 setupBoard: function()
 {
+    if( this.isCurrentPlayerRed() == true)
+    {
+        dojo.addClass('global', 'board-inverted');
+    }
+    
+    
     const TB_bases = this.bases[this.board];
 
     const boardContainer = document.createElement('div');
@@ -290,18 +299,28 @@ setupBoard: function()
         baseElement.style.top = `${baseData.top}%`;
         baseElement.style.left = `${baseData.left}%`;
         boardContainer.appendChild(baseElement);
-/*
+
         const baseElementRed = document.createElement('div');
-        baseElementRed.id = `base_${this.board}_${baseId}`;
-        baseElementRed.classList.add('base');
+        baseElementRed.id = `base_red_${this.board}_${baseId}`;
+        baseElementRed.classList.add('base_red');
         baseElementRed.style.top = `${baseData.top+2.5}%`;
         baseElementRed.style.left = `${baseData.left}%`;
-        baseElementRed.style.transform = 'rotate(180deg)';*/
+        baseElementRed.style.transform = 'rotate(180deg)';
 
-       // boardContainer.appendChild(baseElement);
+        boardContainer.appendChild(baseElementRed);
 
     }
     document.getElementById('global').appendChild(boardContainer);
+},
+
+isCurrentPlayerRed: function()
+{
+    if( this.gamedatas.players[ this.player_id ] )
+    {
+        if( this.gamedatas.players[ this.player_id ].color == this.RED )
+        {   return true;   }
+    }
+    return false;
 },
 
 

@@ -118,7 +118,7 @@ class Game extends \Table
             )
         );
 
-        $this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
+        //$this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 
         // Init global values with their initial values.
@@ -197,23 +197,27 @@ class Game extends \Table
         }
 
 
-        // CHOIX DU BOARD
+        // CHOIX DU BOARD (GSV 101)
 
+        // BOARD DE 1 A 8
         if (($this->gamestate->table_globals[101]>=1)&&($this->gamestate->table_globals[101]<=8))
         {
             $this->setGameStateValue('board', $this->gamestate->table_globals[101]);
         }
 
+        // BOARD RANDOM
         if ($this->gamestate->table_globals[101]==9)
         {
             $random = bga_rand(1,8);
             $this->setGameStateValue('board', $random);
         }
 
+        // BOARD DU MOIS
         if ($this->gamestate->table_globals[101]==10)
         {
-            // BOARD DU MOIS
-            //$this->setGameStateValue('board', $adefinir);
+            // A FAIRE ... POUR LE MOMENT C'EST UN RANDOM
+            $random = bga_rand(1,8);
+            $this->setGameStateValue('board', $random);
         }
 
 
