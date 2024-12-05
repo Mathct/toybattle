@@ -50,9 +50,11 @@ setup: function( gamedatas )
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
 
+    this.bases = gamedatas.bases;
+    this.zones = gamedatas.zones;
+    this.board = gamedatas.board;
 
-
-
+    this.setupBoard();
 
 
 
@@ -272,7 +274,23 @@ attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_
     return box;
 },
 
+setupBoard: function()
+{
+    const TB_bases = this.bases[this.board];
 
+    const boardContainer = document.createElement('div');
+    boardContainer.id = `board_${this.board}`;
+    boardContainer.classList.add('board');
+
+    for (const baseId of Object.keys(TB_bases)) {
+        const baseElement = document.createElement('div');
+        baseElement.id = `base_${this.board}_${baseId}`;
+        baseElement.classList.add('base');
+
+        boardContainer.appendChild(baseElement);
+    }
+    document.getElementById('global').appendChild(boardContainer);
+},
 
 
 /////////////////////////////////////////////////////////////////////////////////  
