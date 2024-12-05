@@ -286,8 +286,20 @@ setupBoard: function()
         const baseElement = document.createElement('div');
         baseElement.id = `base_${this.board}_${baseId}`;
         baseElement.classList.add('base');
-
+        const baseData = TB_bases[baseId];
+        baseElement.style.top = `${baseData.top}%`;
+        baseElement.style.left = `${baseData.left}%`;
         boardContainer.appendChild(baseElement);
+/*
+        const baseElementRed = document.createElement('div');
+        baseElementRed.id = `base_${this.board}_${baseId}`;
+        baseElementRed.classList.add('base');
+        baseElementRed.style.top = `${baseData.top+2.5}%`;
+        baseElementRed.style.left = `${baseData.left}%`;
+        baseElementRed.style.transform = 'rotate(180deg)';*/
+
+       // boardContainer.appendChild(baseElement);
+
     }
     document.getElementById('global').appendChild(boardContainer);
 },

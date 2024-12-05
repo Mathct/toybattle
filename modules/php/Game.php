@@ -54,10 +54,14 @@ class Game extends \Table
         require 'material.inc.php';
 
         $this->initGameStateLabels([
-            /*"my_first_global_variable" => 10,
-            "my_second_global_variable" => 11,
-            "my_first_game_variant" => 100,
-            "my_second_game_variant" => 101,*/]);
+
+            "game_mode" => 100,
+            "game_board" => 101,
+            "board" => 10,
+
+            
+        
+        ]);
 
 
         self::$instance = $this; // ATTENTION
@@ -193,6 +197,24 @@ class Game extends \Table
         }
 
 
+        // CHOIX DU BOARD
+
+        if (($this->gamestate->table_globals[101]>=1)&&($this->gamestate->table_globals[101]<=8))
+        {
+            $this->setGameStateValue('board', $this->gamestate->table_globals[101]);
+        }
+
+        if ($this->gamestate->table_globals[101]==9)
+        {
+            $random = bga_rand(1,8);
+            $this->setGameStateValue('board', $random);
+        }
+
+        if ($this->gamestate->table_globals[101]==10)
+        {
+            // BOARD DU MOIS
+            //$this->setGameStateValue('board', $adefinir);
+        }
 
 
 
@@ -231,7 +253,9 @@ class Game extends \Table
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
 
-        $result["board"] = "castle";
+        $board = ["castle", "pool", "clouds", "jungle", "carribean", "cemetery", "station", "battlefield"];
+        $result["board"] = $board[$this->getGameStateValue('board')-1];
+        
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
 

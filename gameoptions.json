@@ -1,1 +1,95 @@
-{}
+{
+
+    "100": {
+        "name": "Game_mode",
+        "values": {
+            "1": {
+                "name": "Normal", 
+                "tmdisplay": "Normal", 
+                "description": "Base powers are activated"
+            },
+
+            "2": {
+                "name": "Beginners", 
+                "tmdisplay": "Beginners", 
+                "description": "Base powers are deactivated"
+            }   
+                
+        },
+        
+        
+        "default": 1
+              
+    },
+
+    "101": {
+        "name": "Game_board",
+        "values": {
+            "1": {
+                "name": "Castle (recommended for beginners)", 
+                "tmdisplay": "Castle (recommended for beginners)", 
+                "description": "Recommended for beginners"
+            },
+
+            "2": {
+                "name": "Pool", 
+                "tmdisplay": "Pool", 
+                "description": ""
+            },
+    
+            "3": {
+                "name": "Clouds", 
+                "tmdisplay": "Clouds", 
+                "description": ""
+            },
+
+            "4": {
+                "name": "Jungle", 
+                "tmdisplay": "Jungle", 
+                "description": ""
+            },
+
+            "5": {
+                "name": "Carribean", 
+                "tmdisplay": "carribean", 
+                "description": ""
+            },
+
+            "6": {
+                "name": "Cemetery", 
+                "tmdisplay": "Cemetery", 
+                "description": ""
+            },
+
+            "7": {
+                "name": "Station", 
+                "tmdisplay": "Station", 
+                "description": ""
+            },
+
+            "8": {
+                "name": "Battlefield", 
+                "tmdisplay": "Battlefield", 
+                "description": ""
+            },
+
+            "9": {
+                "name": "Random", 
+                "tmdisplay": "Random", 
+                "description": ""
+            },
+
+            "10": {
+                "name": "Board of the month", 
+                "tmdisplay": "Board of the month", 
+                "description": ""
+            }
+    
+    
+        },
+        
+        
+        "default": 1
+              
+    }
+}
