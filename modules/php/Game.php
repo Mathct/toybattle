@@ -243,34 +243,39 @@ class Game extends \Table
         $result = [];
 
         // WARNING: We must only return information visible by the current player.
-        $current_player_id = (int) $this->getCurrentPlayerId();
 
-        $result["players"] = $this->getCollectionFromDb(
-            "SELECT `player_id` `id`, `player_score` `score`, `player_color` `color` FROM `player`"
-        );
+        $current_player_id = (int) $this->getCurrentPlayerId();
+        $opponent_id = (int) $this->getOpponentId($current_player_id);
+        $spectator_id = $this->getSpectatorId();
+        $no_spectator_id = (int) $this->getOpponentId($spectator_id);
+
+        $result['opponent_id'] = $opponent_id;
+        $result['spectator_id'] = $spectator_id;
+        $result['no_spectator_id'] = $no_spectator_id;
+
+        // Get information about players.
+        // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
+        $sql = "SELECT player_id id, player_score score, player_color color, player_no no, player_name name FROM player ORDER BY player_no";
+        $result['players'] = self::getCollectionFromDb($sql);
+
+        if (!$this->isSpectator()) {
+            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id, FLOOR(card_type / 10) card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}'");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}'");
+        } else {
+            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id, FLOOR(card_type / 10) card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id, FLOOR(card_type / 10) card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}'");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}'");
+        }
+        $result["board_troops"] = self::getObjectListFromDB("SELECT card_id, card_type, card_type_arg, card_location, card_location_arg, ordre FROM troop WHERE card_location = 'board'");
 
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
 
         $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $result["board_name"] = $board_name[$this->getGameStateValue('board') - 1];
-
-        //var_dump("message", $result["players"]);
-
-        foreach ($result["players"] as $player) {
-
-            if (($player['id']) == $current_player_id) {
-                if (!$this->isSpectator()) {
-                    $result["my_hand"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}'");
-                }
-                $result["nb_my_hand"] = count($result["my_hand"]);
-                $result["nb_your_hand"] = count(self::getObjectListFromDB("SELECT card_id card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$current_player_id}'", true));
-                $result["my_discard"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}'");
-                $result["your_discard"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type FROM troop WHERE card_location = 'discard' AND card_type_arg != '{$current_player_id}'");
-                $result["board"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type, card_type_arg card_type_arg, card_location card_location, card_location_arg card_location_arg, ordre ordre FROM troop WHERE card_location = 'board'");
-            }
-        }
-
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
 
@@ -331,7 +336,28 @@ class Game extends \Table
     }
 
 
+    /**
+     * Returns the opponent's player id
+     */
+    function getOpponentId(int $player_id): int
+    {
+        $player_ids = array_keys($this->loadPlayersBasicInfos());
+        if (in_array($player_id, $player_ids)) {
+            return (int) array_values(array_diff($player_ids, [$player_id]))[0];
+        } else {
+            $sql = "SELECT player_id FROM player WHERE player_no = (SELECT MAX(player_no) FROM player)";
+            return (int) $this->getUniqueValueFromDB($sql);
+        }
+    }
 
+    /**
+     * returns player_id having player_no 1, used for any spectator
+     */
+    function getSpectatorId(): int
+    {
+        $sql = "SELECT player_id FROM player WHERE player_no = (SELECT MIN(player_no) FROM player)";
+        return (int) $this->getUniqueValueFromDB($sql);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////// 
     //     _____  _                                    _   _                 

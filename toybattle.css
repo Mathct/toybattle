@@ -43,12 +43,41 @@
     width: 500px;
     height: 833.5px;
     position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 2%;
+
+    border-radius: 5px;
     background-image: url('img/TB_Boards.jpg');
     background-size: 400% 200%;
 }
+
+.playmat {
+    height: 833.5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+
+.discard {
+    height: 833.5px;
+    width: 100px;
+    border-radius: 5px;
+    /*border: 2px solid #ccc;*/
+}
+
+#discard_blue {
+    /*background: linear-gradient(to top, #4f66a2 0%, #8a9fcf 50%, #ffffff 100%);*/
+    background: linear-gradient(to top, #4f66a2 0%, transparent 100%);
+}
+
+#discard_red {
+    /*background: linear-gradient(to bottom, #d1553e 0%, #f29d88 50%, #ffffff 100%);*/
+    background: linear-gradient(to bottom, #d1553e 0%, transparent 100%);
+}
+
+
 
 .base {
     position: absolute;
@@ -73,26 +102,14 @@
 }
 
 .troop {
-    /*position: absolute;*/
     width: 65.625px;
     height: 87.5px;
     /*filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));
     -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
-    /*background-position: -100% 0%;*/
 }
 
-.troop_red {
-    /*position: absolute;*/
-    width: 65.625px;
-    height: 87.5px;
-    /*filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));
-    -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
-    background-image: url('img/TB_Tiles.png');
-    background-size: 900% 200%;
-    background-position: -100% -100%;
-}
 
 
 .rack {
@@ -102,10 +119,10 @@
     height: 90px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     gap: 10px; /* Espacement entre les éléments */
-    border: 2px solid #ccc; /* Bordure pour visualiser le conteneur */
+    border: 2px solid #ccc;
     background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);
 
 }

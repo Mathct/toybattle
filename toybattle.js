@@ -63,6 +63,9 @@ setup: function( gamedatas )
     this.BLUE = "4f66a2";
     this.RED = "d1553e";
 
+    this.spectator_id =  gamedatas.spectator_id;
+    this.other_player_id =  gamedatas.other_player_id;
+
     this.setupBoard();
 
 
@@ -295,14 +298,35 @@ setupBoard: function()
     yourRackContainer.style.transform = 'rotate(180deg)';
     globalContainer.appendChild(yourRackContainer);
 
-    for( let i=1; i<9; i++) {
-        const troopElementRed = document.createElement('div');
-        troopElementRed.id = `troop_red_${i}`;
-        troopElementRed.classList.add('troop_red');
-        yourRackContainer.appendChild(troopElementRed);
+    Object.values(this.gamedatas.your_hand).forEach(troop => {
+        const troopElement = document.createElement('div');
+        troopElement.id = `troop_${troop.id}`;
+        troopElement.classList.add('troop');
+
+        const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
+        const troop_color = troop.card_type < 10 ? troop.card_type - 1 : Math.floor(troop.card_type / 10)-1;
+
+        troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
+        yourRackContainer.appendChild(troopElement);
+    });
+
+    const playmatContainer = document.createElement('div');
+    playmatContainer.id = `playmat_id`;
+    playmatContainer.classList.add('playmat');
+    globalContainer.appendChild(playmatContainer);
+
+    if( this.isCurrentPlayerRed() == true)
+    {
+        playmatContainer.classList.add('board-inverted');
     }
 
-    
+
+    const blueDiscardContainer = document.createElement('div');
+    blueDiscardContainer.id = `discard_blue`;
+    blueDiscardContainer.classList.add('discard');
+    playmatContainer.appendChild(blueDiscardContainer);
+
+   
     const boardContainer = document.createElement('div');
     boardContainer.id = `board_${this.board_name}`;
     boardContainer.classList.add('board');
@@ -310,15 +334,12 @@ setupBoard: function()
     const background_x = index % 4;  
     const background_y = Math.floor(index / 4);
     boardContainer.style.backgroundPosition = `-${background_x}00% -${background_y}00%`;
-    if( this.isCurrentPlayerRed() == true)
-        {
-            boardContainer.classList.add('board-inverted');
-        }
 
 
-    console.log( 'BoardContainer', boardContainer);
 
-        
+
+
+/*        
     const TB_bases = this.bases[this.board_name];
 
     for (const baseId of Object.keys(TB_bases)) {
@@ -339,26 +360,41 @@ setupBoard: function()
 
         boardContainer.appendChild(baseElementRed);
 
-    }
-    document.getElementById('global_id').appendChild(boardContainer);
+    }*/
+
+    playmatContainer.appendChild(boardContainer);
+
+
+    const redDiscardContainer = document.createElement('div');
+    redDiscardContainer.id = `discard_red`;
+    redDiscardContainer.classList.add('discard');
+
+    playmatContainer.appendChild(redDiscardContainer);
+
+    const myLineContainer = document.createElement('div');
+    myLineContainer.id = `my_line`;
+    myLineContainer.classList.add('line');
+    globalContainer.appendChild(myLineContainer);
 
     const myRackContainer = document.createElement('div');
     myRackContainer.id = `my_rack`;
     myRackContainer.classList.add('rack');
-    globalContainer.appendChild(myRackContainer);
+    myLineContainer.appendChild(myRackContainer);
 
-    if( this.isSpectator == false) {
-        Object.values(this.gamedatas.my_hand).forEach(troop => {
-            const troopElement = document.createElement('div');
-            troopElement.id = `troop_${troop.id}`;
-            troopElement.classList.add('troop');
-            const troop_type = troop.card_type % 10;
-            const troop_color = Math.floor(troop.card_type / 10)-1;
-            troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
-            myRackContainer.appendChild(troopElement);
-        });
+
+    Object.values(this.gamedatas.my_hand).forEach(troop => {
+        const troopElement = document.createElement('div');
+        troopElement.id = `troop_${troop.id}`;
+        troopElement.classList.add('troop');
+
+        const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
+        const troop_color = troop.card_type < 10 ? troop.card_type - 1 : Math.floor(troop.card_type / 10)-1;
+
+        troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
+        myRackContainer.appendChild(troopElement);
+    });
         
-    }
+    
     
  /*   for( let i=1; i<9; i++) {
         const troopElementBlue = document.createElement('div');
