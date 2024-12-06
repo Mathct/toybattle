@@ -57,6 +57,7 @@ setup: function( gamedatas )
     this.bases = gamedatas.bases;
     this.zones = gamedatas.zones;
     this.board_name = gamedatas.board_name;
+    this.board_id = gamedatas.board_id;
 
     this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean","station", "battlefield"];
 
@@ -290,17 +291,31 @@ setupBoard: function()
 {
     const globalContainer = document.getElementById('global_id');
 
+    const yourLineContainer = document.createElement('div');
+    yourLineContainer.id = `your_line`;
+    yourLineContainer.classList.add('line');
+    yourLineContainer.style.transform = 'rotate(180deg)';
+    globalContainer.appendChild(yourLineContainer);
 
+
+    const yourDeckContainer = document.createElement('div');
+    yourDeckContainer.id = `your_deck`;
+    yourDeckContainer.classList.add('troop');
+    const your_deck_color = this.isCurrentPlayerRed() ? 0 : 1;
+
+    yourDeckContainer.style.backgroundPosition = `0% -${your_deck_color}00%`;
+    yourLineContainer.appendChild(yourDeckContainer);
 
     const yourRackContainer = document.createElement('div');
     yourRackContainer.id = `your_rack`;
     yourRackContainer.classList.add('rack');
-    yourRackContainer.style.transform = 'rotate(180deg)';
-    globalContainer.appendChild(yourRackContainer);
+    yourRackContainer.classList.add(this.isCurrentPlayerRed() ? 'linear_blue' : 'linear_red_top');
+    
+    yourLineContainer.appendChild(yourRackContainer);
 
     Object.values(this.gamedatas.your_hand).forEach(troop => {
         const troopElement = document.createElement('div');
-        troopElement.id = `troop_${troop.id}`;
+        troopElement.id = `troop_${troop.card_id}`;
         troopElement.classList.add('troop');
 
         const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
@@ -309,6 +324,10 @@ setupBoard: function()
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         yourRackContainer.appendChild(troopElement);
     });
+
+   
+
+
 
     const playmatContainer = document.createElement('div');
     playmatContainer.id = `playmat_id`;
@@ -323,26 +342,55 @@ setupBoard: function()
 
     const blueDiscardContainer = document.createElement('div');
     blueDiscardContainer.id = `discard_blue`;
-    blueDiscardContainer.classList.add('discard');
+    blueDiscardContainer.classList.add('discard', 'linear_blue');
     playmatContainer.appendChild(blueDiscardContainer);
+    for( let i=1; i<9; i++ ) {
+        const blueDiscardTroop = document.createElement('div');
+        blueDiscardTroop.id = `discard_blue_${i}`;
+        blueDiscardTroop.classList.add('troop','opa_50');
+        blueDiscardTroop.style.backgroundPosition = `-${i}00% -000%`;
+        blueDiscardContainer.appendChild(blueDiscardTroop);
+    }
+
 
    
     const boardContainer = document.createElement('div');
-    boardContainer.id = `board_${this.board_name}`;
+    boardContainer.id = `board_${this.board_id}`;
     boardContainer.classList.add('board');
     const index = this.boards.indexOf(this.board_name);
-    const background_x = index % 4;  
-    const background_y = Math.floor(index / 4);
+    const background_x = (this.board_id - 1) % 4;  
+    const background_y = Math.floor( (this.board_id - 1) / 4);
     boardContainer.style.backgroundPosition = `-${background_x}00% -${background_y}00%`;
 
 
 
 
 
-/*        
+        
     const TB_bases = this.bases[this.board_name];
 
-    for (const baseId of Object.keys(TB_bases)) {
+    Object.values(this.gamedatas.board_troops).forEach(troop => {
+        const troopElement = document.createElement('div');
+        troopElement.id = `troop_${troop.card_id}`;
+        troopElement.classList.add('troop');
+        const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
+        const troop_color = troop.card_type < 10 ? troop.card_type - 1 : Math.floor(troop.card_type / 10)-1;
+        troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
+        boardContainer.appendChild(troopElement);
+        const baseData = TB_bases[troop.card_location_arg];
+        console.log( 'baseData', baseData);
+        troopElement.style.position = 'absolute';
+        troopElement.style.top = troop_color == 0 ? `${baseData.top}%` : `${baseData.top+2.5}%`;
+        troopElement.style.left = `${baseData.left}%`;
+        console.log( 'baseData style top', troopElement.style.top);
+        console.log( 'baseData style left', troopElement.style.left);
+        if( troop_color == 1 ) {
+            troopElement.style.transform = 'rotate(180deg)';
+        }
+        
+    });
+
+/*    for (const baseId of Object.keys(TB_bases)) {
         const baseElement = document.createElement('div');
         baseElement.id = `base_${this.board_name}_${baseId}`;
         baseElement.classList.add('base');
@@ -367,24 +415,44 @@ setupBoard: function()
 
     const redDiscardContainer = document.createElement('div');
     redDiscardContainer.id = `discard_red`;
-    redDiscardContainer.classList.add('discard');
-
+    redDiscardContainer.classList.add('discard', 'linear_red');
     playmatContainer.appendChild(redDiscardContainer);
+
+    for (let i = 8; i >= 1; i--) {
+        const redDiscardTroop = document.createElement('div');
+        redDiscardTroop.id = `discard_red_${i}`;
+        redDiscardTroop.classList.add('troop','opa_50');
+        redDiscardTroop.style.backgroundPosition = `-${i}00% -100%`;
+        redDiscardTroop.classList.add('board-inverted');
+        redDiscardContainer.appendChild(redDiscardTroop);
+       
+        
+    }    
 
     const myLineContainer = document.createElement('div');
     myLineContainer.id = `my_line`;
     myLineContainer.classList.add('line');
     globalContainer.appendChild(myLineContainer);
 
+    const myDeckContainer = document.createElement('div');
+    myDeckContainer.id = `my_deck`;
+    myDeckContainer.classList.add('troop');
+    const my_deck_color = this.isCurrentPlayerRed() ? 1 : 0;
+
+    myDeckContainer.style.backgroundPosition = `0% -${my_deck_color}00%`;
+
+    myLineContainer.appendChild(myDeckContainer);
+
     const myRackContainer = document.createElement('div');
     myRackContainer.id = `my_rack`;
     myRackContainer.classList.add('rack');
+    myRackContainer.classList.add(this.isCurrentPlayerRed() ? 'linear_red_top' : 'linear_blue');
     myLineContainer.appendChild(myRackContainer);
 
 
     Object.values(this.gamedatas.my_hand).forEach(troop => {
         const troopElement = document.createElement('div');
-        troopElement.id = `troop_${troop.id}`;
+        troopElement.id = `troop_${troop.card_id}`;
         troopElement.classList.add('troop');
 
         const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;

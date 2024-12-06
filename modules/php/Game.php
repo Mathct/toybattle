@@ -255,7 +255,7 @@ class Game extends \Table
 
         // Get information about players.
         // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
-        $sql = "SELECT player_id id, player_score score, player_color color, player_no no, player_name name FROM player ORDER BY player_no";
+        $sql = "SELECT player_id id, player_score score, player_color color, player_no no, player_name name, player_star star FROM player ORDER BY player_no";
         $result['players'] = self::getCollectionFromDb($sql);
 
         if (!$this->isSpectator()) {
@@ -269,13 +269,14 @@ class Game extends \Table
             $result["my_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}'");
             $result["your_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}'");
         }
-        $result["board_troops"] = self::getObjectListFromDB("SELECT card_id, card_type, card_type_arg, card_location, card_location_arg, ordre FROM troop WHERE card_location = 'board'");
+        $result["board_troops"] = self::getObjectListFromDB("SELECT card_id, card_type, card_type_arg, card_location, card_location_arg, card_ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
 
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
 
         $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $result["board_name"] = $board_name[$this->getGameStateValue('board') - 1];
+        $result["board_id"] = $this->getGameStateValue('board');
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
 

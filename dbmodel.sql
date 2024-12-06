@@ -51,7 +51,8 @@ CREATE TABLE IF NOT EXISTS `troop` (
   `card_type_arg` int(11) NOT NULL,
   `card_location` varchar(50) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
-  `ordre` int(2) unsigned DEFAULT 1,
+  `card_ordre` int(2) unsigned DEFAULT 1,
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+ALTER TABLE `player` ADD `player_star` int(2) DEFAULT 0;
