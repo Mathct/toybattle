@@ -45,6 +45,10 @@ setup: function( gamedatas )
 {
     console.log( "Starting game setup" );
 
+    console.log('gamedatas');
+
+    console.log(gamedatas);
+
                
     // TODO: Set up your game interface here, according to "gamedatas"
 
@@ -52,7 +56,9 @@ setup: function( gamedatas )
 
     this.bases = gamedatas.bases;
     this.zones = gamedatas.zones;
-    this.board = gamedatas.board;
+    this.board_name = gamedatas.board_name;
+
+    this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean","station", "battlefield"];
 
     this.BLUE = "4f66a2";
     this.RED = "d1553e";
@@ -279,21 +285,45 @@ attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_
 
 setupBoard: function()
 {
-    if( this.isCurrentPlayerRed() == true)
-    {
-        dojo.addClass('global', 'board-inverted');
-    }
-    
-    
-    const TB_bases = this.bases[this.board];
+    const globalContainer = document.getElementById('global_id');
 
+
+
+    const yourRackContainer = document.createElement('div');
+    yourRackContainer.id = `your_rack`;
+    yourRackContainer.classList.add('rack');
+    yourRackContainer.style.transform = 'rotate(180deg)';
+    globalContainer.appendChild(yourRackContainer);
+
+    for( let i=1; i<9; i++) {
+        const troopElementRed = document.createElement('div');
+        troopElementRed.id = `troop_red_${i}`;
+        troopElementRed.classList.add('troop_red');
+        yourRackContainer.appendChild(troopElementRed);
+    }
+
+    
     const boardContainer = document.createElement('div');
-    boardContainer.id = `board_${this.board}`;
+    boardContainer.id = `board_${this.board_name}`;
     boardContainer.classList.add('board');
+    const index = this.boards.indexOf(this.board_name);
+    const background_x = index % 4;  
+    const background_y = Math.floor(index / 4);
+    boardContainer.style.backgroundPosition = `-${background_x}00% -${background_y}00%`;
+    if( this.isCurrentPlayerRed() == true)
+        {
+            boardContainer.classList.add('board-inverted');
+        }
+
+
+    console.log( 'BoardContainer', boardContainer);
+
+        
+    const TB_bases = this.bases[this.board_name];
 
     for (const baseId of Object.keys(TB_bases)) {
         const baseElement = document.createElement('div');
-        baseElement.id = `base_${this.board}_${baseId}`;
+        baseElement.id = `base_${this.board_name}_${baseId}`;
         baseElement.classList.add('base');
         const baseData = TB_bases[baseId];
         baseElement.style.top = `${baseData.top}%`;
@@ -301,7 +331,7 @@ setupBoard: function()
         boardContainer.appendChild(baseElement);
 
         const baseElementRed = document.createElement('div');
-        baseElementRed.id = `base_red_${this.board}_${baseId}`;
+        baseElementRed.id = `base_red_${this.board_name}_${baseId}`;
         baseElementRed.classList.add('base_red');
         baseElementRed.style.top = `${baseData.top+2.5}%`;
         baseElementRed.style.left = `${baseData.left}%`;
@@ -310,7 +340,35 @@ setupBoard: function()
         boardContainer.appendChild(baseElementRed);
 
     }
-    document.getElementById('global').appendChild(boardContainer);
+    document.getElementById('global_id').appendChild(boardContainer);
+
+    const myRackContainer = document.createElement('div');
+    myRackContainer.id = `my_rack`;
+    myRackContainer.classList.add('rack');
+    globalContainer.appendChild(myRackContainer);
+
+    if( this.isSpectator == false) {
+        Object.values(this.gamedatas.my_hand).forEach(troop => {
+            const troopElement = document.createElement('div');
+            troopElement.id = `troop_${troop.id}`;
+            troopElement.classList.add('troop');
+            const troop_type = troop.card_type % 10;
+            const troop_color = Math.floor(troop.card_type / 10)-1;
+            troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
+            myRackContainer.appendChild(troopElement);
+        });
+        
+    }
+    
+ /*   for( let i=1; i<9; i++) {
+        const troopElementBlue = document.createElement('div');
+        troopElementBlue.id = `troop_red_${i}`;
+        troopElementBlue.classList.add('troop');
+
+        myRackContainer.appendChild(troopElementBlue);
+    }*/
+
+
 },
 
 isCurrentPlayerRed: function()

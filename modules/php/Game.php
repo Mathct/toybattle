@@ -59,8 +59,8 @@ class Game extends \Table
             "game_board" => 101,
             "board" => 10,
 
-            
-        
+
+
         ]);
 
 
@@ -132,13 +132,13 @@ class Game extends \Table
 
             // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
+            // 4f66a2 = bleu d1553e = rouge
+
             if ($color == 'd1553e') {
                 $red = array();
                 for ($i = 1; $i <= 8; $i++) {
 
-                    $red[] = array('type' => $i . '1', 'type_arg' => $player_id, 'nbr' => 1);
-                    $red[] = array('type' => $i . '2', 'type_arg' => $player_id, 'nbr' => 1);
-                    $red[] = array('type' => $i . '3', 'type_arg' => $player_id, 'nbr' => 1);
+                    $red[] = array('type' => '2' . $i, 'type_arg' => $player_id, 'nbr' => 3);
                 }
 
                 $this->troop->createCards($red, 'deckred');
@@ -148,9 +148,7 @@ class Game extends \Table
                 $blue = array();
                 for ($i = 1; $i <= 8; $i++) {
 
-                    $blue[] = array('type' => $i . '1', 'type_arg' => $player_id, 'nbr' => 1);
-                    $blue[] = array('type' => $i . '2', 'type_arg' => $player_id, 'nbr' => 1);
-                    $blue[] = array('type' => $i . '3', 'type_arg' => $player_id, 'nbr' => 1);
+                    $blue[] = array('type' => '1' . $i, 'type_arg' => $player_id, 'nbr' => 3);
                 }
 
                 $this->troop->createCards($blue, 'deckblue');
@@ -200,23 +198,20 @@ class Game extends \Table
         // CHOIX DU BOARD (GSV 101)
 
         // BOARD DE 1 A 8
-        if (($this->gamestate->table_globals[101]>=1)&&($this->gamestate->table_globals[101]<=8))
-        {
+        if (($this->gamestate->table_globals[101] >= 1) && ($this->gamestate->table_globals[101] <= 8)) {
             $this->setGameStateValue('board', $this->gamestate->table_globals[101]);
         }
 
         // BOARD RANDOM
-        if ($this->gamestate->table_globals[101]==9)
-        {
-            $random = bga_rand(1,8);
+        if ($this->gamestate->table_globals[101] == 9) {
+            $random = bga_rand(1, 8);
             $this->setGameStateValue('board', $random);
         }
 
         // BOARD DU MOIS
-        if ($this->gamestate->table_globals[101]==10)
-        {
+        if ($this->gamestate->table_globals[101] == 10) {
             // A FAIRE ... POUR LE MOMENT C'EST UN RANDOM
-            $random = bga_rand(1,8);
+            $random = bga_rand(1, 8);
             $this->setGameStateValue('board', $random);
         }
 
@@ -251,15 +246,31 @@ class Game extends \Table
         $current_player_id = (int) $this->getCurrentPlayerId();
 
         $result["players"] = $this->getCollectionFromDb(
-            "SELECT `player_id` `id`, `player_score` `score` FROM `player`"
+            "SELECT `player_id` `id`, `player_score` `score`, `player_color` `color` FROM `player`"
         );
 
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
 
-        $board = ["castle", "pool", "clouds", "jungle", "carribean", "cemetery", "station", "battlefield"];
-        $result["board"] = $board[$this->getGameStateValue('board')-1];
-        
+        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+        $result["board_name"] = $board_name[$this->getGameStateValue('board') - 1];
+
+        //var_dump("message", $result["players"]);
+
+        foreach ($result["players"] as $player) {
+
+            if (($player['id']) == $current_player_id) {
+                if (!$this->isSpectator()) {
+                    $result["my_hand"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}'");
+                }
+                $result["nb_my_hand"] = count($result["my_hand"]);
+                $result["nb_your_hand"] = count(self::getObjectListFromDB("SELECT card_id card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$current_player_id}'", true));
+                $result["my_discard"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}'");
+                $result["your_discard"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type FROM troop WHERE card_location = 'discard' AND card_type_arg != '{$current_player_id}'");
+                $result["board"] = self::getObjectListFromDB("SELECT card_id card_id, card_type card_type, card_type_arg card_type_arg, card_location card_location, card_location_arg card_location_arg, ordre ordre FROM troop WHERE card_location = 'board'");
+            }
+        }
+
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
 

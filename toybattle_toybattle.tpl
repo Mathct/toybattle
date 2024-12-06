@@ -1,6 +1,6 @@
 {OVERALL_GAME_HEADER}
 
-<div id="global">
+<div id="global_id">
 </div>
 
 <script type="text/javascript">
