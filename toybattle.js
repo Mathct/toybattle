@@ -552,32 +552,6 @@ onOpButton: function(evt)
 
 
 
-/// GESTION DE LA PREF DE CONFIMATION VERS LE BACK /// 
-
-onGameUserPreferenceChanged(pref_id, pref_value) {
-
-    if(!this.isReadOnly())
-    {
-
-        if ((pref_id === 100)&&(!this.isSpectator))
-        {  
-           
-            //this.bgaPerformAction('actConfirmPref', { arg1: this.getCurrentPlayerId(), arg2: pref_value}, { lock: false, checkAction: false });
-                        
-        }
-    }
-},
-
-// GESTION DE LA PREF DE CONFRMATION: GESTION DU REPLAY QUI NE FONCTIONNE PAS AVEC CETTE PREF
-
-isReadOnly: function () { 
-    return this.isSpectator || typeof g_replayFrom != 'undefined' || g_archive_mode; 
-  },
-
-
-
-
-
 
 
 

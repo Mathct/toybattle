@@ -55,11 +55,5 @@ CREATE TABLE IF NOT EXISTS `troop` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `prefconfirm` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `player_id` int(16) NULL,
-  `valeur` int(10) NULL,  
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 ALTER TABLE `player` ADD `player_star` int(2) DEFAULT 0;

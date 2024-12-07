@@ -22,7 +22,6 @@ namespace Bga\Games\toybattle;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
-
 include('Pending.php'); // ATTENTION
 
 class Game extends \Table
@@ -218,14 +217,7 @@ class Game extends \Table
 
 
 
-        //INIT DU PREF CCNFIRMATION STEP POUR CHAQUE JOUEUR ... LA CONFORMARION SERA ACTIVE//
-
-        foreach ($players as $player_id => $player) {
-            self::DbQuery("INSERT INTO prefconfirm (player_id, valeur) VALUES ($player_id, 1)");
-        }
-
-
-
+        
         /************ Init Pending *****/
 
 
@@ -378,7 +370,7 @@ class Game extends \Table
     //                    |___/                                              
     /////////////////////////////////////////////////////////////////////////////////
 
-
+    
     public function actSelect(string $arg1)
     {
 
@@ -403,15 +395,7 @@ class Game extends \Table
         $this->gamestate->nextState('next');
     }
 
-    public function actConfirmPref(string $arg1, string $arg2)
-    {
-
-        $etat = self::getUniqueValueFromDB("SELECT valeur FROM prefconfirm WHERE player_id={$arg1}");
-        if ($etat != $arg2) {
-            self::DbQuery("UPDATE prefconfirm set valeur = '{$arg2}' WHERE player_id = {$arg1}");
-        }
-    }
-
+   
     ///////////////////////////////////////////////////////////////////////////////// 
     //     _____                             _        _                                                    _       
     //    / ____|                           | |      | |                                                  | |      
