@@ -46,9 +46,7 @@ setup: function( gamedatas )
     console.log( "Starting game setup" );
 
     console.log('gamedatas');
-
     console.log(gamedatas);
-
                
     // TODO: Set up your game interface here, according to "gamedatas"
 
@@ -60,6 +58,7 @@ setup: function( gamedatas )
     this.board_id = gamedatas.board_id;
 
     this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean","station", "battlefield"];
+    this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8];
 
     this.BLUE = "4f66a2";
     this.RED = "d1553e";
@@ -67,13 +66,10 @@ setup: function( gamedatas )
     this.spectator_id =  gamedatas.spectator_id;
     this.other_player_id =  gamedatas.other_player_id;
 
+    this.board_troops = gamedatas.board_troops;
+
+    this.setupPlayersBoard();
     this.setupBoard();
-
-
-
-
-    
-
 
 
     // Setup game notifications to handle (see "setupNotifications" method below)
@@ -117,32 +113,39 @@ onEnteringState: function( stateName, args )
     case 'playerTurn':
         this.args = args.args;
         for( var sid in this.args.selectable)
+        {
+            if(this.isCurrentPlayerActive())
             {
-                if(this.isCurrentPlayerActive())
-                {
                 dojo.query("#"+this.args.selectable[sid]).addClass("selectable");
-                }
             }
+        }
 
-            /*this.gamedatas.gamestate.descriptionmyturn = _(this.args.titleyou);
-            this.gamedatas.gamestate.description = _(this.args.title);
-            this.updatePageTitle();*/
-
-            if( this.isCurrentPlayerActive() )
+        if( this.isCurrentPlayerActive() )
+        {
+            if(args.args.titleyou != null)
             {
-                if(args.args.titleyou != null)
-                {
-                    $('pagemaintitletext').innerHTML = 	this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);   
-                }
-            } 
-                
-            else
-            {
-                if(args.args.title != null)
-                {
-                    $('pagemaintitletext').innerHTML = this.format_string_recursive(_(args.args.title).replace('${actplayer}', this.divActPlayer()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);  
-                }
+                $('pagemaintitletext').innerHTML = 	this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);   
             }
+        } 
+        else
+        {
+            if(args.args.title != null)
+            {
+                $('pagemaintitletext').innerHTML = this.format_string_recursive(_(args.args.title).replace('${actplayer}', this.divActPlayer()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);  
+            }
+        }
+
+        if (this.prefs[101].value == 2)
+        {
+            //SELECTIONNER TOUTES LES CLASSES QUI PEUVENT CLIGNOTER ET LEUR AJOUTER UNE CLASSE SANS CLIGNOTEMENT
+
+        }
+
+        if (this.prefs[102].value == 2)
+        {
+            //SELECTIONNER TOUTES LES CLASSES QUI PEUVENT AVOIR UNE ANIMATION GENANT EN BOUCLE ET LEUR AJOUTER UNE CLASSE AVEC UNE ANIMATION MODEREE
+
+        }
 
         
         break;
@@ -187,32 +190,30 @@ onUpdateActionButtons: function( stateName, args )
 
                 case "playerTurn":
                     for( var nb in args.buttons )
-                     { 
-                             
-                             if(args.buttons[nb] == "cancel")
-                             {
-                                this.addActionButton( 'cancel', _("Cancel") ,'onOpButton', null, null, 'red' );
-                             }
-                             if(args.buttons[nb] == "pass")
-                             {
-                                this.addActionButton( 'pass', _("Pass") ,'onOpButton', null, null, 'red' );
-                             }
-                             if(args.buttons[nb] == "draw_2")
-                            {
-                                this.addActionButton( 'draw_2', _("Draw 2 Troops") ,'onOpButton', null, null, 'blue' );
-                            }
-                            if(args.buttons[nb] == "draw_1")
-                            {
-                                this.addActionButton( 'draw_1', _("Draw 1 Troop") ,'onOpButton', null, null, 'blue' );
-                            }
-                            if(args.buttons[nb] == "place_troop")
-                            {
-                                this.addActionButton( 'place_troop', _("Place 1 Troop") ,'onOpButton', null, null, 'blue' );
-                            }
+                    { 
+                            
+                        if(args.buttons[nb] == "cancel")
+                        {
+                            this.addActionButton( 'cancel', _("Cancel") ,'onOpButton', null, null, 'red' );
+                        }
+                        if(args.buttons[nb] == "pass")
+                        {
+                            this.addActionButton( 'pass', _("Pass") ,'onOpButton', null, null, 'red' );
+                        }
+                        if(args.buttons[nb] == "draw_2")
+                        {
+                            this.addActionButton( 'draw_2', _("Draw 2 Troops") ,'onOpButton', null, null, 'blue' );
+                        }
+                        if(args.buttons[nb] == "draw_1")
+                        {
+                            this.addActionButton( 'draw_1', _("Draw 1 Troop") ,'onOpButton', null, null, 'blue' );
+                        }
+                        if(args.buttons[nb] == "place_troop")
+                        {
+                            this.addActionButton( 'place_troop', _("Place 1 Troop") ,'onOpButton', null, null, 'blue' );
+                        }
             
-                }
-                              
-                    
+                    }
                     break;
 
 
@@ -287,63 +288,82 @@ attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_
     return box;
 },
 
+setupPlayersBoard: function() {
+    Object.values(this.gamedatas.players).forEach(player => {
+        const playerBoardElement = document.getElementById('player_board_' + player.id);
+        playerBoardElement.insertAdjacentHTML('beforeend', `
+            <div class="a_board" id="a1_board_${player.id}"></div>
+            <div class="a_board" id="a2_board_${player.id}"></div>
+        `);
+
+    });
+
+},
+
 setupBoard: function()
 {
+    /*  creates global container with yourLine, playMat and myLine containers  */
     const globalContainer = document.getElementById('global_id');
 
+    /*  yourLineContainer definition 
+        contains yourDeckContainer and yourRackContainer
+    */
     const yourLineContainer = document.createElement('div');
     yourLineContainer.id = `your_line`;
     yourLineContainer.classList.add('line');
     yourLineContainer.style.transform = 'rotate(180deg)';
     globalContainer.appendChild(yourLineContainer);
 
-
+    /*  yourDeckContainer definition 
+        contains Deck and number of Troops TODO
+    */
     const yourDeckContainer = document.createElement('div');
     yourDeckContainer.id = `your_deck`;
     yourDeckContainer.classList.add('troop');
     const your_deck_color = this.isCurrentPlayerRed() ? 0 : 1;
-
     yourDeckContainer.style.backgroundPosition = `0% -${your_deck_color}00%`;
     yourLineContainer.appendChild(yourDeckContainer);
 
+
+    /*  youRackkContainer definition 
+        contains Rack and all Troops in Hand
+    */
     const yourRackContainer = document.createElement('div');
     yourRackContainer.id = `your_rack`;
     yourRackContainer.classList.add('rack');
     yourRackContainer.classList.add(this.isCurrentPlayerRed() ? 'linear_blue' : 'linear_red_top');
-    
     yourLineContainer.appendChild(yourRackContainer);
 
     Object.values(this.gamedatas.your_hand).forEach(troop => {
         const troopElement = document.createElement('div');
-        troopElement.id = `troop_${troop.card_id}`;
+        troopElement.id = `troop_${troop.id}`;
         troopElement.classList.add('troop');
 
-        const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
-        const troop_color = troop.card_type < 10 ? troop.card_type - 1 : Math.floor(troop.card_type / 10)-1;
-
+        const troop_type =  troop.type < 10 ? 0 : troop.type % 10;
+        const troop_color = troop.type < 10 ? troop.type - 1 : Math.floor(troop.type / 10)-1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         yourRackContainer.appendChild(troopElement);
     });
 
    
-
-
-
+    /*  PlaymatContainer definition 
+        contains blueDiscard, Board and redDiscard
+    */
     const playmatContainer = document.createElement('div');
     playmatContainer.id = `playmat_id`;
     playmatContainer.classList.add('playmat');
-    globalContainer.appendChild(playmatContainer);
-
-    if( this.isCurrentPlayerRed() == true)
-    {
+    if( this.isCurrentPlayerRed() == true) {
         playmatContainer.classList.add('board-inverted');
     }
+    globalContainer.appendChild(playmatContainer);
 
-
+    /*  blueDiscardContainer definition 
+        contains possible Troops in opacity 50 and all discarded ones TODO
+    */
     const blueDiscardContainer = document.createElement('div');
     blueDiscardContainer.id = `discard_blue`;
     blueDiscardContainer.classList.add('discard', 'linear_blue');
-    playmatContainer.appendChild(blueDiscardContainer);
+    
     for( let i=1; i<9; i++ ) {
         const blueDiscardTroop = document.createElement('div');
         blueDiscardTroop.id = `discard_blue_${i}`;
@@ -351,46 +371,46 @@ setupBoard: function()
         blueDiscardTroop.style.backgroundPosition = `-${i}00% -000%`;
         blueDiscardContainer.appendChild(blueDiscardTroop);
     }
+    playmatContainer.appendChild(blueDiscardContainer);
 
-
-   
+    /*  boardContainer definition 
+        contains board and all troops
+    */   
     const boardContainer = document.createElement('div');
     boardContainer.id = `board_${this.board_id}`;
     boardContainer.classList.add('board');
-    const index = this.boards.indexOf(this.board_name);
+
     const background_x = (this.board_id - 1) % 4;  
     const background_y = Math.floor( (this.board_id - 1) / 4);
     boardContainer.style.backgroundPosition = `-${background_x}00% -${background_y}00%`;
-
-
-
-
-
         
     const TB_bases = this.bases[this.board_name];
-
-    Object.values(this.gamedatas.board_troops).forEach(troop => {
+    Object.values(this.board_troops).forEach(troop => {
         const troopElement = document.createElement('div');
-        troopElement.id = `troop_${troop.card_id}`;
+        troopElement.id = `troop_${troop.id}`;
         troopElement.classList.add('troop');
-        const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
-        const troop_color = troop.card_type < 10 ? troop.card_type - 1 : Math.floor(troop.card_type / 10)-1;
+        // defines troop type and color
+        const troop_type =  troop.type < 10 ? 0 : troop.type % 10;
+        const troop_color = troop.type < 10 ? troop.type - 1 : Math.floor(troop.type / 10)-1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         boardContainer.appendChild(troopElement);
-        const baseData = TB_bases[troop.card_location_arg];
-        console.log( 'baseData', baseData);
+        
+        // defines position on board
+        const baseData = TB_bases[troop.location_arg];
         troopElement.style.position = 'absolute';
         troopElement.style.top = troop_color == 0 ? `${baseData.top}%` : `${baseData.top+2.5}%`;
         troopElement.style.left = `${baseData.left}%`;
-        console.log( 'baseData style top', troopElement.style.top);
-        console.log( 'baseData style left', troopElement.style.left);
+        troopElement.style.zIndex = 10 * troop.ordre;
         if( troop_color == 1 ) {
             troopElement.style.transform = 'rotate(180deg)';
         }
         
     });
 
-/*    for (const baseId of Object.keys(TB_bases)) {
+
+
+/* FORMER CODE FOR CHECKING ALL BASES
+for (const baseId of Object.keys(TB_bases)) {
         const baseElement = document.createElement('div');
         baseElement.id = `base_${this.board_name}_${baseId}`;
         baseElement.classList.add('base');
@@ -412,7 +432,7 @@ setupBoard: function()
 
     playmatContainer.appendChild(boardContainer);
 
-
+    /* redDiscard */
     const redDiscardContainer = document.createElement('div');
     redDiscardContainer.id = `discard_red`;
     redDiscardContainer.classList.add('discard', 'linear_red');
@@ -425,46 +445,43 @@ setupBoard: function()
         redDiscardTroop.style.backgroundPosition = `-${i}00% -100%`;
         redDiscardTroop.classList.add('board-inverted');
         redDiscardContainer.appendChild(redDiscardTroop);
-       
-        
     }    
 
+    /* myLineContainer */
     const myLineContainer = document.createElement('div');
     myLineContainer.id = `my_line`;
     myLineContainer.classList.add('line');
     globalContainer.appendChild(myLineContainer);
 
+    /* myDeckContainer */
     const myDeckContainer = document.createElement('div');
     myDeckContainer.id = `my_deck`;
     myDeckContainer.classList.add('troop');
     const my_deck_color = this.isCurrentPlayerRed() ? 1 : 0;
-
     myDeckContainer.style.backgroundPosition = `0% -${my_deck_color}00%`;
-
     myLineContainer.appendChild(myDeckContainer);
 
+    /* myRackContainer */
     const myRackContainer = document.createElement('div');
     myRackContainer.id = `my_rack`;
     myRackContainer.classList.add('rack');
     myRackContainer.classList.add(this.isCurrentPlayerRed() ? 'linear_red_top' : 'linear_blue');
     myLineContainer.appendChild(myRackContainer);
-
-
     Object.values(this.gamedatas.my_hand).forEach(troop => {
         const troopElement = document.createElement('div');
-        troopElement.id = `troop_${troop.card_id}`;
+        troopElement.id = `troop_${troop.id}`;
         troopElement.classList.add('troop');
 
-        const troop_type =  troop.card_type < 10 ? 0 : troop.card_type % 10;
-        const troop_color = troop.card_type < 10 ? troop.card_type - 1 : Math.floor(troop.card_type / 10)-1;
-
+        const troop_type =  troop.type < 10 ? 0 : troop.type % 10;
+        const troop_color = troop.type < 10 ? troop.type - 1 : Math.floor(troop.type / 10)-1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         myRackContainer.appendChild(troopElement);
     });
         
     
     
- /*   for( let i=1; i<9; i++) {
+ /*  FORMER TEST 8 TROOPS ON A RACK 
+    for( let i=1; i<9; i++) {
         const troopElementBlue = document.createElement('div');
         troopElementBlue.id = `troop_red_${i}`;
         troopElementBlue.classList.add('troop');
@@ -529,6 +546,41 @@ onOpButton: function(evt)
     
 
 },
+
+
+
+
+
+
+/// GESTION DE LA PREF DE CONFIMATION VERS LE BACK /// 
+
+onGameUserPreferenceChanged(pref_id, pref_value) {
+
+    if(!this.isReadOnly())
+    {
+
+        if ((pref_id === 100)&&(!this.isSpectator))
+        {  
+           
+            //this.bgaPerformAction('actConfirmPref', { arg1: this.getCurrentPlayerId(), arg2: pref_value}, { lock: false, checkAction: false });
+                        
+        }
+    }
+},
+
+// GESTION DE LA PREF DE CONFRMATION: GESTION DU REPLAY QUI NE FONCTIONNE PAS AVEC CETTE PREF
+
+isReadOnly: function () { 
+    return this.isSpectator || typeof g_replayFrom != 'undefined' || g_archive_mode; 
+  },
+
+
+
+
+
+
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////// 

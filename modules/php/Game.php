@@ -22,6 +22,7 @@ namespace Bga\Games\toybattle;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 
+
 include('Pending.php'); // ATTENTION
 
 class Game extends \Table
@@ -217,6 +218,12 @@ class Game extends \Table
 
 
 
+        //INIT DU PREF CCNFIRMATION STEP POUR CHAQUE JOUEUR ... LA CONFORMARION SERA ACTIVE//
+
+        foreach ($players as $player_id => $player) {
+            self::DbQuery("INSERT INTO prefconfirm (player_id, valeur) VALUES ($player_id, 1)");
+        }
+
 
 
         /************ Init Pending *****/
@@ -259,17 +266,17 @@ class Game extends \Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         if (!$this->isSpectator()) {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id, FLOOR(card_type / 10) card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}'");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}'");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id id , FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}'");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}'");
         } else {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id, FLOOR(card_type / 10) card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id, FLOOR(card_type / 10) card_type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}'");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id, card_type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}'");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id, FLOOR(card_type / 10) type type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id id , FLOOR(card_type / 10) type type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type  FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}'");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}'");
         }
-        $result["board_troops"] = self::getObjectListFromDB("SELECT card_id, card_type, card_type_arg, card_location, card_location_arg, card_ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
+        $result["board_troops"] = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
 
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
@@ -394,6 +401,15 @@ class Game extends \Table
         self::DbQuery("delete from pending where id=" . $pending['id']);
         $this->giveExtraTime(self::getActivePlayerId());
         $this->gamestate->nextState('next');
+    }
+
+    public function actConfirmPref(string $arg1, string $arg2)
+    {
+
+        $etat = self::getUniqueValueFromDB("SELECT valeur FROM prefconfirm WHERE player_id={$arg1}");
+        if ($etat != $arg2) {
+            self::DbQuery("UPDATE prefconfirm set valeur = '{$arg2}' WHERE player_id = {$arg1}");
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////// 
