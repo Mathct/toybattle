@@ -169,7 +169,28 @@ class Pending extends APP_GameClass
 
             if($this->player_pref_confirm == 2)
             {
-                game::$instance->addPendingFirst($this->player_id, "NormalTurn");
+                $explode_troop = explode("_", $parg1);
+                $explode_base = explode("_", $varg1);
+
+                $compteur_troop_sur_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'" , true ));
+                game::$instance->troop->moveCard( $explode_troop[1], 'board', $explode_base[2] );
+                self::DbQuery( "UPDATE troop set card_ordre = card_ordre + $compteur_troop_sur_base WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'" );
+
+                $infos_troop = self::getObjectListFromDB( "SELECT card_id card_id, card_type card_type, card_type_arg card_type_arg, card_location card_location, card_location_arg card_location_arg, card_ordre card_ordre FROM troop WHERE card_id = '{$explode_troop[1]}'" );
+
+                game::$instance->notifyAllPlayers('moveTroop',clienttranslate( '${player_name} moves troop' ), array(
+                'mobile' =>  $parg1,
+                'parent' => $varg1,
+                'ordre' => $compteur_troop_sur_base+1,
+                'player_name' => $this->player_name,
+                'player_id' => $this->player_id,
+                'origine' => "hand",
+                'infos_troop' => $infos_troop,
+
+                
+                
+                )
+                );
             }
             
         }
@@ -208,11 +229,21 @@ class Pending extends APP_GameClass
         {
             $explode_troop = explode("_", $parg1);
             $explode_base = explode("_", $parg2);
+
+            $compteur_troop_sur_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'" , true ));
             game::$instance->troop->moveCard( $explode_troop[1], 'board', $explode_base[2] );
+            self::DbQuery( "UPDATE troop set card_ordre = card_ordre + $compteur_troop_sur_base WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'" );
+
+            $infos_troop = self::getObjectListFromDB( "SELECT card_id card_id, card_type card_type, card_type_arg card_type_arg, card_location card_location, card_location_arg card_location_arg, card_ordre card_ordre FROM troop WHERE card_id = '{$explode_troop[1]}'" );
+
             game::$instance->notifyAllPlayers('moveTroop',clienttranslate( '${player_name} moves troop' ), array(
                 'mobile' =>  $parg1,
                 'parent' => $parg2,
+                'ordre' => $compteur_troop_sur_base+1,
                 'player_name' => $this->player_name,
+                'player_id' => $this->player_id,
+                'origine' => "hand",
+                'infos_troop' => $infos_troop,
                 
                 )
                 );
