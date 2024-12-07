@@ -8,6 +8,7 @@ trait ActionsTrait  // ATTENTION
     {
         $ret = array();
         $ret["selectable"] = array();
+        $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} pass');
         $ret['titleyou'] = clienttranslate('${you} pass');

@@ -21,6 +21,15 @@
     border: 0;
 }
 
+body {
+    background-image: url('img/TB_texture.jpg');
+    background-repeat: repeat;
+    background-size: 105px 108px;
+    /*background-position: center;*/
+    background-color: rgba(255, 255, 255, 0.2); /* Couleur de fond semi-transparente */
+    background-blend-mode: multiply; /* Fusionne couleur et texture */
+  }
+
 /* Fonts and Tooltips */
 
 
@@ -35,7 +44,9 @@
     gap: 3px;
     margin-bottom: 5px;
     height: 32px;
-   }
+}
+
+
 
 /* Play Area */   
 #global_id {
@@ -98,8 +109,11 @@
     justify-content: space-around;
     align-items: center;
     gap: 10px; /* Espacement entre les éléments */
-    /*border: 2px solid #ccc;
-    background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);*/
+    /*border: 2px solid #ccc;*/
+    /*background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);*/
+    /*background: linear-gradient(to bottom, #f3f3f3 0%, #a1b7d2 100%) ;*/
+    /*background:#a1b7d2;*/
+
 }
 
 .discard {
@@ -138,6 +152,19 @@
     border-radius: 15px;
 }
 
+.base_all {
+    position: absolute;
+    width: 65.625px;
+    height: 109.375px;
+    /*filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));
+    -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
+    /*background-image: url('img/TB_Tiles.png');
+    background-size: 900% 200%;
+    background-position: -100% 0%;*/
+}
+
+
+
 .base {
     position: absolute;
     width: 65.625px;
@@ -174,7 +201,19 @@
 }
 
 
-
+.selectable {
+    outline: 2px dashed yellow;
+    border-radius: 4px;
+    cursor: pointer;
+    pointer-events: auto !important;
+  }
+  
+.selected {
+    outline: 3px solid yellow; 
+    border-radius: 4px;
+    cursor: pointer;
+    pointer-events: auto ;
+  }
 
 
 

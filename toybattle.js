@@ -52,6 +52,8 @@ setup: function( gamedatas )
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
 
+    this.connections = [];
+
     this.bases = gamedatas.bases;
     this.zones = gamedatas.zones;
     this.board_name = gamedatas.board_name;
@@ -106,27 +108,28 @@ onEnteringState: function( stateName, args )
     console.log( 'Entering state: '+stateName, args );
 
     dojo.query(".selectable").removeClass("selectable");
+    dojo.query(".selected").removeClass("selected");
     
     switch( stateName )
     {
     
     case 'playerTurn':
         this.args = args.args;
-        for( var sid in this.args.selectable)
-        {
-            if(this.isCurrentPlayerActive())
-            {
-                dojo.query("#"+this.args.selectable[sid]).addClass("selectable");
-            }
-        }
+        if(this.isCurrentPlayerActive()) {
+            this.args.selectable.forEach(sid => {
+                dojo.addClass(sid,"selectable");
+            });
+            this.args.selected.forEach(sid => {
+                 dojo.addClass(sid,"selected");    
+            });
 
-        if( this.isCurrentPlayerActive() )
-        {
+            this.setupConnections(this.args.selectable);
+
             if(args.args.titleyou != null)
             {
                 $('pagemaintitletext').innerHTML = 	this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);   
-            }
-        } 
+            }   
+        }   
         else
         {
             if(args.args.title != null)
@@ -168,8 +171,9 @@ onLeavingState: function( stateName )
     switch( stateName )
     {
     
-      
-   
+    case 'playerTurn':
+        this.removeConnections();            
+        break;
     case 'dummy':
         break;
     }               
@@ -211,6 +215,15 @@ onUpdateActionButtons: function( stateName, args )
                         if(args.buttons[nb] == "place_troop")
                         {
                             this.addActionButton( 'place_troop', _("Place 1 Troop") ,'onOpButton', null, null, 'blue' );
+                        }
+
+                        if(args.buttons[nb] == "yes")
+                        {
+                            this.addActionButton( 'yes', _("Yes") ,'onOpButton', null, null, 'blue' );
+                        }
+                        if(args.buttons[nb] == "no")
+                        {
+                            this.addActionButton( 'no', _("No") ,'onOpButton', null, null, 'red' );
                         }
             
                     }
@@ -288,6 +301,38 @@ attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_
     return box;
 },
 
+setupConnections: function(selectables) {
+    this.connections = [];  // Initialise ou réinitialise les connexions
+    this.resources_list = [];
+    console.log( 'conneCtions');
+    selectables.forEach(elt_id => {
+        console.log( 'elt_id', elt_id);
+        const element = document.getElementById(elt_id);
+
+        const resourceClickHandler = (evt) => this.onSelect(evt);
+        element.addEventListener('click', resourceClickHandler);
+        this.connections.push({ element, event: 'click', handler: resourceClickHandler });
+
+    });
+
+    //dojo.connect(troopElement, 'onclick', this, 'onSelect');
+    //dojo.connect(baseElement, 'onclick', this, 'onSelect');
+},
+
+
+
+
+removeConnections: function() {
+    this.connections.forEach(connection => {
+        const { element, event, handler } = connection;
+        element.removeEventListener(event, handler);  // Supprime l'événement
+    });
+    this.connections = [];  // Vide le tableau des connexions
+},
+
+
+
+
 setupPlayersBoard: function() {
     Object.values(this.gamedatas.players).forEach(player => {
         const playerBoardElement = document.getElementById('player_board_' + player.id);
@@ -343,6 +388,8 @@ setupBoard: function()
         const troop_color = troop.type < 10 ? troop.type - 1 : Math.floor(troop.type / 10)-1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         yourRackContainer.appendChild(troopElement);
+
+        //dojo.connect(troopElement, 'onclick', this, 'onSelect');
     });
 
    
@@ -404,31 +451,38 @@ setupBoard: function()
         if( troop_color == 1 ) {
             troopElement.style.transform = 'rotate(180deg)';
         }
+
+        //troopElement.classList.add('selected');
         
     });
 
 
 
-/* FORMER CODE FOR CHECKING ALL BASES
+/* FORMER CODE FOR CHECKING ALL BASES */
 for (const baseId of Object.keys(TB_bases)) {
         const baseElement = document.createElement('div');
         baseElement.id = `base_${this.board_name}_${baseId}`;
-        baseElement.classList.add('base');
+        baseElement.classList.add('base_all');
         const baseData = TB_bases[baseId];
         baseElement.style.top = `${baseData.top}%`;
         baseElement.style.left = `${baseData.left}%`;
         boardContainer.appendChild(baseElement);
 
-        const baseElementRed = document.createElement('div');
+        
+        //dojo.connect(baseElement, 'onclick', this, 'onSelect');
+        
+        //baseElement.classList.add('selected');
+
+        /*const baseElementRed = document.createElement('div');
         baseElementRed.id = `base_red_${this.board_name}_${baseId}`;
         baseElementRed.classList.add('base_red');
         baseElementRed.style.top = `${baseData.top+2.5}%`;
         baseElementRed.style.left = `${baseData.left}%`;
         baseElementRed.style.transform = 'rotate(180deg)';
 
-        boardContainer.appendChild(baseElementRed);
+        boardContainer.appendChild(baseElementRed);*/
 
-    }*/
+    }
 
     playmatContainer.appendChild(boardContainer);
 
@@ -476,6 +530,8 @@ for (const baseId of Object.keys(TB_bases)) {
         const troop_color = troop.type < 10 ? troop.type - 1 : Math.floor(troop.type / 10)-1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         myRackContainer.appendChild(troopElement);
+
+        //dojo.connect(troopElement, 'onclick', this, 'onSelect');
     });
         
     
@@ -514,14 +570,21 @@ isCurrentPlayerRed: function()
 //                        |___/                                                
 /////////////////////////////////////////////////////////////////////////////////  
 
+stopEvent:function (evt) {
+    if (evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+    }
+},
+
+
         
 onSelect: function(evt)
 {        	 
     // Preventing default browser reaction
-     dojo.stopEvent( evt );
+    this.stopEvent( evt );
 
-    
-     
+         
     if( !this.isCurrentPlayerActive() || !(evt.currentTarget.classList.contains('selectable')) )
     {   
         return; 
@@ -539,7 +602,7 @@ onOpButton: function(evt)
 {
     
     // Preventing default browser reaction
-    dojo.stopEvent( evt );
+    this.stopEvent( evt );
     
     this.bgaPerformAction('actButton', { arg1: evt.currentTarget.id });
     
@@ -571,38 +634,36 @@ setupNotifications: function()
 {
     console.log( 'notifications subscriptions setup' );
     
-    // TODO: here, associate your game notifications with local methods
-    
-    // Example 1: standard notification handling
-    // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-    
-    // Example 2: standard notification handling + tell the user interface to wait
-    //            during 3 seconds after calling the method in order to let the players
-    //            see what is happening in the game.
-    // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-    // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
-    // 
-},  
+    const notifs = [
+        ['displayNotif', 1],
+        ['moveTroop', 1],
 
-// TODO: from this point and below, you can write your game notifications handling methods
+    ];
 
-/*
-Example:
+    notifs.forEach((notif) => {
+        dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
+        this.notifqueue.setSynchronous(notif[0], notif[1]);
+    });
 
-notif_cardPlayed: function( notif )
+},
+
+notif_displayNotif: function(notif)
 {
-    console.log( 'notif_cardPlayed' );
-    console.log( notif );
-    
-    // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-    
-    // TODO: play the card in the user interface.
-},    
-
-*/
+    console.log('notif_displayNotif');
+    console.log(notif);
+},
 
 
+notif_moveTroop: function(notif)
+{
+    console.log('notif_moveTroop');
+    console.log(notif);
 
+    this.attachToNewParentNoDestroy( notif.args.mobile, notif.args.parent );
+    this.slideToObject( notif.args.mobile, notif.args.parent ).play();
+
+
+},
 
 
 
