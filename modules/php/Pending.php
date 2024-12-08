@@ -43,20 +43,29 @@ class Pending extends APP_GameClass
         $ret['titleyou'] = clienttranslate('${you} must choose an action');
 
 
-        $counttroop = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+        $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
 
 
-        if ($counttroop >= 2) {
+        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
             $ret['buttons'][] = 'draw_2';
         }
 
-        if ($counttroop == 1) {
+        if (($counttroopdeck == 1) && ($counttroophand <= 7)) {
+
             $ret['buttons'][] = 'draw_1';
         }
 
-        // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
-        $ret['buttons'][] = 'place_troop';
+        if (($counttroopdeck >= 1) && ($counttroophand == 7)) {
+
+            $ret['buttons'][] = 'draw_1';
+        }
+
+        if ($counttroopdeck >= 1) {
+            // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
+            $ret['buttons'][] = 'place_troop';
+        }
 
 
 
@@ -66,12 +75,89 @@ class Pending extends APP_GameClass
     function NormalTurn($parg1, $parg2, $varg1, $varg2)
     {
 
-        if (($varg1 == "draw_1") || ($varg1 == "draw_2")) {
-            game::$instance->addPending($this->player_id, "Action1");
+        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 1)) {
+            game::$instance->addPending($this->player_id, "ConfirmDraw", $varg1);
+        }
+
+        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 2)) {
+            
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            
+            if ($varg1 == 'draw_2') {
+                $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
+                
+
+                game::$instance->notifyPlayer(
+                    $this->player_id,
+                    'drawTroopPrivate',
+                    clienttranslate('You draw icon1 icon2 (icon a mettre en place plus tard)'),
+                    array(
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'new_troops' => $new_troops
+
+
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'drawTroopPublic',
+                    clienttranslate('${player_name} draws 2 troops'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'nb_troops' => 2,
+                        'nb_troops_hand' => $nb_troops_hand
+
+
+                    )
+                );
+            }
+
+            if ($varg1 == 'draw_1') {
+                $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+                
+                game::$instance->notifyPlayer(
+                    $this->player_id,
+                    'drawTroopPrivate',
+                    clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                    array(
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'new_troops' => $new_troops
+
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'drawTroopPublic',
+                    clienttranslate('${player_name} draws 1 troop'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'nb_troops' => 1,
+                        'nb_troops_hand' => $nb_troops_hand
+
+
+                    )
+                );
+            }
+
+            game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
         if (($varg1 == "place_troop")) {
             game::$instance->addPending($this->player_id, "ChooseTroop");
+        }
+
+        if ($varg1 == null) {
+            game::$instance->addPending($this->player_id, "FinGame");
         }
     }
 
@@ -122,6 +208,7 @@ class Pending extends APP_GameClass
         $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
         $tableau_bases = game::$instance->_bases[$board_name];
+
         foreach ($tableau_bases as $base) {
 
             $ret["selectable"][] = "base_" . $board_name . "_" . $base['value'];
@@ -153,10 +240,15 @@ class Pending extends APP_GameClass
                 $explode_base = explode("_", $varg1);
 
                 $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'", true));
-                game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
-                self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'");
 
-                $infos_troop = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+                $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+
+
+                game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
+                self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
+
+                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
@@ -169,7 +261,7 @@ class Pending extends APP_GameClass
                         'player_id' => $this->player_id,
                         'origine' => "hand",
                         'infos_troop' => $infos_troop,
-
+                        'nb_troops_hand' => $nb_troops_hand
 
 
                     )
@@ -211,10 +303,14 @@ class Pending extends APP_GameClass
             $explode_base = explode("_", $parg2);
 
             $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'", true));
-            game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
-            self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'");
 
-            $infos_troop = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+
+            game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
+            self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
+
+            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+
 
             game::$instance->notifyAllPlayers(
                 'moveTroop',
@@ -227,7 +323,7 @@ class Pending extends APP_GameClass
                     'player_id' => $this->player_id,
                     'origine' => "hand",
                     'infos_troop' => $infos_troop,
-
+                    'nb_troops_hand' => $nb_troops_hand
                 )
             );
 
@@ -236,6 +332,151 @@ class Pending extends APP_GameClass
 
         if ($varg1 == "no") {
             game::$instance->addPending($this->player_id, "NormalTurn");
+        }
+    }
+
+
+    function argConfirmDraw($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} draws troops');
+        $ret['titleyou'] = clienttranslate('${you} must confirm');
+
+
+        $ret['buttons'][] = 'yes';
+        $ret['buttons'][] = 'no';
+
+
+        return $ret;
+    }
+
+    function ConfirmDraw($parg1, $parg2, $varg1, $varg2)
+    {
+        if ($varg1 == "yes") {
+
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+
+
+            if ($parg1 == 'draw_2') {
+                $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
+                
+
+                game::$instance->notifyPlayer(
+                    $this->player_id,
+                    'drawTroopPrivate',
+                    clienttranslate('You draw icon1 icon2 (icon a mettre en place plus tard)'),
+                    array(
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'new_troops' => $new_troops
+
+
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'drawTroopPublic',
+                    clienttranslate('${player_name} draws 2 troops'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'nb_troops' => 2,
+                        'nb_troops_hand' => $nb_troops_hand
+
+
+                    )
+                );
+            }
+
+            if ($parg1 == 'draw_1') {
+                $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+                
+                game::$instance->notifyPlayer(
+                    $this->player_id,
+                    'drawTroopPrivate',
+                    clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                    array(
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'new_troops' => $new_troops
+
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'drawTroopPublic',
+                    clienttranslate('${player_name} draws 1 troop'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
+                        'origine' => "deck",
+                        'nb_troops' => 1,
+                        'nb_troops_hand' => $nb_troops_hand
+
+
+                    )
+                );
+            }
+
+
+            game::$instance->addPendingFirst($this->player_id, "NormalTurn");
+        }
+
+        if ($varg1 == "no") {
+            game::$instance->addPending($this->player_id, "NormalTurn");
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /// FONCTION FIN DE GAME CAR PLUS DE TROOP DANS LE DECK ET PLUS DE TROOP DANS LA MAIN////
+
+    function argFinGame($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} ne peut plus jouer: plus de troupes dans son deck, plus de troupes dans sa main');
+        $ret['titleyou'] = clienttranslate('${you} ne pouvez plus jouer: plus de troupes le deck, plus de troupes dans la main');
+
+
+        $ret['buttons'][] = 'pass';
+
+
+
+        return $ret;
+    }
+
+    function FinGame($parg1, $parg2, $varg1, $varg2)
+    {
+        if ($varg1 == "pass") {
+
+            game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
     }
 }
