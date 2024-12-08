@@ -270,6 +270,19 @@ class Pending extends APP_GameClass
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+    //////////////////// CONFIRMS /////////////////////////////
+
     function argConfirmPlace($parg1, $parg2)
     {
         $ret = array();
@@ -285,13 +298,6 @@ class Pending extends APP_GameClass
 
         $ret['buttons'][] = 'yes';
         $ret['buttons'][] = 'no';
-
-
-
-
-
-
-
 
         return $ret;
     }
