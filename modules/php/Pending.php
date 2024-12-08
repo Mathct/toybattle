@@ -281,7 +281,7 @@ class Pending extends APP_GameClass
 
 
 
-    //////////////////// CONFIRMS /////////////////////////////
+    //////////////////// ACTION WITH CONFIRM PREF /////////////////////////////
 
     function argConfirmPlace($parg1, $parg2)
     {
