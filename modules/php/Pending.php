@@ -63,6 +63,12 @@ class Pending extends APP_GameClass
         $this->player_pref_confirm = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 100");
     }
 
+
+
+
+
+    
+
     function argNormalTurn($parg1, $parg2)
     {
         $ret = array();
