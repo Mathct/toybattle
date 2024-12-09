@@ -51,6 +51,7 @@ class Pending extends APP_GameClass
             {
             $this->start_base = [41];
             }
+
             if ($board_name =='pool')
             {
             $this->start_base = [41,42];
@@ -84,21 +85,25 @@ class Pending extends APP_GameClass
 
 
 
-        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
+        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
+        {
             $ret['buttons'][] = 'draw_2';
         }
 
-        if (($counttroopdeck == 1) && ($counttroophand <= 7)) {
+        if (($counttroopdeck == 1) && ($counttroophand <= 7)) 
+        {
 
             $ret['buttons'][] = 'draw_1';
         }
 
-        if (($counttroopdeck >= 1) && ($counttroophand == 7)) {
+        if (($counttroopdeck >= 1) && ($counttroophand == 7)) 
+        {
 
             $ret['buttons'][] = 'draw_1';
         }
 
-        if ($counttroopdeck >= 1) {
+        if ($counttroopdeck >= 1) 
+        {
             // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
             $ret['buttons'][] = 'place_troop';
         }
@@ -111,16 +116,19 @@ class Pending extends APP_GameClass
     function NormalTurn($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 1)) {
+        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 1)) 
+        {
             game::$instance->addPending($this->player_id, "ConfirmDraw", $varg1);
         }
 
-        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 2)) {
+        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 2)) 
+        {
             
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_loaction = 'hand' AND card_type_arg ='{$this->player_id}'");
 
-            if ($varg1 == 'draw_2') {
+            if ($varg1 == 'draw_2') 
+            {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
 
@@ -155,7 +163,8 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($varg1 == 'draw_1') {
+            if ($varg1 == 'draw_1') 
+            {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
                 
                 game::$instance->notifyPlayer(
@@ -190,11 +199,13 @@ class Pending extends APP_GameClass
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
-        if (($varg1 == "place_troop")) {
+        if (($varg1 == "place_troop")) 
+        {
             game::$instance->addPending($this->player_id, "ChooseTroop");
         }
 
-        if ($varg1 == null) {
+        if ($varg1 == null) 
+        {
             game::$instance->addPending($this->player_id, "FinGame");
         }
     }
@@ -212,7 +223,8 @@ class Pending extends APP_GameClass
 
 
         $troops = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_type_arg ='{$this->player_id}' AND card_location='hand'", true);
-        foreach ($troops as $troop_id) {
+        foreach ($troops as $troop_id) 
+        {
             $ret["selectable"][] = "troop_" . $troop_id;
         }
 
@@ -224,9 +236,13 @@ class Pending extends APP_GameClass
 
     function ChooseTroop($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "cancel") {
+        if ($varg1 == "cancel") 
+        {
             game::$instance->addPending($this->player_id, "NormalTurn");
-        } else {
+        } 
+        
+        else 
+        {
             game::$instance->addPending($this->player_id, "ChooseBase", $varg1);
         }
     }
@@ -285,15 +301,21 @@ class Pending extends APP_GameClass
     function ChooseBase($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ($varg1 == "cancel") {
+        if ($varg1 == "cancel") 
+        {
             game::$instance->addPending($this->player_id, "ChooseTroop");
-        } else {
+        } 
+        
+        else 
+        {
 
-            if ($this->player_pref_confirm == 1) {
+            if ($this->player_pref_confirm == 1) 
+            {
                 game::$instance->addPending($this->player_id, "ConfirmPlace", $parg1, $varg1);
             }
 
-            if ($this->player_pref_confirm == 2) {
+            if ($this->player_pref_confirm == 2) 
+            {
                 $explode_troop = explode("_", $parg1);
                 $explode_base = explode("_", $varg1);
 
@@ -425,11 +447,11 @@ class Pending extends APP_GameClass
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
 
-            if ($parg1 == 'draw_2') {
+            if ($parg1 == 'draw_2') 
+            {
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
-
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
@@ -461,7 +483,8 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($parg1 == 'draw_1') {
+            if ($parg1 == 'draw_1') 
+            {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
                 
                 game::$instance->notifyPlayer(
