@@ -900,51 +900,61 @@ notif_drawTroopPrivate: function(notif)
     const deckContainer = document.getElementById(deckId);
     const rackContainer = document.getElementById(rackId);
 
-    
-        notif.args.new_troops.forEach( troop =>  {
-            console.log( 'troop added '+troop.id);
+    const desiredIndex = 2;
 
-            const troopElement = document.createElement('div');
-            troopElement.id = troopElement.id = `troop_${troop.id}`;
-            troopElement.classList.add('troop');
+    notif.args.new_troops.forEach( troop =>  {
+        console.log( 'troop added '+troop.id);
 
-            const troop_type =  troop.type % 10;
-            const troop_color = Math.floor(troop.type / 10)-1;
-            troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
-    
-            // Initial placement in the deck
-            deckContainer.appendChild(troopElement);
-    
-            // Animate the movement from the deck to the rack
-            const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
-            const endRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
-    
-            //const deltaX = endRect.left + rackContainer.children.length * 50 - startRect.left; // Space per troop
-            const deltaX = endRect.left - startRect.left; // Space per troop
-            const deltaY = endRect.top - startRect.top;
+        const troopElement = document.createElement('div');
+        troopElement.id = troopElement.id = `troop_${troop.id}`;
+        troopElement.classList.add('troop');
 
-            console.log( 'deltaX '+deltaX+ ' deltaY '+deltaY);
-    
-            troopElement.style.position = 'absolute';
-            troopElement.style.left = `${startRect.left}px`;
-            troopElement.style.top = `${startRect.top}px`;
-            troopElement.style.transform = 'translate(0, 0)';
+        const troop_type =  troop.type % 10;
+        const troop_color = Math.floor(troop.type / 10)-1;
+        troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
 
-            document.body.appendChild(troopElement);
-            troopElement.offsetHeight;
+        // Initial placement in the deck
+        deckContainer.appendChild(troopElement);
 
-            troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-            troopElement.style.zIndex = 100; // Ensure it appears above others during animation
-    
-            troopElement.addEventListener('transitionend', () => {
-                troopElement.style.position = '';
-                troopElement.style.left = '';
-                troopElement.style.top = '';
-                troopElement.style.zIndex = '';
-                rackContainer.appendChild(troopElement); // Move troop to the rack
-            });
-    
+        // Animate the movement from the deck to the rack
+        const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
+        const endRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
+
+    const rackOffsetX =
+        desiredIndex * (rackContainer.offsetWidth / rackContainer.children.length || 50); // Position spécifique
+    const deltaX = endRect.left + rackOffsetX - startRect.left;
+    const deltaY = endRect.top - startRect.top;
+
+    console.log('deltaX ' + deltaX + ' deltaY ' + deltaY);
+
+
+
+        troopElement.style.position = 'absolute';
+        troopElement.style.left = `${startRect.left}px`;
+        troopElement.style.top = `${startRect.top}px`;
+        troopElement.style.transform = 'translate(0, 0)';
+
+        //document.body.appendChild(troopElement);
+        troopElement.offsetHeight;
+
+        troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        troopElement.style.zIndex = 100; // Ensure it appears above others during animation
+
+        troopElement.addEventListener('transitionend', () => {
+            troopElement.style.position = '';
+            troopElement.style.left = '';
+            troopElement.style.top = '';
+            troopElement.style.zIndex = '';
+            
+            if (desiredIndex < rackContainer.children.length) {
+                rackContainer.insertBefore(troopElement, rackContainer.children[desiredIndex]);
+            } else {
+                rackContainer.appendChild(troopElement); // Sinon, ajouter à la fin
+            }
+
         });
+
+    });
     
 
 },
@@ -960,7 +970,7 @@ notif_drawTroopPublic: function(notif)
 
     const deckContainer = document.getElementById(deckId);
     const rackContainer = document.getElementById(rackId);
-
+/*
     if( this.player_id != notif.args.player_id) {
         for( let i = 1; i <= notif.args.nb_troops; i++) {
             console.log( 'troop added '+i);
@@ -989,18 +999,13 @@ notif_drawTroopPublic: function(notif)
     
             troopElement.addEventListener('transitionend', () => {
                 troopElement.style.position = '';
-                
+                troopElement.style.transform = '';
                 troopElement.style.zIndex = '';
                 rackContainer.appendChild(troopElement); // Move troop to the rack
             });
     
-            // Trigger CSS transition
-            setTimeout(() => {
-                troopElement.style.transform = 'translate(0, 0)';
-            });
-
         }
-    }
+    }*/
 },
 
 });             

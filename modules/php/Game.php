@@ -359,6 +359,58 @@ class Game extends \Table
         return (int) $this->getUniqueValueFromDB($sql);
     }
 
+
+
+
+
+
+
+
+
+
+
+    
+
+    //NE PAS TOUCHER LE CODE CI-DESSOUS POUR LE MOMENT STP
+    
+    function getAdjacentBase($start_base)
+    {
+        $possible_bases = [];
+
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+        $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
+
+    
+    
+            foreach ($start_base as $bases) 
+            {
+                // Fusionner les nouvelles bases adjacentes tout en supprimant les doublons
+                $possible_bases = array_unique(array_merge($possible_bases, $this->_bases[$board_name][$bases]['adjacents']));
+
+               
+
+            }
+
+             foreach($possible_bases as $bases2)
+                {
+                    $possible_bases = array_unique(array_merge($possible_bases, $this->_bases[$board_name][$bases2]['adjacents']));
+
+                }
+            
+                foreach($possible_bases as $bases3)
+                {
+                    $possible_bases = array_unique(array_merge($possible_bases, $this->_bases[$board_name][$bases3]['adjacents']));
+
+                }
+
+            
+
+
+        return $possible_bases; 
+    }
+
+
+
     ///////////////////////////////////////////////////////////////////////////////// 
     //     _____  _                                    _   _                 
     //    |  __ \| |                                  | | (_)                

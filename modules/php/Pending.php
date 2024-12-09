@@ -19,14 +19,44 @@ class Pending extends APP_GameClass
         $this->player_score = $p['player_score'];
         $this->player_color = $p['player_color'];
 
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+        $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
+
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
-        if ($p['player_color'] == "d1553e") {
-            $this->player_deck = "deckred";
-        }
-        if ($p['player_color'] == "4f66a2") {
+        if ($p['player_color'] == "4f66a2") 
+        {
+            //DECLARATION DU DECK
             $this->player_deck = "deckblue";
+            
+            //DECLARATION DES BASES DE DEPART
+            if (($board_name =='castle')||($board_name =='clouds')||($board_name =='jungle')||($board_name =='cemetery')||($board_name =='carribean')||($board_name =='station')||($board_name =='battlefield'))
+            {
+            $this->start_base = [1];
+            }
+            if (($board_name =='pool')||($board_name =='carribean'))
+            {
+            $this->start_base = [1,2];
+            }
+
         }
+
+        if ($p['player_color'] == "d1553e") 
+        {
+            //DECLARATION DU DECK
+            $this->player_deck = "deckred";
+
+            //DECLARATION DES BASES DE DEPART
+            if (($board_name =='castle')||($board_name =='clouds')||($board_name =='jungle')||($board_name =='cemetery')||($board_name =='station')||($board_name =='battlefield'))
+            {
+            $this->start_base = [41];
+            }
+            if ($board_name =='pool')
+            {
+            $this->start_base = [41,42];
+            }
+        }
+        
 
         /// PREFERENCE DE CONFIRMATION
 
@@ -201,6 +231,15 @@ class Pending extends APP_GameClass
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
         $ret['titleyou'] = clienttranslate('${you} must choose a base');
+
+        //TEST
+
+        $test_base = game::$instance->getAdjacentBase($this->start_base);
+       // var_dump($test_base);
+        
+        //FIN DE TEST
+
+        
 
         $ret["selected"][] = $parg1;
 
