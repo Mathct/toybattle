@@ -67,7 +67,7 @@ class Pending extends APP_GameClass
 
 
 
-    
+
 
     function argNormalTurn($parg1, $parg2)
     {
@@ -238,7 +238,7 @@ class Pending extends APP_GameClass
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
-        $ret['titleyou'] = clienttranslate('${you} must choose a base');
+        
 
              
 
@@ -249,6 +249,15 @@ class Pending extends APP_GameClass
 
         
         $possible_base = game::$instance->getPossibleBase($this->start_base, $parg1, $this->player_id);
+
+        if(count($possible_base) >= 1)
+        {
+            $ret['titleyou'] = clienttranslate('${you} must choose a base');
+        }
+        else
+        {
+            $ret['titleyou'] = clienttranslate('${you} cannot place this troop');
+        }
         
         foreach ($possible_base as $base) {
 
