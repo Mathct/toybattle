@@ -194,13 +194,19 @@ body {
     transition: transform 0.5s ease-in-out;
 }
 
+.troop-placeholder {
+    width: 65.625px;
+    height: 87.5px;
+    background: transparent; /* when moving a troop to a flex */
+}
+
 .opa_50 {
     opacity:0.5;
 }
 
 
 .selectable {
-    outline: 2px dashed yellow;
+    outline: 3px dashed yellow;
     border-radius: 4px;
     cursor: pointer;
     pointer-events: auto !important;

@@ -112,7 +112,8 @@ class Pending extends APP_GameClass
         if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 2)) {
             
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
-            
+            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_loaction = 'hand' AND card_type_arg ='{$this->player_id}'");
+
             if ($varg1 == 'draw_2') {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
@@ -124,7 +125,8 @@ class Pending extends APP_GameClass
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
-                        'new_troops' => $new_troops
+                        'new_troops' => $new_troops,
+                        'old_troops' => $old_troops
 
 
 
@@ -232,32 +234,34 @@ class Pending extends APP_GameClass
         $ret['title'] = clienttranslate('${actplayer} places a troop');
         $ret['titleyou'] = clienttranslate('${you} must choose a base');
 
-        //TEST
-
-        $test_base = game::$instance->getAdjacentBase($this->start_base);
-       // var_dump($test_base);
-        
-        //FIN DE TEST
-
-        
+             
 
         $ret["selected"][] = $parg1;
 
         $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
-        $tableau_bases = game::$instance->_bases[$board_name];
+        
+        $possible_base = game::$instance->getPossibleBase($this->start_base, $parg1, $this->player_id);
+        
+        foreach ($possible_base as $base) {
 
-        foreach ($tableau_bases as $base) {
-
-            $ret["selectable"][] = "base_" . $board_name . "_" . $base['value'];
+            $ret["selectable"][] = "base_" . $board_name . "_" . $base;
         }
+        
+        
+        /*
+        
+            $tableau_bases = game::$instance->_bases[$board_name];
+
+            foreach ($tableau_bases as $base) {
+
+                $ret["selectable"][] = "base_" . $board_name . "_" . $base['value'];
+            }
+
+        */
 
         $ret['buttons'][] = 'cancel';
-
-
-
-
 
 
         return $ret;
@@ -403,9 +407,11 @@ class Pending extends APP_GameClass
         if ($varg1 == "yes") {
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
 
             if ($parg1 == 'draw_2') {
+
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
 
@@ -416,7 +422,8 @@ class Pending extends APP_GameClass
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
-                        'new_troops' => $new_troops
+                        'new_troops' => $new_troops,
+                        'old_troops' => $old_troops
 
 
 

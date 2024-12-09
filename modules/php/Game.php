@@ -369,45 +369,86 @@ class Game extends \Table
 
 
 
-    
+
 
     //NE PAS TOUCHER LE CODE CI-DESSOUS POUR LE MOMENT STP
     
-    function getAdjacentBase($start_base)
+    function getPossibleBase($table_start_bases_player, $troop_id, $player_id)
+{
+    $possible_bases = [];
+    $new_bases = $table_start_bases_player;
+    $dynamic_base = [];
+    $visited_bases = []; // Liste des bases déjà visitées
+
+    $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+    $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
+
+    $explode_troop_id = explode("_", $troop_id);
+    $troop_selected_force = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id='{$explode_troop_id[1]}'") % 10;
+
+    while (count($new_bases) != 0) 
     {
-        $possible_bases = [];
-
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
-        $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
-
-    
-    
-            foreach ($start_base as $bases) 
+        foreach ($new_bases as $base) 
+        {
+            // Éviter de revisiter une base
+            if (in_array($base, $visited_bases)) 
             {
-                // Fusionner les nouvelles bases adjacentes tout en supprimant les doublons
-                $possible_bases = array_unique(array_merge($possible_bases, $this->_bases[$board_name][$bases]['adjacents']));
-
-               
-
+                continue;
             }
-
-             foreach($possible_bases as $bases2)
-                {
-                    $possible_bases = array_unique(array_merge($possible_bases, $this->_bases[$board_name][$bases2]['adjacents']));
-
-                }
             
-                foreach($possible_bases as $bases3)
+            $visited_bases[] = $base;
+
+            $bases_adjacentes = $this->_bases[$board_name][$base]['adjacents'];
+
+            foreach ($bases_adjacentes as $base_adjacente) 
+            {
+                if (!in_array($base_adjacente, $table_start_bases_player))
                 {
-                    $possible_bases = array_unique(array_merge($possible_bases, $this->_bases[$board_name][$bases3]['adjacents']));
 
+                    // Vérifie les troupes sur la base adjacente
+                    $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}'", true));
+
+                    if ($nb_troop_on_base == 0) 
+                    {
+                        $possible_bases[] = $base_adjacente;
+                    } 
+                    
+                    else 
+                    {
+                        $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
+
+                        if ($infos_troopmax[0]['type_arg'] != $player_id) 
+                        {
+                            $troop_opponent_force = $infos_troopmax[0]['type'] % 10;
+
+                            if (($troop_opponent_force < $troop_selected_force)||($troop_opponent_force == 8)) 
+                            {
+                                $possible_bases[] = $base_adjacente;
+                            }
+
+                        } 
+                        
+                        else
+                        {
+                            $possible_bases[] = $base_adjacente;
+                            $dynamic_base[] = $base_adjacente;
+                        }
+                    }
                 }
+            }
+        }
 
-            
+        // Supprime les doublons et assurez-vous de ne pas revisiter
+        $possible_bases = array_unique($possible_bases);
+        $dynamic_base = array_diff(array_unique($dynamic_base), $visited_bases);
 
-
-        return $possible_bases; 
+        // Met à jour new_bases pour la prochaine itération
+        $new_bases = $dynamic_base;
+        $dynamic_base = [];
     }
+
+    return $possible_bases;
+}
 
 
 

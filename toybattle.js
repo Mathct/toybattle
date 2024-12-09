@@ -71,6 +71,9 @@ setup: function( gamedatas )
 
     this.board_troops = gamedatas.board_troops;
 
+    this.my_hand = gamedatas.my_hand;
+    this.your_hand = gamedatas.your_hand;
+
     this.setupPlayersBoard();
     this.setupBoard();
 
@@ -364,7 +367,7 @@ console.log( 'Red Player ? ',this.isCurrentPlayerRed());
     redLineContainer.appendChild(redRackContainer);
 
     if( this.isCurrentPlayerRed() ) {
-        Object.values(this.gamedatas.my_hand).forEach(troop => {
+        Object.values(this.my_hand).reverse().forEach(troop => {
             const troopElement = document.createElement('div');
             troopElement.id = `troop_${troop.id}`;
             troopElement.classList.add('troop');
@@ -462,7 +465,6 @@ console.log( 'Red Player ? ',this.isCurrentPlayerRed());
         baseBlueElement.style.top = `${baseData.top}%`;
         baseBlueElement.style.left = `${baseData.left}%`;
         boardContainer.appendChild(baseBlueElement);
-        console.log('baseBlueElement', baseBlueElement);
 
         // red base element
         const baseRedElement = document.createElement('div');
@@ -477,7 +479,6 @@ console.log( 'Red Player ? ',this.isCurrentPlayerRed());
         
     
     Object.values(this.board_troops).forEach(troop => {
-        console.log( 'TROOP', troop);
         const troopElement = document.createElement('div');
         troopElement.id = `troop_${troop.id}`;
         troopElement.classList.add('troop');
@@ -488,28 +489,7 @@ console.log( 'Red Player ? ',this.isCurrentPlayerRed());
 
         boardContainer.appendChild(troopElement);
 
-/*        troopElement.style.zIndex = 10 * troop.ordre;
-        const position = troop_color == this.BLUE ? `blue_base_${this.board_name}_${troop.location_arg}` : `red_base_${this.board_name}_${troop.location_arg}`;
-        console.log( 'position', position);
-        if( troop_color == this.RED ) {
-            troopElement.classList.add('board-inverted');
-        }
-        // needs to be sure bases are all in the DOM
-        setTimeout(() => {
-            const baseContainer = document.getElementById(position);
-            if (baseContainer) {
-                baseContainer.appendChild(troopElement);
-            } else {
-                console.error('Base container not found:', position);
-            }
-        }, 0);*/
-        //const baseContainer = document.getElementById(position);
-        
-
-        //console.log('BaseContainer', baseContainer);
-        //console.log('troopElement', troopElement);
-        //baseContainer.appendChild(troopElement);
-        
+      
         // defines position on board from TB_bases array
         const baseData = TB_bases[troop.location_arg];
         troopElement.style.position = 'absolute';
@@ -609,6 +589,16 @@ isCurrentPlayerRed: function()
     if( this.gamedatas.players[ this.player_id ] )
     {
         if( this.gamedatas.players[ this.player_id ].color == this.RED_COLOR )
+        {   return true;   }
+    }
+    return false;
+},
+
+isCurrentPlayerBlue: function()
+{
+    if( this.gamedatas.players[ this.player_id ] )
+    {
+        if( this.gamedatas.players[ this.player_id ].color == this.BLUE_COLOR )
         {   return true;   }
     }
     return false;
@@ -727,14 +717,24 @@ notif_displayNotif: function(notif)
 },
 
 
+
+    /*********************************
+     * 
+     * one troop is moved from rack to board
+     * 
+     * 
+     */
+
 notif_moveTroop: function(notif)
 {
     console.log('notif_moveTroop');
     console.log(notif);
 
+    const player_color = this.players[notif.args.player_id].color;
     const boardContainer = document.getElementById(`board_${this.board_id}`);
     const TB_bases = this.bases[this.board_name];
 
+    /* animation for the active player */
     if( this.player_id == notif.args.player_id) {
         const troopContainer = document.getElementById(notif.args.mobile);
         
@@ -745,43 +745,42 @@ notif_moveTroop: function(notif)
         const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
         let deltaX = endRect.left - startRect.left;
         let deltaY = endRect.top - startRect.top;
+
         troopContainer.style.zIndex = notif.args.infos_troop.ordre * 10;
 
-        // Récupérer l'état de rotation existant (si défini)
+        // gets rotation, if defined
         const existingTransform = window.getComputedStyle(troopContainer).transform;
 
-        // Calcul de la nouvelle transformation
+        // new transformation
         const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
         const newTransform = existingTransform !== "none" 
             ? `${existingTransform} ${translateTransform}` 
             : translateTransform;
-
-        
         troopContainer.style.transform = newTransform;
     
         const onTransitionEnd = () => {
+            // restore former transform
             troopContainer.style.transform = existingTransform;
 
+            // defines postion on board
             const baseData = TB_bases[notif.args.infos_troop.location_arg];
             troopContainer.style.position = 'absolute';
 
             const troopColor =  Math.floor(notif.args.infos_troop.type / 10)-1;
-
             troopContainer.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
             troopContainer.style.left = `${baseData.left}%`;
 
             boardContainer.appendChild(troopContainer);
-            troopContainer.removeEventListener("transitionend", onTransitionEnd); // Nettoyage de l'écouteur
+            troopContainer.removeEventListener("transitionend", onTransitionEnd);
         };
         
         troopContainer.addEventListener("transitionend", onTransitionEnd);
     }
     else {
 
-
-        let moving_troop_id = 'red_troop_' + notif.args.nb_troops_hand;
-
-        if( this.players[notif.args.player_id].color == this.BLUE_COLOR ) {
+        // rename Troop id and unhide it
+        let moving_troop_id = `red_troop_${notif.args.nb_troops_hand}`;
+        if( player_color == this.BLUE_COLOR ) {
             moving_troop_id = `blue_troop_${notif.args.nb_troops_hand}`;
         }
 
@@ -798,19 +797,20 @@ notif_moveTroop: function(notif)
         const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
         let deltaX = endRect.left - startRect.left;
         let deltaY = endRect.top - startRect.top;
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
     
         troopContainer.style.zIndex = notif.args.infos_troop.ordre * 10;
     
-        // Récupérer l'état de rotation existant (si défini)
+
+
+        // gets rotation, if defined
         const existingTransform = window.getComputedStyle(troopContainer).transform;
-        if( this.isSpectator == false || this.players[notif.args.player_id].color == this.RED_COLOR ) {
-            deltaX = -deltaX;
-            deltaY = -deltaY;
-
-        }
-
-    
-        // Calcul de la nouvelle transformation
+ 
+        
+        // new transformation
         const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
         const newTransform = existingTransform !== "none"
             ? `${existingTransform} ${translateTransform}`
@@ -826,187 +826,209 @@ notif_moveTroop: function(notif)
             troopContainer.style.position = 'absolute';
 
             const troopColor =  Math.floor(notif.args.infos_troop.type / 10)-1;
-            console.log( 'troopColor '+troopColor);
-            console.log( 'blue_couleur '+this.BLUE);
+
             troopContainer.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
             troopContainer.style.left = `${baseData.left}%`;
 
             boardContainer.appendChild(troopContainer);
-            troopContainer.removeEventListener("transitionend", onTransitionEnd); // Nettoyage de l'écouteur
-
+            troopContainer.removeEventListener("transitionend", onTransitionEnd);
         };
     
         troopContainer.addEventListener("transitionend", onTransitionEnd);
     }
 },
 
-notif_moveTroop0: function(notif)
-{
-    console.log('notif_moveTroop');
-    console.log(notif);
-   
 
-    if( this.player_id == notif.args.player_id) {
-        const troopElement = document.getElementById(notif.args.mobile);
-        if( this.isCurrentPlayerRed() ) {
-            //troopElement.classList.remove('board-inverted');
-            this.attachToNewParentNoDestroy( notif.args.mobile, notif.args.parent );
-            this.slideToObject( notif.args.mobile, notif.args.parent ).play();  
-            //troopElement.classList.add('board-inverted');
-        }
-        else {
-            this.attachToNewParentNoDestroy( notif.args.mobile, notif.args.parent );
-            this.slideToObject( notif.args.mobile, notif.args.parent ).play();            
-        }
+    /*********************************
+     * 
+     * one or two troops are drawn. Animation for active players
+     * 
+     * 
+     */
 
-    }
-    else{
-        if( this.isCurrentPlayerRed() ) {
-            
-            const moving_troop_id = `blue_troop_${notif.args.nb_troops_hand}`;
-            const movingTroopElement = document.getElementById(moving_troop_id);
-            movingTroopElement.id = `troop_${notif.args.infos_troop.id}`;
-            const x = notif.args.infos_troop.type.toString().slice(-1);
-            movingTroopElement.style.backgroundPositionX = `-${x}00%`;
-            //troopElement.classList.remove('board-inverted');
-            this.attachToNewParentNoDestroy( movingTroopElement.id, notif.args.parent );
-            this.slideToObject( movingTroopElement.id, notif.args.parent ).play();  
-            //troopElement.classList.add('board-inverted');
-            
+    notif_drawTroopPrivate: function (notif) {
+        console.log('notif_drawTroopPrivate');
+        console.log(notif);
 
-
-        }
-        else {
-            const moving_troop_id = 'red_troop_'+notif.args.nb_troops_hand;
-            const movingTroopElement = document.getElementById(moving_troop_id);
-            movingTroopElement.id = `troop_${notif.args.infos_troop.id}`;
-            const x = notif.args.infos_troop.type.toString().slice(-1);
-            movingTroopElement.style.backgroundPositionX = `-${x}00%`;
-            this.attachToNewParentNoDestroy( movingTroopElement.id, notif.args.parent );
-            this.slideToObject( movingTroopElement.id, notif.args.parent ).play();
-        }
-    }
-},
-
-notif_drawTroopPrivate: function(notif)
-{
-    console.log('notif_drawTroopPrivate');
-    console.log(notif);
-
+        const player_color = this.players[notif.args.player_id].color;
+        const deckId = player_color == this.BLUE_COLOR ? 'blue_deck' : 'red_deck';
+        const rackId = player_color == this.BLUE_COLOR ? 'blue_rack' : 'red_rack';
     
-    const deckId = this.players[notif.args.player_id].color == this.BLUE_COLOR ? 'blue_deck' : 'red_deck';
-    const rackId = this.players[notif.args.player_id].color == this.BLUE_COLOR ? 'blue_rack' : 'red_rack';
+        const deckContainer = document.getElementById(deckId);
+        const rackContainer = document.getElementById(rackId);
 
-    const deckContainer = document.getElementById(deckId);
-    const rackContainer = document.getElementById(rackId);
-
-    const desiredIndex = 2;
-
-    notif.args.new_troops.forEach( troop =>  {
-        console.log( 'troop added '+troop.id);
-
-        const troopElement = document.createElement('div');
-        troopElement.id = troopElement.id = `troop_${troop.id}`;
-        troopElement.classList.add('troop');
-
-        const troop_type =  troop.type % 10;
-        const troop_color = Math.floor(troop.type / 10)-1;
-        troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
-
-        // Initial placement in the deck
-        deckContainer.appendChild(troopElement);
-
-        // Animate the movement from the deck to the rack
-        const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
-        const endRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
-
-    const rackOffsetX =
-        desiredIndex * (rackContainer.offsetWidth / rackContainer.children.length || 50); // Position spécifique
-    const deltaX = endRect.left + rackOffsetX - startRect.left;
-    const deltaY = endRect.top - startRect.top;
-
-    console.log('deltaX ' + deltaX + ' deltaY ' + deltaY);
-
-
-
-        troopElement.style.position = 'absolute';
-        troopElement.style.left = `${startRect.left}px`;
-        troopElement.style.top = `${startRect.top}px`;
-        troopElement.style.transform = 'translate(0, 0)';
-
-        //document.body.appendChild(troopElement);
-        troopElement.offsetHeight;
-
-        troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-        troopElement.style.zIndex = 100; // Ensure it appears above others during animation
-
-        troopElement.addEventListener('transitionend', () => {
-            troopElement.style.position = '';
-            troopElement.style.left = '';
-            troopElement.style.top = '';
-            troopElement.style.zIndex = '';
-            
-            if (desiredIndex < rackContainer.children.length) {
-                rackContainer.insertBefore(troopElement, rackContainer.children[desiredIndex]);
-            } else {
-                rackContainer.appendChild(troopElement); // Sinon, ajouter à la fin
-            }
-
-        });
-
-    });
+        console.log('rackContainer start');
+        console.log(rackContainer);
+        console.log(rackContainer.children);
     
-
-},
-
-notif_drawTroopPublic: function(notif)
-{
-    console.log('notif_drawTroopPublic');
-    console.log(notif);
-
-    const troopColor = this.players[notif.args.player_id].color == this.BLUE_COLOR ? 0 : 1;
-    const deckId = this.players[notif.args.player_id].color == this.BLUE_COLOR ? 'blue_deck' : 'red_deck';
-    const rackId = this.players[notif.args.player_id].color == this.BLUE_COLOR ? 'blue_rack' : 'red_rack';
-
-    const deckContainer = document.getElementById(deckId);
-    const rackContainer = document.getElementById(rackId);
-/*
-    if( this.player_id != notif.args.player_id) {
-        for( let i = 1; i <= notif.args.nb_troops; i++) {
-            console.log( 'troop added '+i);
-
+        const animateTroop = (troop, index) => {
+            /* troop is created and added to the deck */ 
             const troopElement = document.createElement('div');
-            troopElement.id = `troop_${notif.args.nb_troops_hand + i}`;
+            troopElement.id = `troop_${troop.id}`;
             troopElement.classList.add('troop');
-            troopElement.style.backgroundPosition = `0% -${troopColor}00%`;
-    
-            // Initial placement in the deck
+            const troop_type = troop.type % 10;
+            const troop_color = Math.floor(troop.type / 10) - 1;
+            troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
             deckContainer.appendChild(troopElement);
     
-            // Animate the movement from the deck to the rack
-            const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
-            const endRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
-    
-            //const deltaX = endRect.left + rackContainer.children.length * 50 - startRect.left; // Space per troop
-            const deltaX = endRect.left - startRect.left; // Space per troop
-            const deltaY = endRect.top - startRect.top;
+            /* check where to insert the troop */
+            const newTroop = { id: troop.id, type: troop.type };
 
-            console.log( 'deltaX '+deltaX+ ' deltaY '+deltaY);
+            let insertIndex = this.my_hand.findIndex(t => t.type > newTroop.type);
+              if (insertIndex === -1) {
+                this.my_hand.push(newTroop); // end of array
+            } else {
+                this.my_hand.splice(insertIndex, 0, newTroop);
+            }
     
-            troopElement.style.position = 'absolute';
+            /* room is reserved in the flex */
+            const placeholder = document.createElement('div');
+            placeholder.classList.add('troop-placeholder');
+            if( player_color == this.RED_COLOR ) {
+                if( insertIndex === -1) {
+                    insertIndex = 0; // TODO vérifier
+                }
+                else {
+                    insertIndex = this.my_hand.length - insertIndex - 1; //TODO vérifier le bon index
+                }
+            }
+
+            if (insertIndex === rackContainer.children.length) {
+                rackContainer.appendChild(placeholder);
+            } else {
+                rackContainer.insertBefore(placeholder, rackContainer.children[insertIndex]);
+            }
+            console.log('rackContainer after addition');
+            console.log(rackContainer);
+            console.log(rackContainer.children);
+
+            const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
+            const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+    
+            const deltaX = targetRect.left - startRect.left;
+            const deltaY = targetRect.top - startRect.top;
+    
             troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-            troopElement.style.zIndex = 100; // Ensure it appears above others during animation
+            troopElement.style.zIndex = 100;
     
             troopElement.addEventListener('transitionend', () => {
-                troopElement.style.position = '';
+                
                 troopElement.style.transform = '';
-                troopElement.style.zIndex = '';
-                rackContainer.appendChild(troopElement); // Move troop to the rack
-            });
+                if( player_color == this.RED_COLOR ) {
+                    troopElement.classList.add('board-inverted');
+                }
+                // placeholder is removed
+                
+                rackContainer.replaceChild(troopElement, placeholder);
+                console.log('rackContainer after replace');
+                console.log(rackContainer);
+                console.log(rackContainer.children);
     
+                // call next animation
+                if (index + 1 < notif.args.new_troops.length) {
+                    animateTroop(notif.args.new_troops[index + 1], index + 1);
+                }
+            });
+        };
+    
+        if (notif.args.new_troops.length > 0) {
+            animateTroop(notif.args.new_troops[0], 0);
         }
-    }*/
-},
+        console.log('rackContainer end');
+        console.log(rackContainer);
+        console.log(rackContainer.children);
+    },
+
+
+    /*********************************
+     * 
+     * one or two troops are drawn. Animation shown to other players
+     * active player is not affected
+     * 
+     */
+
+    notif_drawTroopPublic: function(notif)
+    {
+        console.log('notif_drawTroopPublic');
+        console.log(notif);
+    
+        const player_color = this.players[notif.args.player_id].color;
+        const deckId = player_color == this.BLUE_COLOR ? 'blue_deck' : 'red_deck';
+        const rackId = player_color == this.BLUE_COLOR ? 'blue_rack' : 'red_rack';
+        const deckContainer = document.getElementById(deckId);
+        const rackContainer = document.getElementById(rackId);
+
+        if( this.player_id != notif.args.player_id) {
+    
+            const animateTroop = (index) => {
+                /* troop is created and added to the deck */
+                let troopElement = document.createElement('div');
+                troopElement.classList.add('troop');
+
+                if( this.isCurrentPlayerRed() ){
+                    troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+
+                }
+                else if( this.isCurrentPlayerBlue() ){
+                    troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -100%`;               
+                }
+
+                else{ // spectator
+                    if( player_color == this.RED_COLOR ) {
+                        troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                        troopElement.style.backgroundPosition = `-0% -100%`; 
+                    }
+                    else {
+                        troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                        troopElement.style.backgroundPosition = `-0% -0%`;                    
+                    }
+                }
+                deckContainer.appendChild(troopElement);
+
+                /* room is reserved in the flex */
+                const placeholder = document.createElement('div');
+                placeholder.classList.add('troop-placeholder');
+                rackContainer.appendChild(placeholder);
+
+                const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
+                const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+        
+                let deltaX = targetRect.left - startRect.left;
+                let deltaY = targetRect.top - startRect.top;
+
+                if( this.isSpectator == false || player_color == this.RED_COLOR) {
+                    deltaX = -deltaX;
+                    deltaY = -deltaY;
+                }
+
+                troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                troopElement.style.zIndex = 100;
+        
+                troopElement.addEventListener('transitionend', () => {
+                    troopElement.style.transform = '';
+                    // board inversion is restored for Red player
+                    if( player_color == this.RED_COLOR ) {
+                        troopElement.classList.add('board-inverted');
+                    }
+                    // placeholder is removed
+                    rackContainer.replaceChild(troopElement, placeholder);
+        
+                    // next animation is called
+                    if (index + 1 < notif.args.nb_troops) {
+                        animateTroop(index + 1);
+                    }
+                });
+            };
+    
+            if (notif.args.nb_troops > 0) {
+                animateTroop(0);
+            }
+        }
+
+    },
+
 
 });             
 });
