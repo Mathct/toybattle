@@ -371,18 +371,20 @@ class Game extends \Table
 
 
 
-    //NE PAS TOUCHER LE CODE CI-DESSOUS POUR LE MOMENT STP
+    //GESTION DU POSITIONNEMENT DES TROOPS SUR LES BASES
     
     function getPossibleBase($table_start_bases_player, $troop_id, $player_id)
 {
     $possible_bases = [];
-    $new_bases = $table_start_bases_player;
-    $dynamic_base = [];
+    $new_bases = $table_start_bases_player; //base de départ à inspecter en premier
+    $dynamic_base = []; // base dynamique pour les nouvelles bases à inspecter
     $visited_bases = []; // Liste des bases déjà visitées
 
+    // recuperation du nom du board
     $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
     $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
+    //recuperation de la force de la troupe selectionnée
     $explode_troop_id = explode("_", $troop_id);
     $troop_selected_force = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id='{$explode_troop_id[1]}'") % 10;
 
@@ -395,29 +397,29 @@ class Game extends \Table
             {
                 continue;
             }
-            
+
             $visited_bases[] = $base;
 
             $bases_adjacentes = $this->_bases[$board_name][$base]['adjacents'];
 
             foreach ($bases_adjacentes as $base_adjacente) 
             {
-                if (!in_array($base_adjacente, $table_start_bases_player))
+                if (!in_array($base_adjacente, $table_start_bases_player))  //ne pas proposer ses propres bases de départ pour positionner sa troupe
                 {
 
-                    // Vérifie les troupes sur la base adjacente
+                    // Vérifie le nombre de troupes sur la base adjacente
                     $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}'", true));
 
-                    if ($nb_troop_on_base == 0) 
+                    if ($nb_troop_on_base == 0) //si la base est vide
                     {
                         $possible_bases[] = $base_adjacente;
                     } 
                     
-                    else 
+                    else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
                     {
                         $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
 
-                        if ($infos_troopmax[0]['type_arg'] != $player_id) 
+                        if ($infos_troopmax[0]['type_arg'] != $player_id) // si elle appartient au joueur adverse on compare les forces
                         {
                             $troop_opponent_force = $infos_troopmax[0]['type'] % 10;
 
@@ -428,7 +430,7 @@ class Game extends \Table
 
                         } 
                         
-                        else
+                        else // si elle appartient au joueur actif, on peut s'y positionner
                         {
                             $possible_bases[] = $base_adjacente;
                             $dynamic_base[] = $base_adjacente;
@@ -438,7 +440,7 @@ class Game extends \Table
             }
         }
 
-        // Supprime les doublons et assurez-vous de ne pas revisiter
+        // Supprime les doublons et s'assurer de ne pas revisiter les bases
         $possible_bases = array_unique($possible_bases);
         $dynamic_base = array_diff(array_unique($dynamic_base), $visited_bases);
 
