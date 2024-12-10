@@ -2,10 +2,10 @@
 
 namespace Bga\Games\toybattle; // ATTENTION
 
-trait TroopsTrait  // ATTENTION
+trait BasesTrait  // ATTENTION
 {
-    
-    public function argVerifTroop($parg1, $parg2)
+
+    public function argVerifBase($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -17,18 +17,17 @@ trait TroopsTrait  // ATTENTION
         return $ret;
     }
 
-    public function VerifTroop($parg1, $parg2, $varg1, $varg2)
+    public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
         
         if(($this->player_name = "Backstar0")||($this->player_name = "Backstar1")) //etc en fonction du nombre de joueurs
     {
         var_dump($parg1);
-        var_dump($parg2);
     }
-        game::$instance->addPending($this->player_id, "VerifBase", $parg2);
+        game::$instance->addPendingFirst($this->player_id, "NormalTurn");
     }
-    
-    public function argTroop1($parg1, $parg2)
+
+    public function argBase1($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -42,7 +41,7 @@ trait TroopsTrait  // ATTENTION
         return $ret;
     }
 
-    public function Troop1($parg1, $parg2, $varg1, $varg2)
+    public function Base1($parg1, $parg2, $varg1, $varg2)
     {
         game::$instance->addPendingFirst($this->player_id, "NormalTurn");
     }

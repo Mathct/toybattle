@@ -4,10 +4,12 @@ namespace Bga\Games\toybattle;   // ATTENTION NOM DU JEU
 use APP_GameClass; // ATTENTION
 
 require_once 'actions/Troops.php';
+require_once 'actions/Bases.php';
 
 class Pending extends APP_GameClass
 {
     use TroopsTrait; // ATTENTION
+    use BasesTrait; // ATTENTION
 
     public function __construct($player_id)
     {
@@ -413,7 +415,11 @@ class Pending extends APP_GameClass
                 )
             );
 
-            game::$instance->addPendingFirst($this->player_id, "NormalTurn");
+            
+
+            $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
+
+            game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $parg2);
         }
 
         if ($varg1 == "no") {
