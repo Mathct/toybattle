@@ -55,5 +55,11 @@ CREATE TABLE IF NOT EXISTS `troop` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `zone` (
+  `zone_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `zone_star` int(2) unsigned DEFAULT 0,
+  PRIMARY KEY (`zone_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 
 ALTER TABLE `player` ADD `player_star` int(2) DEFAULT 0;
