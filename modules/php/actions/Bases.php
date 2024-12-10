@@ -20,10 +20,7 @@ trait BasesTrait  // ATTENTION
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
         
-        if(($this->player_name = "Backstar0")||($this->player_name = "Backstar1")) //etc en fonction du nombre de joueurs
-    {
-        var_dump($parg1);
-    }
+           
         game::$instance->addPendingFirst($this->player_id, "NormalTurn");
     }
 
@@ -36,7 +33,7 @@ trait BasesTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} pass');
         $ret['titleyou'] = clienttranslate('${you} pass');
 
-        $ret['buttons'][] = 'pass';
+        $ret['buttons'][] = 'btn_pass';
 
         return $ret;
     }

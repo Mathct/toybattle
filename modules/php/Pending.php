@@ -89,25 +89,25 @@ class Pending extends APP_GameClass
 
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
         {
-            $ret['buttons'][] = 'draw_2';
+            $ret['buttons'][] = 'btn_draw_2';
         }
 
         if (($counttroopdeck == 1) && ($counttroophand <= 7)) 
         {
 
-            $ret['buttons'][] = 'draw_1';
+            $ret['buttons'][] = 'btn_draw_1';
         }
 
         if (($counttroopdeck >= 1) && ($counttroophand == 7)) 
         {
 
-            $ret['buttons'][] = 'draw_1';
+            $ret['buttons'][] = 'btn_draw_1';
         }
 
         if ($counttroopdeck >= 1) 
         {
             // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
-            $ret['buttons'][] = 'place_troop';
+            $ret['buttons'][] = 'btn_place_troop';
         }
 
 
@@ -118,18 +118,18 @@ class Pending extends APP_GameClass
     function NormalTurn($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 1)) 
+        if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2")) && ($this->player_pref_confirm == 1)) 
         {
             game::$instance->addPending($this->player_id, "ConfirmDraw", $varg1);
         }
 
-        if ((($varg1 == "draw_1") || ($varg1 == "draw_2")) && ($this->player_pref_confirm == 2)) 
+        if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2")) && ($this->player_pref_confirm == 2)) 
         {
             
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
-            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_loaction = 'hand' AND card_type_arg ='{$this->player_id}'");
+            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
-            if ($varg1 == 'draw_2') 
+            if ($varg1 == 'btn_draw_2') 
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
@@ -165,7 +165,7 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($varg1 == 'draw_1') 
+            if ($varg1 == 'btn_draw_1') 
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
                 
@@ -201,7 +201,7 @@ class Pending extends APP_GameClass
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
-        if (($varg1 == "place_troop")) 
+        if (($varg1 == "btn_place_troop")) 
         {
             game::$instance->addPending($this->player_id, "ChooseTroop");
         }
@@ -230,7 +230,7 @@ class Pending extends APP_GameClass
             $ret["selectable"][] = "troop_" . $troop_id;
         }
 
-        $ret['buttons'][] = 'cancel';
+        $ret['buttons'][] = 'btn_cancel';
 
 
         return $ret;
@@ -238,7 +238,7 @@ class Pending extends APP_GameClass
 
     function ChooseTroop($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "cancel") 
+        if ($varg1 == "btn_cancel") 
         {
             game::$instance->addPending($this->player_id, "NormalTurn");
         } 
@@ -283,18 +283,8 @@ class Pending extends APP_GameClass
         }
         
         
-        /*
         
-            $tableau_bases = game::$instance->_bases[$board_name];
-
-            foreach ($tableau_bases as $base) {
-
-                $ret["selectable"][] = "base_" . $board_name . "_" . $base['value'];
-            }
-
-        */
-
-        $ret['buttons'][] = 'cancel';
+        $ret['buttons'][] = 'btn_cancel';
 
 
         return $ret;
@@ -303,7 +293,7 @@ class Pending extends APP_GameClass
     function ChooseBase($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ($varg1 == "cancel") 
+        if ($varg1 == "btn_cancel") 
         {
             game::$instance->addPending($this->player_id, "ChooseTroop");
         } 
@@ -348,6 +338,10 @@ class Pending extends APP_GameClass
 
                     )
                 );
+
+                $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
+
+                game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $varg1);
             }
         }
     }
@@ -378,15 +372,15 @@ class Pending extends APP_GameClass
         $ret["selected"][] = $parg2;
 
 
-        $ret['buttons'][] = 'yes';
-        $ret['buttons'][] = 'no';
+        $ret['buttons'][] = 'btn_yes';
+        $ret['buttons'][] = 'btn_no';
 
         return $ret;
     }
 
     function ConfirmPlace($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "yes") {
+        if ($varg1 == "btn_yes") {
             $explode_troop = explode("_", $parg1);
             $explode_base = explode("_", $parg2);
 
@@ -422,7 +416,7 @@ class Pending extends APP_GameClass
             game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $parg2);
         }
 
-        if ($varg1 == "no") {
+        if ($varg1 == "btn_no") {
             game::$instance->addPending($this->player_id, "NormalTurn");
         }
     }
@@ -438,8 +432,8 @@ class Pending extends APP_GameClass
         $ret['titleyou'] = clienttranslate('${you} must confirm');
 
 
-        $ret['buttons'][] = 'yes';
-        $ret['buttons'][] = 'no';
+        $ret['buttons'][] = 'btn_yes';
+        $ret['buttons'][] = 'btn_no';
 
 
         return $ret;
@@ -447,13 +441,13 @@ class Pending extends APP_GameClass
 
     function ConfirmDraw($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "yes") {
+        if ($varg1 == "btn_yes") {
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
 
-            if ($parg1 == 'draw_2') 
+            if ($parg1 == 'btn_draw_2') 
             {
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
@@ -489,7 +483,7 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($parg1 == 'draw_1') 
+            if ($parg1 == 'btn_draw_1') 
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
                 
@@ -526,7 +520,7 @@ class Pending extends APP_GameClass
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
-        if ($varg1 == "no") {
+        if ($varg1 == "btn_no") {
             game::$instance->addPending($this->player_id, "NormalTurn");
         }
     }
@@ -561,7 +555,7 @@ class Pending extends APP_GameClass
         $ret['titleyou'] = clienttranslate('${you} ne pouvez plus jouer: plus de troupes le deck, plus de troupes dans la main');
 
 
-        $ret['buttons'][] = 'pass';
+        $ret['buttons'][] = 'btn_pass';
 
 
 
@@ -570,7 +564,7 @@ class Pending extends APP_GameClass
 
     function FinGame($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "pass") {
+        if ($varg1 == "btn_pass") {
 
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }

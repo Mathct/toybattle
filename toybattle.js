@@ -182,26 +182,29 @@ onUpdateActionButtons: function( stateName, args )
             case "playerTurn":
                 for (let button of args.buttons) { 
                     switch (button) {
-                        case "cancel":
-                            this.addActionButton('cancel', _("Cancel"), 'onOpButton', null, null, 'red');
+                        case "btn_cancel":
+                            this.addActionButton('btn_cancel', _("Cancel"), 'onOpButton', null, null, 'red');
                             break;
-                        case "pass":
-                            this.addActionButton('pass', _("Pass"), 'onOpButton', null, null, 'red');
+                        case "btn_pass":
+                            this.addActionButton('btn_pass', _("Pass"), 'onOpButton', null, null, 'red');
                             break;
-                        case "draw_2":
-                            this.addActionButton('draw_2', _("Draw 2 Troops"), 'onOpButton', null, null, 'blue');
+                        case "btn_continue":
+                            this.addActionButton('btn_continue', _("Continue"), 'onOpButton', null, null, 'blue');
                             break;
-                        case "draw_1":
-                            this.addActionButton('draw_1', _("Draw 1 Troop"), 'onOpButton', null, null, 'blue');
+                        case "btn_draw_2":
+                            this.addActionButton('btn_draw_2', _("Draw 2 Troops"), 'onOpButton', null, null, 'blue');
                             break;
-                        case "place_troop":
-                            this.addActionButton('place_troop', _("Place 1 Troop"), 'onOpButton', null, null, 'blue');
+                        case "btn_draw_1":
+                            this.addActionButton('btn_draw_1', _("Draw 1 Troop"), 'onOpButton', null, null, 'blue');
                             break;
-                        case "yes":
-                            this.addActionButton('yes', _("Yes"), 'onOpButton', null, null, 'blue');
+                        case "btn_place_troop":
+                            this.addActionButton('btn_place_troop', _("Place 1 Troop"), 'onOpButton', null, null, 'blue');
                             break;
-                        case "no":
-                            this.addActionButton('no', _("No"), 'onOpButton', null, null, 'red');
+                        case "btn_yes":
+                            this.addActionButton('btn_yes', _("Yes"), 'onOpButton', null, null, 'blue');
+                            break;
+                        case "btn_no":
+                            this.addActionButton('btn_no', _("No"), 'onOpButton', null, null, 'red');
                             break;
                     }
                 }
@@ -982,10 +985,10 @@ notif_moveTroop: function(notif)
         const rackContainer = document.getElementById(rackId);
 
         if( player_color == this.BLUE_COLOR) {
-            this.blue_deck_counter_counter.incValue(parseInt(-notif.args.nb_troop));
+            this.blue_deck_counter.incValue(parseInt(-notif.args.nb_troops));
         }
         else {
-            this.red_deck_counter_counter.incValue(parseInt(-notif.args.nb_troop));
+            this.red_deck_counter.incValue(parseInt(-notif.args.nb_troops));
         }
         // TODO EMPTY DECK
     
