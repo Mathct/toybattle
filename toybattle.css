@@ -58,8 +58,6 @@ body {
     margin-bottom: 20px;
     position: relative;
     margin-top: 20px;
-
-        
 }
 
 
@@ -96,28 +94,31 @@ body {
     margin : 5px 0;
 }
 
+
+.deck {
+    width: 65.625px;
+    height: 87.5px;
+    position: relative;
+    background-image: url('img/TB_Tiles.png');
+    background-size: 900% 200%;
+}
+
 .deck_counter {
     position: absolute;
-    width: 4%;
-    height: 3%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index:100;
+    z-index: 100;
     font-size: 16px;
-    font-weight: bold; /* Rend le texte plus épais */
-    color: white; /* Couleur du texte */
+    font-weight: bold;
+    color: white;
+    top: 17%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.blue_deck {
-    left: 20.7%;
-    top: 91%;
-}
 
-.red_deck {
-    left: 75%;
-    top: 6%;
-}
 
 .rack {
     margin-left: auto;
@@ -129,11 +130,6 @@ body {
     justify-content: space-around;
     align-items: center;
     gap: 10px; /* Espacement entre les éléments */
-    /*border: 2px solid #ccc;*/
-    /*background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);*/
-    /*background: linear-gradient(to bottom, #f3f3f3 0%, #a1b7d2 100%) ;*/
-    /*background:#a1b7d2;*/
-
 }
 
 .discard {
@@ -143,31 +139,22 @@ body {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    /*border: 2px solid #ccc;*/
 }
 
 .linear_blue {
-    /*background: linear-gradient(to top, #4f66a2 0%, #8a9fcf 50%, #ffffff 100%);*/
-    /*background: linear-gradient(to top, #4f66a2 0%, transparent 100%);*/
     border: 5px solid;
     border-image: linear-gradient(to top, #4f66a2, #a1b7d2) 1;
     border-radius: 15px;
 }
 
 .linear_red {
-    /*background: linear-gradient(to bottom, #d1553e 0%, #f29d88 50%, #ffffff 100%);*/
-    /*background: linear-gradient(to bottom, #d1553e 0%, transparent 100%);*/
     border: 5px solid;
-    /*border-image: linear-gradient(to bottom, #d1553e, transparent) 1;*/
     border-image: linear-gradient(to bottom, #d1553e, #f3a7a1) 1;
     border-radius: 15px;
 }
 
 .linear_red_top {
-    /*background: linear-gradient(to bottom, #d1553e 0%, #f29d88 50%, #ffffff 100%);*/
-    /*background: linear-gradient(to bottom, #d1553e 0%, transparent 100%);*/
     border: 5px solid;
-    /*border-image: linear-gradient(to bottom, #d1553e, transparent) 1;*/
     border-image: linear-gradient(to top, #d1553e, #f3a7a1) 1;
     border-radius: 15px;
 }
@@ -177,19 +164,12 @@ body {
     width: 65.625px;
     height: 109.375px;
     z-index: 300;
-    /*filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));
-    -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
-    /*background-image: url('img/TB_Tiles.png');
-    background-size: 900% 200%;
-    background-position: -100% 0%;*/
 }
 
 .base {
     position: absolute;
     width: 65.625px;
     height: 87.5px;
-    /*filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));
-    -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
 }
 
 .base_blue {
@@ -207,8 +187,6 @@ body {
 .troop {
     width: 65.625px;
     height: 87.5px;
-    /*filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));
-    -webkit-filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.7));*/
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
     transition: transform 0.5s ease-in-out;

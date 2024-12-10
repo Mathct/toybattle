@@ -340,8 +340,9 @@ class Pending extends APP_GameClass
                 );
 
                 $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
+                $numero_base = $explode_base[2];
 
-                game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $varg1);
+                game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $numero_base);
             }
         }
     }
@@ -412,8 +413,9 @@ class Pending extends APP_GameClass
             
 
             $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
+            $numero_base = $explode_base[2];
 
-            game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $parg2);
+            game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $numero_base);
         }
 
         if ($varg1 == "btn_no") {
