@@ -222,9 +222,8 @@ class Game extends \Table
         $board_selected = $board_name[$this->getGameStateValue('board') - 1];
         $nb_zones = count($this->_zones[$board_selected]);
 
-        for ($i = 1; $i <= $nb_zones; $i++)
-        {
-            self::DbQuery( "INSERT INTO zone (zone_star) VALUES ({$this->_zones[$board_selected][$i]['medals']})");
+        for ($i = 1; $i <= $nb_zones; $i++) {
+            self::DbQuery("INSERT INTO zone (zone_star) VALUES ({$this->_zones[$board_selected][$i]['medals']})");
         }
 
 
@@ -283,6 +282,9 @@ class Game extends \Table
 
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
+
+        $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckblue'");
+        $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckred'");
 
         $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $result["board_name"] = $board_name[$this->getGameStateValue('board') - 1];
@@ -383,7 +385,7 @@ class Game extends \Table
 
 
     //GESTION DU POSITIONNEMENT DES TROOPS SUR LES BASES
-    
+
     function getPossibleBase($table_start_bases_player, $troop_id, $player_id)
     {
         $possible_bases = [];
@@ -399,13 +401,10 @@ class Game extends \Table
         $explode_troop_id = explode("_", $troop_id);
         $troop_selected_force = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id='{$explode_troop_id[1]}'") % 10;
 
-        while (count($new_bases) != 0) 
-        {
-            foreach ($new_bases as $base) 
-            {
+        while (count($new_bases) != 0) {
+            foreach ($new_bases as $base) {
                 // Éviter de revisiter une base
-                if (in_array($base, $visited_bases)) 
-                {
+                if (in_array($base, $visited_bases)) {
                     continue;
                 }
 
@@ -413,8 +412,7 @@ class Game extends \Table
 
                 $bases_adjacentes = $this->_bases[$board_name][$base]['adjacents'];
 
-                foreach ($bases_adjacentes as $base_adjacente) 
-                {
+                foreach ($bases_adjacentes as $base_adjacente) {
                     if (!in_array($base_adjacente, $table_start_bases_player))  //ne pas proposer ses propres bases de départ pour positionner sa troupe
                     {
 
@@ -424,9 +422,7 @@ class Game extends \Table
                         if ($nb_troop_on_base == 0) //si la base est vide
                         {
                             $possible_bases[] = $base_adjacente;
-                        } 
-                        
-                        else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
+                        } else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
                         {
                             $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
 
@@ -434,14 +430,10 @@ class Game extends \Table
                             {
                                 $troop_opponent_force = $infos_troopmax[0]['type'] % 10;
 
-                                if (($troop_opponent_force < $troop_selected_force)||($troop_opponent_force == 8)) 
-                                {
+                                if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-
-                            } 
-                            
-                            else // si elle appartient au joueur actif, on peut s'y positionner
+                            } else // si elle appartient au joueur actif, on peut s'y positionner
                             {
                                 $possible_bases[] = $base_adjacente;
                                 $dynamic_base[] = $base_adjacente;

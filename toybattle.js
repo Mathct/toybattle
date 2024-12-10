@@ -418,8 +418,8 @@ console.log( 'setup Board');
         
         this.red_deck_counter = new ebg.counter();
         this.red_deck_counter.create('red_deck_counter_id');
-        this.red_deck_counter.toValue(18);
-        //this.red_deck_counter.toValue(this.gamedatas.nb_deck_blue,5000);
+        //this.red_deck_counter.toValue(18);
+        this.red_deck_counter.toValue(this.gamedatas.nb_deck_red);
 
 
 
@@ -561,8 +561,8 @@ console.log( 'setup Board');
     
     this.blue_deck_counter = new ebg.counter();
     this.blue_deck_counter.create('blue_deck_counter_id');
-    this.blue_deck_counter.toValue('18');
-    //this.blue_deck_counter.toValue(this.gamedatas.nb_deck_blue,5000);
+    //this.blue_deck_counter.toValue('18');
+    this.blue_deck_counter.toValue(this.gamedatas.nb_deck_blue);
 
 
 
