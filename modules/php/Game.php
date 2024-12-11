@@ -269,14 +269,14 @@ class Game extends \Table
 
         if (!$this->isSpectator()) {
             $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id id , FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}'");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}'");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}' ORDER BY card_type");
         } else {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id, FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT card_id id , FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type  FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}'");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}'");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS card_id, FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type  FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}' ORDER BY card_type");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}' ORDER BY card_type");
         }
         $result["board_troops"] = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
 

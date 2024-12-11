@@ -136,6 +136,7 @@ body {
     height: 833.5px;
     width: 100px;
     display: flex;
+    flex-wrap: nowrap;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
