@@ -31,6 +31,9 @@ class Pending extends APP_GameClass
         {
             //DECLARATION DU DECK
             $this->player_deck = "deckblue";
+
+            //DECLARATION DU COULEUR
+            $this->player_color_title = "blue";
             
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='carribean')||($this->board_name =='station')||($this->board_name =='battlefield'))
@@ -49,6 +52,9 @@ class Pending extends APP_GameClass
             //DECLARATION DU DECK
             $this->player_deck = "deckred";
 
+            //DECLARATION DU COULEUR
+            $this->player_color_title = "red";
+
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
             {
@@ -65,6 +71,10 @@ class Pending extends APP_GameClass
         /// PREFERENCE DE CONFIRMATION
 
         $this->player_pref_confirm = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 100");
+
+        /// PREFERENCE DE DISCARD
+
+        $this->player_pref_discard = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 101");
     }
 
 

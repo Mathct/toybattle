@@ -586,7 +586,7 @@ createBackTroopElement: function( troop, index ) {
 createRack: function( color ) {
     const rackContainer = document.createElement('div');
     rackContainer.id = `${color}_rack`;
-    rackContainer.classList.add('rack', `linear_${color}`);
+    rackContainer.classList.add('rack', `rack_${color}`);
     return rackContainer;
 },
 
@@ -690,6 +690,8 @@ createTroopsOnBoard:function() {
 
 
 
+
+
 isCurrentPlayerRed: function()
 {
     if( this.gamedatas.players[ this.player_id ] )
@@ -723,6 +725,21 @@ getBoundingClientRectIgnoreZoom: function (element) {
     rect.width /= zoomCorr;
     rect.height /= zoomCorr;
     return rect;
+},
+
+
+removeFromBoardArray: function( troop_id) {
+    const index = this.board_troops.findIndex(t => t.id === troop_id);
+    if (index !== -1) {
+        this.board_troops.splice(index, 1);
+    }
+},
+
+removeFromMyHandArray: function( troop_id) {
+    const index = this.my_hand.findIndex(t => t.id === troop_id);
+    if (index !== -1) {
+        this.my_hand.splice(index, 1);
+    }
 },
 
 
@@ -991,21 +1008,29 @@ notif_moveTroop: function(notif)
     const boardContainer = document.getElementById(`board_${this.board_id}`);
     const TB_bases = this.bases[this.board_name];
 
-    /* animation for the active player */
+    const troop = notif.args.infos_troop;
+
+    /* troop is added to board JS array */
+    this.board_troops.push(troop);
+    
     if( this.player_id == notif.args.player_id) {
+    
+       /* troop is removed from hand JS array */
+       this.removeFromMyHandArray( troop.id);
+
+
+    /* animation for the active player */
         const troopContainer = document.getElementById(notif.args.mobile);
         
         const destination_id = this.isCurrentPlayerRed() ? 'red_'+notif.args.parent : 'blue_'+notif.args.parent;
         const destinationContainer = document.getElementById(destination_id);
-        console.log( 'dest_id', destination_id );
-        console.log( 'dest', destinationContainer);
 
         const startRect = this.getBoundingClientRectIgnoreZoom(troopContainer);
         const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
         let deltaX = endRect.left - startRect.left;
         let deltaY = endRect.top - startRect.top;
 
-        troopContainer.style.zIndex = notif.args.infos_troop.ordre * 10;
+        troopContainer.style.zIndex = troop.ordre * 10;
 
         // gets rotation, if defined
         const existingTransform = window.getComputedStyle(troopContainer).transform;
@@ -1022,10 +1047,10 @@ notif_moveTroop: function(notif)
             troopContainer.style.transform = existingTransform;
 
             // defines postion on board
-            const baseData = TB_bases[notif.args.infos_troop.location_arg];
+            const baseData = TB_bases[troop.location_arg];
             troopContainer.style.position = 'absolute';
 
-            const troopColor =  Math.floor(notif.args.infos_troop.type / 10)-1;
+            const troopColor =  Math.floor(troop.type / 10)-1;
             troopContainer.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
             troopContainer.style.left = `${baseData.left}%`;
 
@@ -1036,6 +1061,13 @@ notif_moveTroop: function(notif)
         troopContainer.addEventListener("transitionend", onTransitionEnd);
     }
     else {
+        // remove troop from hand JS array
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            this.your_hand.pop();
+        }
+        else {
+            this.my_hand.pop();
+        }
 
         // rename Troop id and unhide it
         let moving_troop_id = `red_troop_${notif.args.nb_troops_hand}`;
@@ -1044,8 +1076,8 @@ notif_moveTroop: function(notif)
         }
 
         const troopContainer = document.getElementById(moving_troop_id);
-        troopContainer.id = `troop_${notif.args.infos_troop.id}`;
-        const x = notif.args.infos_troop.type.toString().slice(-1);
+        troopContainer.id = `troop_${troop.id}`;
+        const x = troop.type.toString().slice(-1);
         troopContainer.style.backgroundPositionX = `-${x}00%`;
     
         
@@ -1061,7 +1093,7 @@ notif_moveTroop: function(notif)
             deltaY = -deltaY;
         }
     
-        troopContainer.style.zIndex = notif.args.infos_troop.ordre * 10;
+        troopContainer.style.zIndex = troop.ordre * 10;
     
 
 
@@ -1081,10 +1113,10 @@ notif_moveTroop: function(notif)
 
             troopContainer.style.transform = existingTransform;
 
-            const baseData = TB_bases[notif.args.infos_troop.location_arg];
+            const baseData = TB_bases[troop.location_arg];
             troopContainer.style.position = 'absolute';
 
-            const troopColor =  Math.floor(notif.args.infos_troop.type / 10)-1;
+            const troopColor =  Math.floor(troop.type / 10)-1;
 
             troopContainer.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
             troopContainer.style.left = `${baseData.left}%`;
@@ -1239,6 +1271,17 @@ notif_drawTroopPublic: function (notif) {
             }
             deckContainer.appendChild(troopElement);
 
+            /* add to hand JS array */
+            const newTroop = { type: troop.type };
+            if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+                this.your_hand.push(newTroop);
+            }
+            else {
+                this.my_hand.push(newTroop);
+            }
+
+
+
             /* room is reserved in the flex */
             const placeholder = document.createElement('div');
             placeholder.classList.add('troop-placeholder');
@@ -1305,15 +1348,29 @@ notif_discardTroopFromBoard: function (notif) {
     const discardId = player_color == this.BLUE_COLOR ? 'blue_discard' : 'red_discard';
     const discardContainer = document.getElementById(discardId);
     
-    /* check where to insert the troop */
-    const newTroop = { id: troop.id, type: troop.type };
 
-    let insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
-    if (insertIndex === -1) {
-        this.your_discard.push(newTroop); // end of array
-    } else {
-        this.your_discard.splice(insertIndex, 0, newTroop);
+    this.removeFromBoardArray(troop.id);
+
+    /* check where to insert the troop */
+    const newTroop = { id: troop.id, type: troop.type };   
+    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+        let insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+        if (insertIndex === -1) {
+            this.your_discard.push(newTroop); // end of array
+        } else {
+            this.your_discard.splice(insertIndex, 0, newTroop);
+        }
     }
+    else {
+        let insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
+        if (insertIndex === -1) {
+            this.my_discard.push(newTroop); // end of array
+        } else {
+            this.my_discard.splice(insertIndex, 0, newTroop);
+        }
+    }
+    
+
 
 
     /* room is reserved in the flex */
@@ -1343,6 +1400,11 @@ notif_discardTroopFromBoard: function (notif) {
         deltaX = -deltaX;
         deltaY = -deltaY;
     }
+    if (this.isCurrentPlayerRed() && player_color == this.BLUE_COLOR) {
+        deltaX = -deltaX;
+        deltaY = -deltaY;
+    }
+
 
     // gets rotation, if defined
     const existingTransform = window.getComputedStyle(troopElement).transform;
@@ -1363,7 +1425,7 @@ notif_discardTroopFromBoard: function (notif) {
         troopElement.style.top = '';
         troopElement.style.left = '';
         troopElement.style.position = '';
-        troopElement.style.zIndex = '';
+        troopElement.style.zIndex = 10; // ATTENTION POUR LES PROCHAINES ACTIONS
         discardContainer.replaceChild(troopElement, placeholder);
 
         // Nettoyage : suppression du gestionnaire
@@ -1375,7 +1437,7 @@ notif_discardTroopFromBoard: function (notif) {
 
 /*********************************
  * 
- * Troop 5, Mastok effect
+ * Troop 5, XB-42 effect
  * a troop from the opponent's rack is discarded 
  * 
  */

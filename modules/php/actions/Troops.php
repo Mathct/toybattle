@@ -43,7 +43,17 @@ trait TroopsTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "VerifBase", $parg2);
         }
 
-        if($parg1 > 4)
+        if($parg1 == 5)
+        {
+            game::$instance->addPending($this->player_id, "Troop5_Step1", $parg2);
+        }
+
+        if($parg1 == 6)
+        {
+            game::$instance->addPending($this->player_id, "Troop6_Step1", $parg2);
+        }
+
+        if($parg1 > 6)
         {
             game::$instance->addPending($this->player_id, "VerifBase", $parg2);
         }
@@ -80,7 +90,7 @@ trait TroopsTrait  // ATTENTION
         }
 
         
-        if ($counttroopdeck == 0)
+        if (($counttroopdeck == 0)||($counttroophand==8))
         {
             $ret['titleyou'] = clienttranslate('SKULLY: ${you} cannot draw troops');
             $ret['buttons'][] = 'btn_continue';
@@ -511,7 +521,7 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->notifyAllPlayers(
                     'discardTroopFromBoard',
-                    clienttranslate('${player_name} ddiscards an opposing troop from the board'),
+                    clienttranslate('${player_name} discards an opposing troop from the board'),
                     array(
                         
                         'player_name' => $this->player_name,
@@ -569,7 +579,7 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->notifyAllPlayers(
                 'discardTroopFromBoard',
-                clienttranslate('${player_name} ddiscards an opposing troop from the board'),
+                clienttranslate('${player_name} discards an opposing troop from the board'),
                 array(
                     
                     'player_name' => $this->player_name,
@@ -603,6 +613,9 @@ trait TroopsTrait  // ATTENTION
 
         $ret['titleyou'] = clienttranslate('XB-42: ${you} can discard a troop from the opponent\'s hand');
 
+        $ret['buttons'][] = 'btn_yes';
+        $ret['buttons'][] = 'btn_no';
+
                 
         
         return $ret;
@@ -610,10 +623,130 @@ trait TroopsTrait  // ATTENTION
 
     public function Troop5_Step1($parg1, $parg2, $varg1, $varg2)
     {
+
+        if($varg1 == 'btn_no')
+        {
+            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+        }
+
+        if($varg1 == 'btn_yes')
+        {
+            if($this->player_pref_discard == 1)
+            {
+                game::$instance->addPending($this->player_id, "Troop5_Step2", $parg1);
+            }
+
+            if($this->player_pref_discard == 2)
+            {
+                $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
+                $count = count($troop_id_opponent_hand);
+                $rand = bga_rand(1, $count);
+                $rand_troop_id = $troop_id_opponent_hand[$rand-1];
+
+                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$rand_troop_id}'");
+
+                $selected_troop = 0;
+
+                game::$instance->troop->moveCard($rand_troop_id, 'discard', 0);
+
+                game::$instance->notifyAllPlayers(
+                    'discardTroopFromHand',
+                    clienttranslate('${player_name} discards an opposing troop from the hand'),
+                    array(
+                        
+                        'player_name' => $this->player_name,
+                        'infos_troop' => $infos_troop, // info_troop a discard avant discard
+                        'selected_troop' => $selected_troop, // 0 si le joueur n'a pas choisi... de 1 à 8 si le joueur a choisi lui même
+                        
+                    )
+                );
+
+
+                game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+            }
+            
+        }
         
 
+        
+    }
 
-        game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+
+    public function argTroop5_Step2($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} places a troop');
+
+        $ret['titleyou'] = clienttranslate('${you} must choose a troop to discard');
+
+        $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
+        $count = count($troop_id_opponent_hand);
+
+        for ($i=1; $i<=$count; $i++)
+        {
+            if($this->player_color_title == 'blue')
+            {
+                $ret["selectable"][] = 'red_troop_'.$i;
+            }
+
+            if($this->player_color_title == 'red')
+            {
+                $ret["selectable"][] = 'blue_troop_'.$i;
+            }
+        }
+
+
+        $ret['buttons'][] = 'btn_cancel';
+
+                
+        
+        return $ret;
+    }
+
+    public function Troop5_Step2($parg1, $parg2, $varg1, $varg2)
+    {
+
+        if($varg1 == 'btn_cancel')
+        {
+            game::$instance->addPending($this->player_id, "Troop5_Step1", $parg1);
+        }
+
+        else
+        {
+          
+            $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
+            $count = count($troop_id_opponent_hand);
+            $rand = bga_rand(1, $count);
+            $rand_troop_id = $troop_id_opponent_hand[$rand-1];
+
+            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$rand_troop_id}'");
+
+            $explode = explode("_", $varg1);
+            $selected_troop = $explode[2];
+
+            game::$instance->troop->moveCard($rand_troop_id, 'discard', 0);
+
+            game::$instance->notifyAllPlayers(
+                'discardTroopFromHand',
+                clienttranslate('${player_name} discards an opposing troop from the hand'),
+                array(
+                    
+                    'player_name' => $this->player_name,
+                    'infos_troop' => $infos_troop, // info_troop a discard avant discard
+                    'selected_troop' => $selected_troop, // 0 si le joueur n'a pas choisi... de 1 à 8 si le joueur a choisi lui même
+                    
+                )
+            );
+
+            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+           
+        }
+        
+
+        
     }
 
 
@@ -630,19 +763,73 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $ret['titleyou'] = clienttranslate('SKULLY: ${you} can draw 2 troops');
+        $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
-                
+       
+        if (($counttroopdeck >= 1) && ($counttroophand <= 7))
+        {
+            $ret['titleyou'] = clienttranslate('STAR: ${you} can draw 1 troop');
+            $ret['buttons'][] = 'btn_draw_1';
+            $ret['buttons'][] = 'btn_no';
+        }
+
+        
+        if (($counttroopdeck == 0)||($counttroophand == 8))
+        {
+            $ret['titleyou'] = clienttranslate('STAR: ${you} cannot draw troops');
+            $ret['buttons'][] = 'btn_continue';
+        }
+        
         
         return $ret;
     }
 
     public function Troop6_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        
+        if ($varg1 == "btn_draw_1")
+        {
+            
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
+            
+            $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+            
+            game::$instance->notifyPlayer(
+                $this->player_id,
+                'drawTroopPrivate',
+                clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                array(
+                    'player_id' => $this->player_id,
+                    'origine' => "deck",
+                    'new_troops' => $new_troops
+
+
+
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'drawTroopPublic',
+                clienttranslate('${player_name} draws 1 troop'),
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id,
+                    'origine' => "deck",
+                    'nb_troops' => 1,
+                    'nb_troops_hand' => $nb_troops_hand
+
+
+                )
+            );
+            
+
+            
+        }
 
 
         game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+    
     }
 
 

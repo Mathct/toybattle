@@ -31,7 +31,7 @@ body {
   }
 
 
-  .bgabutton_green {
+  .bgabutton_khakhi {
     background-color: #7a9f34;
   }
 
@@ -42,6 +42,10 @@ body {
   .bgaimagebutton {
     margin: 0px 12px;
   }  
+
+  .bgabutton:hover {
+    color:white;
+  }
 
 /* Fonts and Tooltips */
 
@@ -143,6 +147,19 @@ body {
     justify-content: space-around;
     align-items: center;
     gap: 10px; /* Espacement entre les éléments */
+    
+
+   /* background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);
+    /*background: linear-gradient(to bottom, #f3f3f3 0%, #a1b7d2 100%) ;
+    /*background:#a1b7d2;*/
+}
+
+.rack_blue {
+    background: linear-gradient(to bottom, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);
+}
+
+.rack_red {
+    background: linear-gradient(to top, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);
 }
 
 .discard {
@@ -156,21 +173,21 @@ body {
 }
 
 .linear_blue {
-    border: 5px solid;
+/*    border: 5px solid;
     border-image: linear-gradient(to top, #4f66a2, #a1b7d2) 1;
-    border-radius: 15px;
+    border-radius: 15px;*/
 }
 
 .linear_red {
-    border: 5px solid;
+/*    border: 5px solid;
     border-image: linear-gradient(to bottom, #d1553e, #f3a7a1) 1;
-    border-radius: 15px;
+    border-radius: 15px;*/
 }
 
 .linear_red_top {
-    border: 5px solid;
+/*    border: 5px solid;
     border-image: linear-gradient(to top, #d1553e, #f3a7a1) 1;
-    border-radius: 15px;
+    border-radius: 15px;*/
 }
 
 .base_all {
