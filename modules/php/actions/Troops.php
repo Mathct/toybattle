@@ -38,7 +38,12 @@ trait TroopsTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "Troop3_Step1", $parg2);
         }
 
-        if($parg1 > 3)
+        if($parg1 == 4)
+        {
+            game::$instance->addPending($this->player_id, "VerifBase", $parg2);
+        }
+
+        if($parg1 > 4)
         {
             game::$instance->addPending($this->player_id, "VerifBase", $parg2);
         }
@@ -505,7 +510,7 @@ trait TroopsTrait  // ATTENTION
                 self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'" );
 
                 game::$instance->notifyAllPlayers(
-                    'discardFromBoard',
+                    'discardTroopFromBoard',
                     clienttranslate('${player_name} ddiscards an opposing troop from the board'),
                     array(
                         
@@ -563,7 +568,7 @@ trait TroopsTrait  // ATTENTION
             self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'" );
 
             game::$instance->notifyAllPlayers(
-                'discardFromBoard',
+                'discardTroopFromBoard',
                 clienttranslate('${player_name} ddiscards an opposing troop from the board'),
                 array(
                     
@@ -584,11 +589,40 @@ trait TroopsTrait  // ATTENTION
     }
 
     ///////////////////////////
-    ///////// TROOP 4 /////////
+    ///////// TROOP 5 /////////
     ///////////////////////////
 
 
-    public function argTroop4_Step1($parg1, $parg2)
+    public function argTroop5_Step1($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} places a troop');
+
+        $ret['titleyou'] = clienttranslate('XB-42: ${you} can discard a troop from the opponent\'s hand');
+
+                
+        
+        return $ret;
+    }
+
+    public function Troop5_Step1($parg1, $parg2, $varg1, $varg2)
+    {
+        
+
+
+        game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+    }
+
+
+    ///////////////////////////
+    ///////// TROOP 6 /////////
+    ///////////////////////////
+
+
+    public function argTroop6_Step1($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -603,7 +637,7 @@ trait TroopsTrait  // ATTENTION
         return $ret;
     }
 
-    public function Troop4_Step1($parg1, $parg2, $varg1, $varg2)
+    public function Troop6_Step1($parg1, $parg2, $varg1, $varg2)
     {
         
 

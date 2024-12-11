@@ -130,13 +130,13 @@ onEnteringState: function( stateName, args )
                 }
             }
 
-            if (this.prefs[101].value == 2)
+            //if (this.prefs[101].value == 2)
             {
                 //SELECTIONNER TOUTES LES CLASSES QUI PEUVENT CLIGNOTER ET LEUR AJOUTER UNE CLASSE SANS CLIGNOTEMENT
 
             }
 
-            if (this.prefs[102].value == 2)
+            //if (this.prefs[102].value == 2)
             {
                 //SELECTIONNER TOUTES LES CLASSES QUI PEUVENT AVOIR UNE ANIMATION GENANT EN BOUCLE ET LEUR AJOUTER UNE CLASSE AVEC UNE ANIMATION MODEREE
 
@@ -955,7 +955,8 @@ setupNotifications: function()
         ['moveTroop', 1],
         ['drawTroopPrivate', 1],
         ['drawTroopPublic', 1],
-        ['discardFromBoard', 1]
+        ['discardTroopFromBoard', 1],
+        ['discardTroopFromRack', 1],
 
     ];
 
@@ -1293,8 +1294,8 @@ notif_drawTroopPublic: function (notif) {
  * 
  */
 
-notif_discardFromBoard: function (notif) {
-    console.log('notif_discardFromBoard');
+notif_discardTroopFromBoard: function (notif) {
+    console.log('notif_discardTroopFromBoard');
     console.log(notif);
 
     const troop = notif.args.infos_troop;
@@ -1338,7 +1339,7 @@ notif_discardFromBoard: function (notif) {
     let deltaX = targetRect.left - startRect.left;
     let deltaY = targetRect.top - startRect.top;
 
-    if (player_color == this.RED_COLOR) {
+    if (!this.isCurrentPlayerRed() && player_color == this.RED_COLOR) {
         deltaX = -deltaX;
         deltaY = -deltaY;
     }
@@ -1357,7 +1358,12 @@ notif_discardFromBoard: function (notif) {
 
     const onTransitionEnd = () => {
 
-        troopElement.style.transform = existingTransform;
+        //troopElement.style.transform = existingTransform;
+        troopElement.style.transform = '';
+        troopElement.style.top = '';
+        troopElement.style.left = '';
+        troopElement.style.position = '';
+        troopElement.style.zIndex = '';
         discardContainer.replaceChild(troopElement, placeholder);
 
         // Nettoyage : suppression du gestionnaire
@@ -1365,6 +1371,19 @@ notif_discardFromBoard: function (notif) {
     };
     troopElement.addEventListener('transitionend', onTransitionEnd);
     
+},
+
+/*********************************
+ * 
+ * Troop 5, Mastok effect
+ * a troop from the opponent's rack is discarded 
+ * 
+ */
+
+notif_discardTroopFromRack: function (notif) {
+    console.log('notif_discardTroopFromRack');
+    console.log(notif);
+
 },
 
 });             
