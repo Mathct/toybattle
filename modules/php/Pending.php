@@ -22,7 +22,8 @@ class Pending extends APP_GameClass
         $this->player_color = $p['player_color'];
 
         $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
-        $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
+        $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
+        
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
@@ -32,11 +33,11 @@ class Pending extends APP_GameClass
             $this->player_deck = "deckblue";
             
             //DECLARATION DES BASES DE DEPART
-            if (($board_name =='castle')||($board_name =='clouds')||($board_name =='jungle')||($board_name =='cemetery')||($board_name =='carribean')||($board_name =='station')||($board_name =='battlefield'))
+            if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='carribean')||($this->board_name =='station')||($this->board_name =='battlefield'))
             {
             $this->start_base = [1];
             }
-            if (($board_name =='pool')||($board_name =='carribean'))
+            if (($this->board_name =='pool')||($this->board_name =='carribean'))
             {
             $this->start_base = [1,2];
             }
@@ -49,12 +50,12 @@ class Pending extends APP_GameClass
             $this->player_deck = "deckred";
 
             //DECLARATION DES BASES DE DEPART
-            if (($board_name =='castle')||($board_name =='clouds')||($board_name =='jungle')||($board_name =='cemetery')||($board_name =='station')||($board_name =='battlefield'))
+            if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
             {
             $this->start_base = [41];
             }
 
-            if ($board_name =='pool')
+            if ($this->board_name =='pool')
             {
             $this->start_base = [41,42];
             }
@@ -262,10 +263,7 @@ class Pending extends APP_GameClass
 
         $ret["selected"][] = $parg1;
 
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
-        $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
-
-        
+                
         $possible_base = game::$instance->getPossibleBase($this->start_base, $parg1, $this->player_id);
 
         if(count($possible_base) >= 1)
@@ -279,7 +277,7 @@ class Pending extends APP_GameClass
         
         foreach ($possible_base as $base) {
 
-            $ret["selectable"][] = "base_" . $board_name . "_" . $base;
+            $ret["selectable"][] = "base_" . $this->board_name . "_" . $base;
         }
         
         

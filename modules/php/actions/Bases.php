@@ -21,7 +21,7 @@ trait BasesTrait  // ATTENTION
     {
         if(($this->player_name = "Backstar0")||($this->player_name = "Backstar1")) //etc en fonction du nombre de joueurs
         {
-            var_dump($parg1);
+            var_dump('base_a_activer',$parg1);
         }
         
         game::$instance->addPendingFirst($this->player_id, "NormalTurn");

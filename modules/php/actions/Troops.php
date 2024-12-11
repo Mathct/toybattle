@@ -19,6 +19,8 @@ trait TroopsTrait  // ATTENTION
 
     public function VerifTroop($parg1, $parg2, $varg1, $varg2)
     {
+
+        /// il y aura une verif base speciale qui annule l'effet de la troupe sur le board station
         
         
         if($parg1 == 1)
@@ -184,14 +186,14 @@ trait TroopsTrait  // ATTENTION
 
         if($counttroophand >= 1)
         {
-            $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} can place a second troop');
+            $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} can place an other troop');
             $ret['buttons'][] = 'btn_place_troop';
             $ret['buttons'][] = 'btn_no';
         }
 
         else
         {
-            $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} cannot place a second troop');
+            $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} cannot place an other troop');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -435,32 +437,115 @@ trait TroopsTrait  // ATTENTION
         $explode = explode("_", $parg1);
         $base_mastok = end($explode);
 
-        $ret['titleyou'] = clienttranslate('MASTOK');
+        $list_base_discard_possible = [];
+        $bases_adjacentes_mastok = game::$instance->_bases[$this->board_name][$base_mastok]['adjacents'];
 
-        if(($this->player_name = "Backstar0")||($this->player_name = "Backstar1")) //etc en fonction du nombre de joueurs
+        foreach($bases_adjacentes_mastok as $base)
         {
-            var_dump($base_mastok);
+            $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
+            if(count($infos_troopmax) != 0)
+            {
+
+                if($infos_troopmax[0]['type_arg'] != $this->player_id)
+                {
+                    $list_base_discard_possible[] = $infos_troopmax[0]['location_arg'];
+                }
+
+            }
+                       
         }
 
-        //$ret['titleyou'] = clienttranslate('MASTOK: ${you} can discard an adjacent and visible troop');
+        if(count($list_base_discard_possible) == 0)
+        {
+            $ret['titleyou'] = clienttranslate('MASTOK: ${you} cannot discard an adjacent troop');
+            $ret['buttons'][] = 'btn_continue';
+        }
 
-        //$ret['titleyou'] = clienttranslate('MASTOK: ${you} cannot discard an adjacent, visible troop');
+        else
+        {
+            $ret['titleyou'] = clienttranslate('MASTOK: ${you} can discard an adjacent troop');
 
-        
-$ret['buttons'][] = 'btn_cancel';
-                
+            foreach($list_base_discard_possible as $base_discard)
+            {
+                $ret["selectable"][] = "base_".$this->board_name."_".$base_discard;
+            }
+
+            
+            $ret['buttons'][] = 'btn_no';
+
+        }
+
+                        
         
         return $ret;
     }
 
     public function Troop3_Step1($parg1, $parg2, $varg1, $varg2)
     {
+
+        if(($varg1 == 'btn_continue')||($varg1 == 'btn_no'))
+        {
+            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+        }
+
+        else 
+        {
+            if ($this->player_pref_confirm == 1)
+            {
+                game::$instance->addPending($this->player_id, "Troop3_Confirm", $varg1, $parg1);
+            }
+
+            if ($this->player_pref_confirm == 2)
+            {
+                // A FAIRE
+                game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+            }
+            
+        }
+   
         
-
-
-        game::$instance->addPending($this->player_id, "VerifBase", $parg1);
     }
 
+    public function argTroop3_Confirm($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} places a troop');
+
+        $ret['titleyou'] = clienttranslate('${you} must confirm');
+
+        $ret["selected"][] = $parg1;
+
+        $ret['buttons'][] = 'btn_yes';
+        $ret['buttons'][] = 'btn_no';
+
+        
+
+                                      
+        
+        return $ret;
+    }
+
+    public function Troop3_Confirm($parg1, $parg2, $varg1, $varg2)
+    {
+
+        if($varg1 == 'btn_no')
+        {
+            game::$instance->addPending($this->player_id, "Troop3_Step1", $parg2);
+        }
+
+        if($varg1 == 'btn_yes')
+        {
+            // A FAIRE
+            game::$instance->addPending($this->player_id, "VerifBase", $parg2);
+        }
+        
+
+        
+        
+    }
 
     ///////////////////////////
     ///////// TROOP 4 /////////
