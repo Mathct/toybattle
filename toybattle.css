@@ -30,6 +30,19 @@ body {
     background-blend-mode: multiply; /* Fusionne couleur et texture */
   }
 
+
+  .bgabutton_green {
+    background-color: #7a9f34;
+  }
+
+  .bgabutton_orange {
+    background-color: #e3a733;
+  }
+  
+  .bgaimagebutton {
+    margin: 0px 12px;
+  }  
+
 /* Fonts and Tooltips */
 
 
@@ -138,7 +151,7 @@ body {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-end;
     align-items: center;
 }
 
@@ -193,6 +206,13 @@ body {
     transition: transform 0.5s ease-in-out;
 }
 
+.troop_icon {
+    width: 24px;
+    height: 32px;
+    background-image: url('img/TB_Tiles.png');
+    background-size: 900% 200%;
+}
+
 .troop-placeholder {
     width: 65.625px;
     height: 87.5px;
@@ -220,3 +240,47 @@ body {
 
 
 
+/* Tisaac Help Mode */
+/****** help mode Tisaac ********/
+#help-mode-switch .checkbox {
+    display: none;
+}
+
+#help-mode-switch .label {
+    background-color: rgb(57, 86, 105);
+    border-radius: 40px;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    height: 22px;
+    width: 40px;
+}
+#help-mode-switch .label .ball {
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 18px;
+    width: 18px;
+    transform: translateX(0px);
+    transition: transform 0.2s linear, color 0.7s linear;
+}
+#help-mode-switch .checkbox:checked + .label .ball {
+    transform: translateX(18px);
+}
+#help-mode-switch svg {
+    width: 22px;
+    color: rgb(57, 86, 105);
+}
+#ebd-body.help-mode .tooltipable {
+    cursor: help;
+}
+
+#ebd-body.help-mode .tooltipable .cardcontent {
+    pointer-events: none;
+}
+
+.dijitTooltip {
+    width: auto !important;
+}

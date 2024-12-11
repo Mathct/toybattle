@@ -14,6 +14,8 @@
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
+const TOOLTIP_DELAY = 500;
+
 
 define([
     "dojo","dojo/_base/declare",
@@ -63,8 +65,9 @@ setup: function( gamedatas )
 
 
     //TODO check if spectator is always BLUE
-    this.spectator_id =  gamedatas.spectator_id;
-    this.other_player_id =  gamedatas.other_player_id;
+    this.opponent_id = gamedatas.opponent_id;
+    this.spectator_id = gamedatas.spectator_id;
+    this.other_player_id = gamedatas.other_player_id;
 
     this.board_troops = gamedatas.board_troops;
 
@@ -192,12 +195,18 @@ onUpdateActionButtons: function( stateName, args )
                             break;
                         case "btn_draw_2":
                             this.addActionButton('btn_draw_2', _("Draw 2 Troops"), 'onOpButton', null, null, 'blue');
+                            dojo.toggleClass('btn_draw_2', 'bgabutton_blue');
+                            dojo.toggleClass('btn_draw_2', 'bgabutton_orange');
                             break;
                         case "btn_draw_1":
                             this.addActionButton('btn_draw_1', _("Draw 1 Troop"), 'onOpButton', null, null, 'blue');
+                            dojo.toggleClass('btn_draw_1', 'bgabutton_blue');
+                            dojo.toggleClass('btn_draw_1', 'bgabutton_orange');
                             break;
                         case "btn_place_troop":
                             this.addActionButton('btn_place_troop', _("Place 1 Troop"), 'onOpButton', null, null, 'blue');
+                            dojo.toggleClass('btn_place_troop', 'bgabutton_blue');
+                            dojo.toggleClass('btn_place_troop', 'bgabutton_green');
                             break;
                         case "btn_yes":
                             this.addActionButton('btn_yes', _("Yes"), 'onOpButton', null, null, 'blue');
@@ -325,7 +334,56 @@ setupPlayersBoard: function() {
             <div class="a_board" id="a2_board_${player.id}"></div>
         `);
 
+        if( player.id == this.player_id || (this.isSpectator && player.id == this.spectator_id) )
+        {
+            const a1BoardElement = document.getElementById('a1_board_' + player.id);
+                    a1BoardElement.insertAdjacentHTML('beforeend', `
+                        <div id="help-mode-switch">
+                            <input type="checkbox" class="checkbox" id="help-mode-chk" />
+                            <label class="label" for="help-mode-chk">
+                                <div class="ball"></div>
+                            </label>
+                            <svg aria-hidden="true" focusable="false" data-prefix="fad" data-icon="question-circle" class="svg-inline--fa fa-question-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <g class="fa-group">
+                                    <path class="fa-secondary" fill="currentColor" d="M256 8C119 8 8 119.08 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 422a46 46 0 1 1 46-46 46.05 46.05 0 0 1-46 46zm40-131.33V300a12 12 0 0 1-12 12h-56a12 12 0 0 1-12-12v-4c0-41.06 31.13-57.47 54.65-70.66 20.17-11.31 32.54-19 32.54-34 0-19.82-25.27-33-45.7-33-27.19 0-39.44 13.14-57.3 35.79a12 12 0 0 1-16.67 2.13L148.82 170a12 12 0 0 1-2.71-16.26C173.4 113 208.16 90 262.66 90c56.34 0 116.53 44 116.53 102 0 77-83.19 78.21-83.19 106.67z" opacity="0.4"></path>
+                                    <path class="fa-primary" fill="currentColor" d="M256 338a46 46 0 1 0 46 46 46 46 0 0 0-46-46zm6.66-248c-54.5 0-89.26 23-116.55 63.76a12 12 0 0 0 2.71 16.24l34.7 26.31a12 12 0 0 0 16.67-2.13c17.86-22.65 30.11-35.79 57.3-35.79 20.43 0 45.7 13.14 45.7 33 0 15-12.37 22.66-32.54 34C247.13 238.53 216 254.94 216 296v4a12 12 0 0 0 12 12h56a12 12 0 0 0 12-12v-1.33c0-28.46 83.19-29.67 83.19-106.67 0-58-60.19-102-116.53-102z"></path>
+                                </g>
+                            </svg>
+                        </div>
+                    `);
+                    const helpModeSwitchElement = document.getElementById('help-mode-switch');
+                    helpModeSwitchElement.style.display = 'inline-block';
+                    const helpModeCheckbox = document.getElementById('help-mode-chk');
+                    helpModeCheckbox.addEventListener('change', () => {
+                        this.toggleHelpMode(helpModeCheckbox.checked);
+                    });
+                    this.addTooltip("help-mode-switch", "", _("Toggle Tooltips on Mobile mode."));
+                /* help mode Tisaac */
+
+        }
+
+        /* slider */
+        if(player.id == this.opponent_id) {
+            const a1BoardElement = document.getElementById('a1_board_' + player.id);
+            const initialValue = window.localStorage?.getItem("BB_zoom") ?? 100;
+            a1BoardElement.insertAdjacentHTML('beforeend', `
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24H280c13.3 0 24-10.7 24-24s-10.7-24-24-24H136z"/></svg>
+                    <input type="range" min="50" max="200" value="${initialValue}" class="slider" id="zoom_value">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM184 296c0 13.3 10.7 24 24 24s24-10.7 24-24V232h64c13.3 0 24-10.7 24-24s-10.7-24-24-24H232V120c0-13.3-10.7-24-24-24s-24 10.7-24 24v64H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h64v64z"/></svg>
+                </div>
+            `);
+            dojo.connect($("zoom_value"), "oninput", () => {
+                // debug('zoom changed', $('zoom_value').value);
+                window.localStorage.setItem("BB_zoom", $("zoom_value").value);
+                this.onScreenWidthChange();
+            });
+        }
+        /* slider */
+
     });
+
+    
 
 },
 
@@ -553,8 +611,14 @@ createDeckCounter : function( color) {
 
 createDiscard: function( color ) {
     const discardContainer = document.createElement('div');
-    discardContainer.id = `discard_${color}`;
+    discardContainer.id = `${color}_discard`;
     discardContainer.classList.add('discard', `linear_${color}`);
+    if( color == 'blue') {
+        discardContainer.style.justifyContent = `flex-end`;
+    }
+    else {
+        discardContainer.style.justifyContent = `flex-start`;
+    }
     return discardContainer;
 },
 
@@ -662,6 +726,166 @@ getBoundingClientRectIgnoreZoom: function (element) {
 },
 
 
+
+/*******************************
+ ****** HELP MODE TISAAC *******
+    ******************************/
+/**
+ * Toggle help mode
+ */
+toggleHelpMode(b) {
+    if (b) this.activateHelpMode();
+    else this.desactivateHelpMode();
+},
+
+activateHelpMode() {
+    this._helpMode = true;
+    dojo.addClass('ebd-body', 'help-mode');
+    this._displayedTooltip = null;
+    document.body.addEventListener('click', this.closeCurrentTooltip.bind(this));
+},
+
+desactivateHelpMode() {
+    this.closeCurrentTooltip();
+    this._helpMode = false;
+    dojo.removeClass('ebd-body', 'help-mode');
+    document.body.removeEventListener('click', this.closeCurrentTooltip.bind(this));
+},
+
+closeCurrentTooltip() {
+    if (!this._helpMode) return;
+
+    if (this._displayedTooltip == null) return;
+    else {
+        this._displayedTooltip.close();
+        this._displayedTooltip = null;
+    }
+},
+
+    /*
+    * Custom connect that keep track of all the connections
+    *  and wrap clicks to make it work with help mode
+    */
+connect(node, action, callback) {
+    this._connections.push(dojo.connect($(node), action, callback));
+},
+
+onClick(node, callback, temporary = true) {
+    let safeCallback = (evt) => {
+        evt.stopPropagation();
+        if (this.isInterfaceLocked()) return false;
+        if (this._helpMode) return false;
+        callback(evt);
+    };
+
+    if (temporary) {
+        this.connect($(node), 'click', safeCallback);
+        dojo.removeClass(node, 'unselectable');
+        dojo.addClass(node, 'selectable');
+        this._selectableNodes.push(node);
+    } else {
+        dojo.connect($(node), 'click', safeCallback);
+    }
+},
+
+    /**
+     * Tooltip to work with help mode
+     */
+registerCustomTooltip(html, id = null) {
+    id = id || this.game_name + '-tooltipable-' + this._customTooltipIdCounter++;
+    this._registeredCustomTooltips[id] = html;
+    return id;
+},
+
+attachRegisteredTooltips() {
+    Object.keys(this._registeredCustomTooltips).forEach((id) => {
+        if ($(id)) {
+        this.addCustomTooltip(id, this._registeredCustomTooltips[id], { forceRecreate: true });
+        }
+    });
+    this._registeredCustomTooltips = {};
+},
+
+addCustomTooltip(id, html, config = {}) {
+    config = Object.assign(
+        {
+        delay: 400,
+        midSize: true,
+        forceRecreate: false,
+        },
+        config,
+    );
+
+    // Handle dynamic content out of the box
+    let getContent = () => {
+        let content = typeof html === 'function' ? html() : html;
+        if (config.midSize) {
+        content = '<div class="midSizeDialog">' + content + '</div>';
+        }
+        return content;
+    };
+
+    if (this.tooltips[id] && !config.forceRecreate) {
+        this.tooltips[id].getContent = getContent;
+        return;
+    }
+
+    let tooltip = new dijit.Tooltip({
+        //        connectId: [id],
+        getContent,
+        position: this.defaultTooltipPosition,
+        showDelay: config.delay,
+    });
+    this.tooltips[id] = tooltip;
+    dojo.addClass(id, 'tooltipable');
+
+    dojo.connect($(id), 'click', (evt) => {
+        if (!this._helpMode) {
+        tooltip.close();
+        } else {
+        evt.stopPropagation();
+
+        if (tooltip.state == 'SHOWING') {
+            this.closeCurrentTooltip();
+        } else {
+            this.closeCurrentTooltip();
+            tooltip.open($(id));
+            this._displayedTooltip = tooltip;
+        }
+        }
+    });
+
+    tooltip.showTimeout = null;
+    dojo.connect($(id), 'mouseenter', (evt) => {
+        evt.stopPropagation();
+        if (!this._helpMode && !this._dragndropMode) {
+        if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+
+        tooltip.showTimeout = setTimeout(() => {
+            if ($(id)) tooltip.open($(id));
+        }, config.delay);
+        }
+    });
+
+    dojo.connect($(id), 'mouseleave', (evt) => {
+        evt.stopPropagation();
+        if (!this._helpMode && !this._dragndropMode) {
+        tooltip.close();
+        if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+        }
+    });
+    },
+
+destroy(elem) {
+    if (this.tooltips[elem.id]) {
+        this.tooltips[elem.id].destroy();
+        delete this.tooltips[elem.id];
+    }
+
+    elem.remove();
+    },
+
+
 /////////////////////////////////////////////////////////////////////////////////  
 //         _____  _                       _                  _   _             
 //        |  __ \| |                     ( )                | | (_)            
@@ -730,7 +954,8 @@ setupNotifications: function()
         ['displayNotif', 1],
         ['moveTroop', 1],
         ['drawTroopPrivate', 1],
-        ['drawTroopPublic', 1]
+        ['drawTroopPublic', 1],
+        ['discardFromBoard', 1]
 
     ];
 
@@ -1058,6 +1283,88 @@ notif_drawTroopPublic: function (notif) {
             animateTroop(0);
         }
     }
+},
+
+
+/*********************************
+ * 
+ * Troop 3, Mastok effect
+ * a troop from the board is discarded 
+ * 
+ */
+
+notif_discardFromBoard: function (notif) {
+    console.log('notif_discardFromBoard');
+    console.log(notif);
+
+    const troop = notif.args.infos_troop;
+    
+    const player_color = this.players[troop.type_arg].color;
+    const troopElement = document.getElementById(`troop_${troop.id}`);
+    const discardId = player_color == this.BLUE_COLOR ? 'blue_discard' : 'red_discard';
+    const discardContainer = document.getElementById(discardId);
+    
+    /* check where to insert the troop */
+    const newTroop = { id: troop.id, type: troop.type };
+
+    let insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+    if (insertIndex === -1) {
+        this.your_discard.push(newTroop); // end of array
+    } else {
+        this.your_discard.splice(insertIndex, 0, newTroop);
+    }
+
+
+    /* room is reserved in the flex */
+    let placeholder = document.createElement('div');
+    placeholder.classList.add('troop-placeholder');
+    if (player_color == this.RED_COLOR) {
+        if (insertIndex === -1) {
+            insertIndex = 0; // TODO vérifier
+        } else {
+            insertIndex = this.your_discard.length - insertIndex - 1; //TODO vérifier le bon index
+        }
+    }
+
+    if (insertIndex === discardContainer.children.length) {
+        discardContainer.appendChild(placeholder);
+    } else {
+        discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+    }
+
+    const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+    const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+    let deltaX = targetRect.left - startRect.left;
+    let deltaY = targetRect.top - startRect.top;
+
+    if (player_color == this.RED_COLOR) {
+        deltaX = -deltaX;
+        deltaY = -deltaY;
+    }
+
+    // gets rotation, if defined
+    const existingTransform = window.getComputedStyle(troopElement).transform;
+
+    
+    // new transformation
+    const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+    const newTransform = existingTransform !== "none"
+        ? `${existingTransform} ${translateTransform}`
+        : translateTransform;
+
+    troopElement.style.transform = newTransform;
+
+    const onTransitionEnd = () => {
+
+        troopElement.style.transform = existingTransform;
+        discardContainer.replaceChild(troopElement, placeholder);
+
+        // Nettoyage : suppression du gestionnaire
+        troopElement.removeEventListener('transitionend', onTransitionEnd);
+    };
+    troopElement.addEventListener('transitionend', onTransitionEnd);
+    
 },
 
 });             

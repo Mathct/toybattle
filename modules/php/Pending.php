@@ -93,19 +93,13 @@ class Pending extends APP_GameClass
             $ret['buttons'][] = 'btn_draw_2';
         }
 
-        if (($counttroopdeck == 1) && ($counttroophand <= 7)) 
+        if ((($counttroopdeck == 1) && ($counttroophand <= 7)) || (($counttroopdeck >= 1) && ($counttroophand == 7))) 
         {
 
             $ret['buttons'][] = 'btn_draw_1';
         }
 
-        if (($counttroopdeck >= 1) && ($counttroophand == 7)) 
-        {
-
-            $ret['buttons'][] = 'btn_draw_1';
-        }
-
-        if ($counttroopdeck >= 1) 
+        if ($counttroophand >= 1) 
         {
             // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
             $ret['buttons'][] = 'btn_place_troop';
@@ -322,7 +316,7 @@ class Pending extends APP_GameClass
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
-                    clienttranslate('${player_name} moves troop'),
+                    clienttranslate('${player_name} places troop'),
                     array(
                         'mobile' =>  $parg1,
                         'parent' => $varg1,
@@ -395,7 +389,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'moveTroop',
-                clienttranslate('${player_name} moves troop'),
+                clienttranslate('${player_name} places troop'),
                 array(
                     'mobile' =>  $parg1,
                     'parent' => $parg2,

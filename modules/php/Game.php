@@ -393,6 +393,7 @@ class Game extends \Table
         $dynamic_base = []; // base dynamique pour les nouvelles bases à inspecter
         $visited_bases = []; // Liste des bases déjà visitées
 
+        
         // recuperation du nom du board
         $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
@@ -400,6 +401,8 @@ class Game extends \Table
         //recuperation de la force de la troupe selectionnée
         $explode_troop_id = explode("_", $troop_id);
         $troop_selected_force = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id='{$explode_troop_id[1]}'") % 10;
+
+        
 
         while (count($new_bases) != 0) {
             foreach ($new_bases as $base) {
@@ -451,6 +454,61 @@ class Game extends \Table
             $new_bases = $dynamic_base;
             $dynamic_base = [];
         }
+        
+
+        if($troop_selected_force == 4){
+
+            
+            $all_bases = $this->_bases[$board_name];
+
+            $bases_crochet = array_map('strval', array_keys($all_bases));
+
+            $bases_crochet_sans_QG = [];
+            
+            foreach ($bases_crochet as $liste_bases_crochet){
+                if (($liste_bases_crochet >=10)&&($liste_bases_crochet <=40))
+                {
+                    $bases_crochet_sans_QG[] = $liste_bases_crochet;
+                }
+            }
+
+            $diff = array_diff($bases_crochet_sans_QG, $possible_bases);
+
+            $bases_crochet_ok = [];
+
+            foreach ($diff as $testotherbase)
+            {
+                $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}'", true));
+
+                if ($nb_troop_on_base == 0) //si la base est vide
+                {
+                    $bases_crochet_ok[] = $testotherbase;
+                } else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
+                {
+                    $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}')");
+
+                    if ($infos_troopmax[0]['type_arg'] != $player_id) // si elle appartient au joueur adverse on compare les forces
+                    {
+                        $troop_opponent_force = $infos_troopmax[0]['type'] % 10;
+
+                        if (($troop_opponent_force < 4) || ($troop_opponent_force == 8)) {
+                            $bases_crochet_ok[] = $testotherbase;
+                        }
+                    } else // si elle appartient au joueur actif, on peut s'y positionner
+                    {
+                        $bases_crochet_ok[] = $testotherbase;
+                    }
+                }
+
+
+            }
+            
+            
+            
+            $possible_bases = array_merge($possible_bases, $bases_crochet_ok);
+        }
+
+
 
         return $possible_bases;
     }

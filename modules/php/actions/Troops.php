@@ -332,7 +332,7 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
-                    clienttranslate('${player_name} moves troop'),
+                    clienttranslate('${player_name} places troop'),
                     array(
                         'mobile' =>  $parg1,
                         'parent' => $varg1,
@@ -392,7 +392,7 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->notifyAllPlayers(
                 'moveTroop',
-                clienttranslate('${player_name} moves troop'),
+                clienttranslate('${player_name} places troop'),
                 array(
                     'mobile' =>  'troop_'.$explode[1],
                     'parent' => 'base_'.$explode[3].'_'.$explode[4],
@@ -497,7 +497,23 @@ trait TroopsTrait  // ATTENTION
 
             if ($this->player_pref_confirm == 2)
             {
-                // A FAIRE
+                $explode = explode("_", $varg1);
+                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
+
+                game::$instance->troop->moveCard($infos_troop['id'], 'discard', 0);
+
+                self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'" );
+
+                game::$instance->notifyAllPlayers(
+                    'discardFromBoard',
+                    clienttranslate('${player_name} ddiscards an opposing troop from the board'),
+                    array(
+                        
+                        'player_name' => $this->player_name,
+                        'infos_troop' => $infos_troop,
+                        
+                    )
+                );
                 game::$instance->addPending($this->player_id, "VerifBase", $parg1);
             }
             
@@ -538,7 +554,27 @@ trait TroopsTrait  // ATTENTION
 
         if($varg1 == 'btn_yes')
         {
-            // A FAIRE
+            
+            $explode = explode("_", $parg1);
+            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
+
+            game::$instance->troop->moveCard($infos_troop['id'], 'discard', 0);
+
+            self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'" );
+
+            game::$instance->notifyAllPlayers(
+                'discardFromBoard',
+                clienttranslate('${player_name} ddiscards an opposing troop from the board'),
+                array(
+                    
+                    'player_name' => $this->player_name,
+                    'infos_troop' => $infos_troop,
+                    
+                )
+            );
+
+            
+
             game::$instance->addPending($this->player_id, "VerifBase", $parg2);
         }
         

@@ -1,5 +1,74 @@
 <?php
 
+$this->_troop_types = [
+    "SKULLY" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round.Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand.")
+    ],
+    "CAP'TAIN" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round.Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand.")
+    ],
+    "MASTOK" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round.Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand.")
+    ],
+    "CROCHET" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round.Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand.")
+    ],
+    "XB-42" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "STAR" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "ROXY" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "KWAK" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+];
+
+$this->_board_types = [
+    "CASTLE" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "CLOUDS" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "VOLCANO" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round.Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand.")
+    ],
+    "CEMETERY" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "CARRIBEAN" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "BATTLEFIELD" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round.Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand.")
+    ],
+    "TROPICO" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+    "METAL" => [
+        clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        clienttranslate("")
+    ],
+];
 
 $this->_bases = [
     "castle" => [
