@@ -201,9 +201,26 @@ trait TroopsTrait  // ATTENTION
 
         if($counttroophand >= 1)
         {
+            $place_ok = 0;
+            $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+            foreach ($list_troop as $troop)
+            {
+                $troop_id = 'troop_'.$troop;
+                $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
+                if(count($possible_base) >= 1)
+                {
+                    $place_ok = 1;
+                }
+
+
+            }
+
+            if ($place_ok == 1)
+            {
             $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} can place an other troop');
             $ret['buttons'][] = 'btn_place_troop';
             $ret['buttons'][] = 'btn_no';
+            }
         }
 
         else
@@ -245,13 +262,21 @@ trait TroopsTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} places a troop');
         $ret['titleyou'] = clienttranslate('${you} must choose a troop');
 
-
-        $troops = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_type_arg ='{$this->player_id}' AND card_location='hand'", true);
-        foreach ($troops as $troop_id) 
+        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+        foreach ($list_troop as $troop)
         {
-            $ret["selectable"][] = "troop_" . $troop_id;
+            $troop_id = 'troop_'.$troop;
+            $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
+            if(count($possible_base) >= 1)
+            {
+                $ret["selectable"][] = $troop_id;
+            }
+
+
         }
 
+
+        
         $ret['buttons'][] = 'btn_cancel';
 
 

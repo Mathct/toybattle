@@ -195,18 +195,18 @@ onUpdateActionButtons: function( stateName, args )
                             break;
                         case "btn_draw_2":
                             this.addActionButton('btn_draw_2', _("Draw 2 Troops"), 'onOpButton', null, null, 'blue');
-                            dojo.toggleClass('btn_draw_2', 'bgabutton_blue');
-                            dojo.toggleClass('btn_draw_2', 'bgabutton_orange');
+                            dojo.removeClass('btn_draw_2', 'bgabutton_blue');
+                            dojo.addClass('btn_draw_2', 'bgabutton_orange');
                             break;
                         case "btn_draw_1":
                             this.addActionButton('btn_draw_1', _("Draw 1 Troop"), 'onOpButton', null, null, 'blue');
-                            dojo.toggleClass('btn_draw_1', 'bgabutton_blue');
-                            dojo.toggleClass('btn_draw_1', 'bgabutton_orange');
+                            dojo.removeClass('btn_draw_1', 'bgabutton_blue');
+                            dojo.addClass('btn_draw_1', 'bgabutton_orange');
                             break;
                         case "btn_place_troop":
                             this.addActionButton('btn_place_troop', _("Place 1 Troop"), 'onOpButton', null, null, 'blue');
-                            dojo.toggleClass('btn_place_troop', 'bgabutton_blue');
-                            dojo.toggleClass('btn_place_troop', 'bgabutton_green');
+                            dojo.removeClass('btn_place_troop', 'bgabutton_blue');
+                            dojo.addClass('btn_place_troop', 'bgabutton_khakhi');
                             break;
                         case "btn_yes":
                             this.addActionButton('btn_yes', _("Yes"), 'onOpButton', null, null, 'blue');
@@ -396,164 +396,201 @@ setupPlayersBoard: function() {
  **************************/
 
 setupBoard: function() {
-    console.log( 'setup Board');
+    console.log('setup Board');
 
+    const mediaQuery = window.matchMedia('(max-width: 1024px) and (orientation: landscape)');
+
+    // Fonction pour gérer les changements d'orientation
+    const handleTabletChange = (e) => {
+        if (e.matches) {
+            console.log('Media Query Matched! Landscape Mode');
+            this.setupLandscapeMode();
+        } else {
+            console.log('Portrait Mode');
+            this.setupPortraitMode(); // Ici, `this` fait bien référence à l'objet parent
+        }
+    };
+
+    // Enregistrer l'écouteur d'événements
+    mediaQuery.addEventListener('change', handleTabletChange);
+
+    // Vérification initiale
+    handleTabletChange(mediaQuery);
+
+
+    //this.setupPortraitMode();
+
+},
+
+setupLandscapeMode: function() {
+    
+    console.log('NEW MODE');
+    const globalContainer = document.getElementById('global_id');
+
+    // Réinitialiser toutes les classes
+    globalContainer.className = '';
+
+    // Réinitialiser tout le contenu
+    globalContainer.innerHTML = '';
+
+},
+
+setupPortraitMode: function() {
     /*  creates global container with yourLine, playMat and myLine containers  */
     const globalContainer = document.getElementById('global_id');
     if( this.isCurrentPlayerRed() ) {
         globalContainer.classList.add('board-inverted');
     }
 
+
+
     /*  redLineContainer definition 
         contains redDeckElement and redRackContainer
     */
-    const redLineContainer = this.createLine('red');
-    globalContainer.appendChild(redLineContainer);
-
-
-    /*  redRackContainer definition 
-        contains Rack and all Troops in Hand
-    */
-    const redRackContainer = this.createRack('red');
-    redLineContainer.appendChild(redRackContainer);
-
-    if( this.isCurrentPlayerRed() ) {
-        Object.values(this.my_hand).reverse().forEach(troop => {
-            const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('board-inverted');
-            redRackContainer.appendChild(troopElement);
-        });
-    }
-    else {
-        Object.values(this.your_hand).forEach((troop, index) => {
-            const troopElement = this.createBackTroopElement(troop, index);
-            troopElement.classList.add('board-inverted');
-            redRackContainer.appendChild(troopElement);
-        });
-    }
-
-
-    /*  yourDeckContainer definition 
-        contains Deck and number of Troops TODO
-    */
-        const redDeckElement = this.createDeck( 'red' );
-        redDeckElement.classList.add('board-inverted');
-        redLineContainer.appendChild(redDeckElement);
-
-        const redDeckCounterElement = this.createDeckCounter( 'red');
-        redDeckElement.appendChild(redDeckCounterElement);
-        
-        this.red_deck_counter = new ebg.counter();
-        this.red_deck_counter.create('red_deck_counter_id');
-        this.red_deck_counter.toValue(this.nb_decks[1]);
-
-
-    /*  PlaymatContainer definition 
-        contains blueDiscard, Board and redDiscard
-    */
-    const playmatContainer = document.createElement('div');
-    playmatContainer.id = `playmat_id`;
-    playmatContainer.classList.add('playmat');
-    globalContainer.appendChild(playmatContainer);
-
-    /*  blueDiscardContainer definition 
-        contains possible Troops in opacity 50 and all discarded ones TODO
-    */
-    const blueDiscardContainer = this.createDiscard( 'blue' );
-    playmatContainer.appendChild(blueDiscardContainer);
-
-
-    if( this.isCurrentPlayerRed() ) {
-        Object.values(this.your_discard).forEach(troop => {
-            const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('opa_70');
-            blueDiscardContainer.appendChild(troopElement);
-        });
-    }
-    else {
-        Object.values(this.my_discard).forEach((troop) => {
-            const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('opa_70');
-            blueDiscardContainer.appendChild(troopElement);
-        });
-    }
-
-   
-    /*  boardContainer definition 
-        contains board and all troops
-    */
-
-    const boardContainer = this.createBoard();
-    playmatContainer.appendChild(boardContainer);
-    this.createBases();
-    this.createTroopsOnBoard();
-
-
-
-    /* redDiscard */
-    const redDiscardContainer = this.createDiscard( 'red' );
-    playmatContainer.appendChild(redDiscardContainer);
-
-
-
-    if( this.isCurrentPlayerRed() ) {
-        Object.values(this.my_discard).forEach(troop => {
-            const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('board-inverted', 'opa_70');
-            redDiscardContainer.appendChild(troopElement);
+        const redLineContainer = this.createLine('red');
+        globalContainer.appendChild(redLineContainer);
+    
+    
+        /*  redRackContainer definition 
+            contains Rack and all Troops in Hand
+        */
+        const redRackContainer = this.createRack('red');
+        redLineContainer.appendChild(redRackContainer);
+    
+        if( this.isCurrentPlayerRed() ) {
+            Object.values(this.my_hand).reverse().forEach(troop => {
+                const troopElement = this.createTroopElement(troop);
+                troopElement.classList.add('board-inverted');
+                redRackContainer.appendChild(troopElement);
+            });
+        }
+        else {
+            Object.values(this.your_hand).forEach((troop, index) => {
+                const troopElement = this.createBackTroopElement(troop, index);
+                troopElement.classList.add('board-inverted');
+                redRackContainer.appendChild(troopElement);
+            });
+        }
+    
+    
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+            const redDeckElement = this.createDeck( 'red' );
+            redDeckElement.classList.add('board-inverted');
+            redLineContainer.appendChild(redDeckElement);
+    
+            const redDeckCounterElement = this.createDeckCounter( 'red');
+            redDeckElement.appendChild(redDeckCounterElement);
             
-        });
-    }
-    else {
-        Object.values(this.your_discard).forEach((troop) => {
-            const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('board-inverted', 'opa_70');
-            redDiscardContainer.appendChild(troopElement);
-        });
-    }
-
-
-
-
-
-
-    /* blueLineContainer */
-    const blueLineContainer = this.createLine( 'blue');
-    globalContainer.appendChild(blueLineContainer);
-
-    /* blueDeckElement */
-    const blueDeckElement = this.createDeck( 'blue' );
-    blueLineContainer.appendChild(blueDeckElement);
-
-    /* blueDeckCounterElement */
-    const blueDeckCounterElement = this.createDeckCounter( 'blue');
-    blueDeckElement.appendChild(blueDeckCounterElement);
-    this.blue_deck_counter = new ebg.counter();
-    this.blue_deck_counter.create('blue_deck_counter_id');
-    this.blue_deck_counter.toValue(this.nb_decks[0]);
-
-    /* blueRackContainer */
-    const blueRackContainer = this.createRack('blue');
-    blueLineContainer.appendChild(blueRackContainer);
-
-    if( this.isCurrentPlayerRed() ) {
-        Object.values(this.your_hand).forEach((troop, index) => {
-            const backTroopElement = this.createBackTroopElement(troop, index);
-            blueRackContainer.appendChild(backTroopElement);
-        });
-    }
-    else if( this.isSpectator) {
-        Object.values(this.my_hand).forEach((troop, index) => {
-            const backTroopElement = this.createBackTroopElement(troop, index);
-            blueRackContainer.appendChild(backTroopElement);
-        });
-    }
-    else {
-        Object.values(this.my_hand).forEach(troop => {
-            const troopElement = this.createTroopElement(troop);
-            blueRackContainer.appendChild(troopElement);
-        });
-    }
+            this.red_deck_counter = new ebg.counter();
+            this.red_deck_counter.create('red_deck_counter_id');
+            this.red_deck_counter.toValue(this.nb_decks[1]);
+    
+    
+        /*  PlaymatContainer definition 
+            contains blueDiscard, Board and redDiscard
+        */
+        const playmatContainer = document.createElement('div');
+        playmatContainer.id = `playmat_id`;
+        playmatContainer.classList.add('playmat');
+        globalContainer.appendChild(playmatContainer);
+    
+        /*  blueDiscardContainer definition 
+            contains possible Troops in opacity 50 and all discarded ones TODO
+        */
+        const blueDiscardContainer = this.createDiscard( 'blue' );
+        playmatContainer.appendChild(blueDiscardContainer);
+    
+    
+        if( this.isCurrentPlayerRed() ) {
+            Object.values(this.your_discard).forEach(troop => {
+                const troopElement = this.createTroopElement(troop);
+                troopElement.classList.add('opa_70');
+                blueDiscardContainer.appendChild(troopElement);
+            });
+        }
+        else {
+            Object.values(this.my_discard).forEach((troop) => {
+                const troopElement = this.createTroopElement(troop);
+                troopElement.classList.add('opa_70');
+                blueDiscardContainer.appendChild(troopElement);
+            });
+        }
+    
+       
+        /*  boardContainer definition 
+            contains board and all troops
+        */
+    
+        const boardContainer = this.createBoard();
+        playmatContainer.appendChild(boardContainer);
+        this.createBases();
+        this.createTroopsOnBoard();
+    
+    
+    
+        /* redDiscard */
+        const redDiscardContainer = this.createDiscard( 'red' );
+        playmatContainer.appendChild(redDiscardContainer);
+    
+    
+    
+        if( this.isCurrentPlayerRed() ) {
+            Object.values(this.my_discard).forEach(troop => {
+                const troopElement = this.createTroopElement(troop);
+                troopElement.classList.add('board-inverted', 'opa_70');
+                redDiscardContainer.appendChild(troopElement);
+                
+            });
+        }
+        else {
+            Object.values(this.your_discard).forEach((troop) => {
+                const troopElement = this.createTroopElement(troop);
+                troopElement.classList.add('board-inverted', 'opa_70');
+                redDiscardContainer.appendChild(troopElement);
+            });
+        }
+    
+    
+    
+        /* blueLineContainer */
+        const blueLineContainer = this.createLine( 'blue');
+        globalContainer.appendChild(blueLineContainer);
+    
+        /* blueDeckElement */
+        const blueDeckElement = this.createDeck( 'blue' );
+        blueLineContainer.appendChild(blueDeckElement);
+    
+        /* blueDeckCounterElement */
+        const blueDeckCounterElement = this.createDeckCounter( 'blue');
+        blueDeckElement.appendChild(blueDeckCounterElement);
+        this.blue_deck_counter = new ebg.counter();
+        this.blue_deck_counter.create('blue_deck_counter_id');
+        this.blue_deck_counter.toValue(this.nb_decks[0]);
+    
+        /* blueRackContainer */
+        const blueRackContainer = this.createRack('blue');
+        blueLineContainer.appendChild(blueRackContainer);
+    
+        if( this.isCurrentPlayerRed() ) {
+            Object.values(this.your_hand).forEach((troop, index) => {
+                const backTroopElement = this.createBackTroopElement(troop, index);
+                blueRackContainer.appendChild(backTroopElement);
+            });
+        }
+        else if( this.isSpectator) {
+            Object.values(this.my_hand).forEach((troop, index) => {
+                const backTroopElement = this.createBackTroopElement(troop, index);
+                blueRackContainer.appendChild(backTroopElement);
+            });
+        }
+        else {
+            Object.values(this.my_hand).forEach(troop => {
+                const troopElement = this.createTroopElement(troop);
+                blueRackContainer.appendChild(troopElement);
+            });
+        }
 },
 
 
@@ -744,7 +781,19 @@ removeFromMyHandArray: function( troop_id) {
     }
 },
 
+showArrays: function() {
 
+    
+    console.log('my_hand',this.my_hand);
+    console.log('your_hand',this.your_hand);
+    
+    console.log('nb_decks',this.nb_decks);
+
+    console.log('my_discard',this.my_discard);
+    console.log('your_discard',this.your_discard);
+
+    console.log('board_troops',this.board_troops);
+},
 
 /*******************************
  ****** HELP MODE TISAAC *******
@@ -1006,6 +1055,8 @@ notif_moveTroop: function(notif)
     console.log('notif_moveTroop');
     console.log(notif);
 
+    this.showArrays();
+
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
  
@@ -1129,6 +1180,9 @@ notif_moveTroop: function(notif)
     
         troopContainer.addEventListener("transitionend", onTransitionEnd);
     }
+
+    this.showArrays();
+
 },
 
 
@@ -1149,6 +1203,8 @@ notif_drawTroopPrivate: function (notif) {
 
     const deckContainer = document.getElementById(deckId);
     const rackContainer = document.getElementById(rackId);
+
+    
 
     const animateTroop = (troop, index) => {
         /* troop is created and added to the deck */
@@ -1235,8 +1291,11 @@ notif_drawTroopPublic: function (notif) {
     console.log('notif_drawTroopPublic');
     console.log(notif);
 
+    this.showArrays();
+
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+    const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
     const deckId = `${player_color_name}_deck`;
     const rackId = `${player_color_name}_rack`;
     const deckContainer = document.getElementById(deckId);
@@ -1249,6 +1308,8 @@ notif_drawTroopPublic: function (notif) {
         this.red_deck_counter.incValue(parseInt(-notif.args.nb_troops));
     }
     // TODO EMPTY DECK
+
+    this.nb_decks[parseInt(player_color_index)-1] -= notif.args.nb_troops;
 
     if (this.player_id != notif.args.player_id) {
 
@@ -1276,7 +1337,7 @@ notif_drawTroopPublic: function (notif) {
             deckContainer.appendChild(troopElement);
 
             /* add to hand JS array */
-            const newTroop = { type: troop.type };
+            const newTroop = { type: player_color_index };
             if( this.isSpectator == false || player_color == this.RED_COLOR ) {
                 this.your_hand.push(newTroop);
             }
@@ -1331,6 +1392,8 @@ notif_drawTroopPublic: function (notif) {
             animateTroop(0);
         }
     }
+
+    this.showArrays();
 },
 
 
@@ -1344,6 +1407,8 @@ notif_drawTroopPublic: function (notif) {
 notif_discardTroopFromBoard: function (notif) {
     console.log('notif_discardTroopFromBoard');
     console.log(notif);
+
+    this.showArrays();
 
     const troop = notif.args.infos_troop;
     
@@ -1439,6 +1504,7 @@ notif_discardTroopFromBoard: function (notif) {
     };
     troopElement.addEventListener('transitionend', onTransitionEnd);
     
+    this.showArrays();
 },
 
 /*********************************
@@ -1451,6 +1517,8 @@ notif_discardTroopFromBoard: function (notif) {
 notif_discardTroopFromHand: function (notif) {
     console.log('notif_discardTroopFromHand');
     console.log(notif);
+
+    this.showArrays();
 
     const troop = notif.args.infos_troop;
     const player_color = this.players[troop.type_arg].color;
@@ -1648,18 +1716,7 @@ notif_discardTroopFromHand: function (notif) {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-    
-
+    this.showArrays();
 
 },
 

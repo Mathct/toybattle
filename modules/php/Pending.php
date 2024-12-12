@@ -110,7 +110,7 @@ class Pending extends APP_GameClass
         }
 
 
-
+        // TESTE SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
         if ($counttroophand >= 1) 
         {
             $place_ok = 0;
@@ -126,7 +126,7 @@ class Pending extends APP_GameClass
 
 
             }
-            // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
+            
             if ($place_ok == 1)
             {
                 $ret['buttons'][] = 'btn_place_troop';

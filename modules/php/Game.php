@@ -513,6 +513,16 @@ class Game extends \Table
         return $possible_bases;
     }
 
+    function joinValues($array) {
+        if (count($array) > 1) {
+            return implode("_", $array);
+        } elseif (count($array) === 1) {
+            return $array[0];
+        } else {
+            return ""; 
+        }
+    }
+
 
 
     ///////////////////////////////////////////////////////////////////////////////// 

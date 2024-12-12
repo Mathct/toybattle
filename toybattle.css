@@ -33,21 +33,19 @@ body {
 
   .bgabutton_khakhi {
     background-color: #7a9f34;
-    color:white !important;
   }
 
   .bgabutton_orange {
     background-color: #e3a733;
-    color:white !important;
   }
   
   .bgaimagebutton {
     margin: 0px 12px;
   }  
 
-  /*.bgabutton:hover {
+  a.bgabutton:hover {
     color:white;
-  }*/
+  }
 
 /* Fonts and Tooltips */
 
