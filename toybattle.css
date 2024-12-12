@@ -33,19 +33,21 @@ body {
 
   .bgabutton_khakhi {
     background-color: #7a9f34;
+    color:white !important;
   }
 
   .bgabutton_orange {
     background-color: #e3a733;
+    color:white !important;
   }
   
   .bgaimagebutton {
     margin: 0px 12px;
   }  
 
-  .bgabutton:hover {
+  /*.bgabutton:hover {
     color:white;
-  }
+  }*/
 
 /* Fonts and Tooltips */
 
@@ -223,6 +225,11 @@ body {
     transition: transform 0.5s ease-in-out;
 }
 
+.troop:hover {
+    opacity: 1;
+    scale: 1.2;
+}
+
 .troop_icon {
     width: 24px;
     height: 32px;
@@ -238,6 +245,10 @@ body {
 
 .opa_50 {
     opacity:0.5;
+}
+
+.opa_70 {
+    opacity:0.7;
 }
 
 

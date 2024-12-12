@@ -349,8 +349,8 @@ trait TroopsTrait  // ATTENTION
                     'moveTroop',
                     clienttranslate('${player_name} places troop'),
                     array(
-                        'mobile' =>  $parg1,
-                        'parent' => $varg1,
+                        
+                        'base_id' => $varg1,
                         'ordre' => $compteur_troop_sur_base + 1,
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
@@ -409,8 +409,8 @@ trait TroopsTrait  // ATTENTION
                 'moveTroop',
                 clienttranslate('${player_name} places troop'),
                 array(
-                    'mobile' =>  'troop_'.$explode[1],
-                    'parent' => 'base_'.$explode[3].'_'.$explode[4],
+                    
+                    'base_id' => 'base_'.$explode[3].'_'.$explode[4],
                     'ordre' => $compteur_troop_sur_base + 1,
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
@@ -611,10 +611,28 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $ret['titleyou'] = clienttranslate('XB-42: ${you} can discard a troop from the opponent\'s hand');
+        $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
+        $count = count($troop_id_opponent_hand);
 
-        $ret['buttons'][] = 'btn_yes';
-        $ret['buttons'][] = 'btn_no';
+        if ($count >=1)
+        {
+            $ret['titleyou'] = clienttranslate('XB-42: ${you} can discard a troop from the opponent\'s hand');
+
+            $ret['buttons'][] = 'btn_yes';
+            $ret['buttons'][] = 'btn_no';
+
+        }
+
+        if ($count == 0)
+        {
+            $ret['titleyou'] = clienttranslate('XB-42: ${you} cannot discard a troop from the opponent\'s hand');
+
+            $ret['buttons'][] = 'btn_continue';
+            
+
+        }
+
+        
 
                 
         
@@ -624,7 +642,7 @@ trait TroopsTrait  // ATTENTION
     public function Troop5_Step1($parg1, $parg2, $varg1, $varg2)
     {
 
-        if($varg1 == 'btn_no')
+        if(($varg1 == 'btn_no')||($varg1 == 'btn_continue'))
         {
             game::$instance->addPending($this->player_id, "VerifBase", $parg1);
         }
@@ -657,6 +675,7 @@ trait TroopsTrait  // ATTENTION
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troop, // info_troop a discard avant discard
                         'selected_troop' => $selected_troop, // 0 si le joueur n'a pas choisi... de 1 à 8 si le joueur a choisi lui même
+                        'nb_cards_in_hand' => $count, 
                         
                     )
                 );
@@ -737,6 +756,7 @@ trait TroopsTrait  // ATTENTION
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troop, // info_troop a discard avant discard
                     'selected_troop' => $selected_troop, // 0 si le joueur n'a pas choisi... de 1 à 8 si le joueur a choisi lui même
+                    'nb_cards_in_hand' => $count, 
                     
                 )
             );

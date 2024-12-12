@@ -19,7 +19,7 @@ trait BasesTrait  // ATTENTION
 
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
-        if (($this->player_name == "Backstar0") || ($this->player_name == "Backstar1")) //etc en fonction du nombre de joueurs
+        if (($this->player_name == "Backstar0") || ($this->player_name == "Backstar1")) 
         {
             var_dump('base_a_activer', $parg1);
         }

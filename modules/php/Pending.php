@@ -109,10 +109,29 @@ class Pending extends APP_GameClass
             $ret['buttons'][] = 'btn_draw_1';
         }
 
+
+
         if ($counttroophand >= 1) 
         {
+            $place_ok = 0;
+            $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+            foreach ($list_troop as $troop)
+            {
+                $troop_id = 'troop_'.$troop;
+                $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
+                if(count($possible_base) >= 1)
+                {
+                    $place_ok = 1;
+                }
+
+
+            }
             // TESTER SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
-            $ret['buttons'][] = 'btn_place_troop';
+            if ($place_ok == 1)
+            {
+                $ret['buttons'][] = 'btn_place_troop';
+            }
+            
         }
 
 
@@ -229,11 +248,21 @@ class Pending extends APP_GameClass
         $ret['titleyou'] = clienttranslate('${you} must choose a troop');
 
 
-        $troops = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_type_arg ='{$this->player_id}' AND card_location='hand'", true);
-        foreach ($troops as $troop_id) 
-        {
-            $ret["selectable"][] = "troop_" . $troop_id;
-        }
+
+        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+            foreach ($list_troop as $troop)
+            {
+                $troop_id = 'troop_'.$troop;
+                $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
+                if(count($possible_base) >= 1)
+                {
+                    $ret["selectable"][] = $troop_id;
+                }
+
+
+            }
+
+        
 
         $ret['buttons'][] = 'btn_cancel';
 
@@ -328,8 +357,7 @@ class Pending extends APP_GameClass
                     'moveTroop',
                     clienttranslate('${player_name} places troop'),
                     array(
-                        'mobile' =>  $parg1,
-                        'parent' => $varg1,
+                        'base_id' => $varg1,
                         'ordre' => $compteur_troop_sur_base + 1,
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
@@ -401,8 +429,8 @@ class Pending extends APP_GameClass
                 'moveTroop',
                 clienttranslate('${player_name} places troop'),
                 array(
-                    'mobile' =>  $parg1,
-                    'parent' => $parg2,
+                    
+                    'base_id' => $parg2,
                     'ordre' => $compteur_troop_sur_base + 1,
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
@@ -555,8 +583,8 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} ne peut plus jouer: plus de troupes dans son deck, plus de troupes dans sa main');
-        $ret['titleyou'] = clienttranslate('${you} ne pouvez plus jouer: plus de troupes le deck, plus de troupes dans la main');
+        $ret['title'] = clienttranslate('END GAME: ${actplayer} ne peut plus jouer car plus de troupes dans son deck et aucune troupe jouable');
+        $ret['titleyou'] = clienttranslate('END GAME: ${you} ne pouvez plus jouer: plus de troupes le deck et plus aucune troupe jouable');
 
 
         $ret['buttons'][] = 'btn_pass';

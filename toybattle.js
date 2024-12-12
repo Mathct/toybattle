@@ -466,12 +466,14 @@ setupBoard: function() {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.your_discard).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('opa_70');
             blueDiscardContainer.appendChild(troopElement);
         });
     }
     else {
         Object.values(this.my_discard).forEach((troop) => {
             const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('opa_70');
             blueDiscardContainer.appendChild(troopElement);
         });
     }
@@ -497,7 +499,7 @@ setupBoard: function() {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.my_discard).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('board-inverted');
+            troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
             
         });
@@ -505,7 +507,7 @@ setupBoard: function() {
     else {
         Object.values(this.your_discard).forEach((troop) => {
             const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('board-inverted');
+            troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
         });
     }
@@ -973,7 +975,7 @@ setupNotifications: function()
         ['drawTroopPrivate', 1],
         ['drawTroopPublic', 1],
         ['discardTroopFromBoard', 1],
-        ['discardTroopFromRack', 1],
+        ['discardTroopFromHand', 1],
 
     ];
 
@@ -1005,7 +1007,10 @@ notif_moveTroop: function(notif)
     console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+ 
     const boardContainer = document.getElementById(`board_${this.board_id}`);
+
     const TB_bases = this.bases[this.board_name];
 
     const troop = notif.args.infos_troop;
@@ -1020,9 +1025,9 @@ notif_moveTroop: function(notif)
 
 
     /* animation for the active player */
-        const troopContainer = document.getElementById(notif.args.mobile);
+        const troopContainer = document.getElementById(`troop_${troop.id}`);
         
-        const destination_id = this.isCurrentPlayerRed() ? 'red_'+notif.args.parent : 'blue_'+notif.args.parent;
+        const destination_id = this.isCurrentPlayerRed() ? 'red_'+notif.args.base_id : 'blue_'+notif.args.base_id;
         const destinationContainer = document.getElementById(destination_id);
 
         const startRect = this.getBoundingClientRectIgnoreZoom(troopContainer);
@@ -1070,10 +1075,7 @@ notif_moveTroop: function(notif)
         }
 
         // rename Troop id and unhide it
-        let moving_troop_id = `red_troop_${notif.args.nb_troops_hand}`;
-        if( player_color == this.BLUE_COLOR ) {
-            moving_troop_id = `blue_troop_${notif.args.nb_troops_hand}`;
-        }
+        let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
 
         const troopContainer = document.getElementById(moving_troop_id);
         troopContainer.id = `troop_${troop.id}`;
@@ -1081,7 +1083,7 @@ notif_moveTroop: function(notif)
         troopContainer.style.backgroundPositionX = `-${x}00%`;
     
         
-        const destination_id = this.isCurrentPlayerRed() ? 'blue_'+notif.args.parent : 'red_'+notif.args.parent;
+        const destination_id = this.isCurrentPlayerRed() ? 'blue_'+notif.args.base_id : 'red_'+notif.args.base_id;
         const destinationContainer = document.getElementById(destination_id);
     
         const startRect = this.getBoundingClientRectIgnoreZoom(troopContainer);
@@ -1141,8 +1143,9 @@ notif_drawTroopPrivate: function (notif) {
     console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
-    const deckId = player_color == this.BLUE_COLOR ? 'blue_deck' : 'red_deck';
-    const rackId = player_color == this.BLUE_COLOR ? 'blue_rack' : 'red_rack';
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+    const deckId = `${player_color_name}_deck`;
+    const rackId = `${player_color_name}_rack`;
 
     const deckContainer = document.getElementById(deckId);
     const rackContainer = document.getElementById(rackId);
@@ -1233,8 +1236,9 @@ notif_drawTroopPublic: function (notif) {
     console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
-    const deckId = player_color == this.BLUE_COLOR ? 'blue_deck' : 'red_deck';
-    const rackId = player_color == this.BLUE_COLOR ? 'blue_rack' : 'red_rack';
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+    const deckId = `${player_color_name}_deck`;
+    const rackId = `${player_color_name}_rack`;
     const deckContainer = document.getElementById(deckId);
     const rackContainer = document.getElementById(rackId);
 
@@ -1344,8 +1348,10 @@ notif_discardTroopFromBoard: function (notif) {
     const troop = notif.args.infos_troop;
     
     const player_color = this.players[troop.type_arg].color;
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+
     const troopElement = document.getElementById(`troop_${troop.id}`);
-    const discardId = player_color == this.BLUE_COLOR ? 'blue_discard' : 'red_discard';
+    const discardId = `${player_color_name}_discard`;
     const discardContainer = document.getElementById(discardId);
     
 
@@ -1442,9 +1448,218 @@ notif_discardTroopFromBoard: function (notif) {
  * 
  */
 
-notif_discardTroopFromRack: function (notif) {
-    console.log('notif_discardTroopFromRack');
+notif_discardTroopFromHand: function (notif) {
+    console.log('notif_discardTroopFromHand');
     console.log(notif);
+
+    const troop = notif.args.infos_troop;
+    const player_color = this.players[troop.type_arg].color;
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+
+    const discardId = `${player_color_name}_discard`;
+    
+    const discardContainer = document.getElementById(discardId);
+    
+
+    /* check where to remove to troop */
+    
+    
+    if( this.player_id == troop.type_arg) {
+        this.removeFromMyHandArray( troop.id);
+    }
+
+    else {
+        // remove troop from hand JS array
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            this.your_hand.pop();
+        }
+        else {
+            this.my_hand.pop();
+        }        
+    }
+
+
+
+    /* check where to insert the troop */
+    const newTroop = { id: troop.id, type: troop.type }; 
+    let insertIndex;  
+    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+        insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+        if (insertIndex === -1) {
+            this.your_discard.push(newTroop); // end of array
+        } else {
+            this.your_discard.splice(insertIndex, 0, newTroop);
+        }
+    }
+    else {
+        insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
+        if (insertIndex === -1) {
+            this.my_discard.push(newTroop); // end of array
+        } else {
+            this.my_discard.splice(insertIndex, 0, newTroop);
+        }
+    }
+
+     /* room is reserved in the flex */
+    let placeholder = document.createElement('div');
+    placeholder.classList.add('troop-placeholder');
+    if (player_color == this.RED_COLOR) {
+        if (insertIndex === -1) {
+            insertIndex = 0; // TODO vérifier
+        } else {
+            insertIndex = this.your_discard.length - insertIndex - 1; //TODO vérifier le bon index
+        }
+    }
+
+
+   /* troop in hand to remove is defined*/
+
+    if( this.player_id == troop.type_arg) {
+
+        const troopElement = document.getElementById(`troop_${troop.id}`);
+
+        if (insertIndex === discardContainer.children.length) {
+            discardContainer.appendChild(placeholder);
+        } else {
+            discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+        }
+
+
+
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const endRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+        let deltaX = endRect.left - startRect.left;
+        let deltaY = endRect.top - startRect.top;
+
+        // gets rotation, if defined
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+        // new transformation
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none" 
+            ? `${existingTransform} ${translateTransform}` 
+            : translateTransform;
+        troopElement.style.transform = newTransform;
+
+        const onTransitionEnd = () => {
+            // restore former transform
+            //troopContainer.style.transform = existingTransform;
+            troopElement.style.transform = '';
+            troopElement.style.top = '';
+            troopElement.style.left = '';
+            troopElement.style.position = '';
+            troopElement.style.zIndex = 10; // ATTENTION POUR LES PROCHAINES ACTIONS
+            troopElement.classList.add('opa_70');
+            discardContainer.replaceChild(troopElement, placeholder);
+    
+
+            troopElement.removeEventListener("transitionend", onTransitionEnd);
+        };
+        
+        troopElement.addEventListener("transitionend", onTransitionEnd);
+    }
+    else {
+        // remove troop from hand JS array
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            this.your_hand.pop();
+        }
+        else {
+            this.my_hand.pop();
+        }
+
+        // rename Troop id and unhide it
+
+        let selected_troop = notif.args.selected_troop;
+        if( selected_troop == 0) {
+            selected_troop = notif.args.nb_cards_in_hand;
+        } 
+
+        let moving_troop_id = `${player_color_name}_troop_${selected_troop}`;
+
+        const troopElement = document.getElementById(moving_troop_id);
+        troopElement.id = `troop_${troop.id}`;
+        const x = troop.type.toString().slice(-1);
+        troopElement.style.backgroundPositionX = `-${x}00%`;
+
+
+
+       //TODO renommer les suivants -1
+
+       if (insertIndex === discardContainer.children.length) {
+            discardContainer.appendChild(placeholder);
+        } else {
+            discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+        }
+
+
+
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const endRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+
+        let deltaX = endRect.left - startRect.left;
+        let deltaY = endRect.top - startRect.top;
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
+
+        
+
+
+
+        /// gets rotation, if defined
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+        // new transformation
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none" 
+            ? `${existingTransform} ${translateTransform}` 
+            : translateTransform;
+        troopElement.style.transform = newTransform;
+
+        const onTransitionEnd = () => {
+           // restore former transform
+            //troopContainer.style.transform = existingTransform;
+            troopElement.style.transform = '';
+            troopElement.style.top = '';
+            troopElement.style.left = '';
+            troopElement.style.position = '';
+            troopElement.style.zIndex = 10; // ATTENTION POUR LES PROCHAINES ACTIONS
+            troopElement.classList.add('opa_70');
+            discardContainer.replaceChild(troopElement, placeholder);
+
+
+            for( let i=selected_troop+1; i<=notif.args.nb_cards_in_hand;i++) {
+                const troop_id = `${player_color_name}_troop_${i}`;
+                let troopElement = document.getElementById(troop_id);
+                troopElement.id = `${player_color_name}_troop_${i-1}`;
+            }
+
+
+    
+
+            troopElement.removeEventListener("transitionend", onTransitionEnd);
+        };
+        
+        troopElement.addEventListener("transitionend", onTransitionEnd);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
 
 },
 
