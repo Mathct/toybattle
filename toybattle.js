@@ -962,17 +962,70 @@ createTroopsOnBoard:function() {
 
 createBasesTooltips: function() {
     console.log('AllTroopsOnBases', this.troops_on_bases);
-    const TB_bases = this.bases[this.board_name];
-    
-    Object.entries(this.troops_on_bases).forEach(([base_id, troops]) => {
-        const base_power = TB_bases[base_id].power;
-        if( troops.length > 0 || base_power > 0) {
-            const base_css_id = `base_${this.board_name}_${base_id}`;
-            this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);  
-        }
+
+    Object.keys(this.troops_on_bases).forEach(base_id => {
+        this.createBaseTooltip(base_id);
     });
 },
 
+createBaseTooltip: function(base_id) {
+    const TB_bases = this.bases[this.board_name];
+    const base_power = TB_bases[base_id].power;
+    const troops = this.troops_on_bases[base_id];
+    
+    if (troops.length > 0 || base_power > 0) {
+        const base_css_id = `base_${this.board_name}_${base_id}`;
+        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);
+    }
+},
+
+
+
+
+
+removeTroopFromBoardArray: function( troop_id ) {
+    const index = this.board_troops.findIndex(t => t.id === troop_id);
+    if (index !== -1) {
+        this.board_troops.splice(index, 1);
+    }
+},
+
+removeTroopFromBaseArray: function( troop ) {
+    const base_id = troop.location_arg;
+    let base_troops = this.troops_on_bases[base_id];
+    const index = base_troops.findIndex(t => t.id === troop.id);
+    if (index !== -1) {
+        this.troops_on_bases[base_id].splice(index, 1);
+        const base_css_id = `base_${this.board_name}_${base_id}`;
+        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);  
+    }
+
+},
+
+removeFromMyHandArray: function( troop_id) {
+    const index = this.my_hand.findIndex(t => t.id === troop_id);
+    if (index !== -1) {
+        this.my_hand.splice(index, 1);
+
+
+    }
+},
+
+showArrays: function() {
+
+    
+    console.log('my_hand',this.my_hand);
+    console.log('your_hand',this.your_hand);
+    
+    console.log('nb_decks',this.nb_decks);
+
+    console.log('my_discard',this.my_discard);
+    console.log('your_discard',this.your_discard);
+
+    console.log('board_troops',this.board_troops);
+
+    console.log('troops_on_bases',this.troops_on_bases);
+},
 
 
 
@@ -1009,35 +1062,6 @@ getBoundingClientRectIgnoreZoom: function (element) {
     rect.width /= zoomCorr;
     rect.height /= zoomCorr;
     return rect;
-},
-
-
-removeFromBoardArray: function( troop_id) {
-    const index = this.board_troops.findIndex(t => t.id === troop_id);
-    if (index !== -1) {
-        this.board_troops.splice(index, 1);
-    }
-},
-
-removeFromMyHandArray: function( troop_id) {
-    const index = this.my_hand.findIndex(t => t.id === troop_id);
-    if (index !== -1) {
-        this.my_hand.splice(index, 1);
-    }
-},
-
-showArrays: function() {
-
-    
-    console.log('my_hand',this.my_hand);
-    console.log('your_hand',this.your_hand);
-    
-    console.log('nb_decks',this.nb_decks);
-
-    console.log('my_discard',this.my_discard);
-    console.log('your_discard',this.your_discard);
-
-    console.log('board_troops',this.board_troops);
 },
 
 /*******************************
@@ -1741,6 +1765,8 @@ notif_discardTroopFromBoard: function (notif) {
     console.log('notif_discardTroopFromBoard');
     console.log(notif);
 
+    //TODO MAJ this.troopsOnBase et les deux Tooltips
+
     this.showArrays();
 
     const troop = notif.args.infos_troop;
@@ -1752,8 +1778,9 @@ notif_discardTroopFromBoard: function (notif) {
     const discardId = `${player_color_name}_discard`;
     const discardContainer = document.getElementById(discardId);
     
-
-    this.removeFromBoardArray(troop.id);
+    this.removeTroopFromBaseArray(troop);
+    this.removeTroopFromBoardArray(troop.id);
+    
 
     /* check where to insert the troop */
     const newTroop = { id: troop.id, type: troop.type };
