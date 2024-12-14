@@ -29,6 +29,8 @@ class Game extends \Table
     //private static array $CARD_TYPES; // ATTENTION
     public $_bases;
     public $_zones;
+    public $_troop_types;
+    public $_board_types;
     public $_powers;
     public $_medals_to_win;
     public $troop;
@@ -282,6 +284,8 @@ class Game extends \Table
 
         $result["bases"] = $this->_bases;
         $result["zones"] = $this->_zones;
+        $result["troop_types"] = $this->_troop_types;
+        $result["board_types"] = $this->_board_types;
 
         $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckblue'");
         $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckred'");
@@ -393,7 +397,7 @@ class Game extends \Table
         $dynamic_base = []; // base dynamique pour les nouvelles bases à inspecter
         $visited_bases = []; // Liste des bases déjà visitées
 
-        
+
         // recuperation du nom du board
         $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
@@ -402,7 +406,7 @@ class Game extends \Table
         $explode_troop_id = explode("_", $troop_id);
         $troop_selected_force = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id='{$explode_troop_id[1]}'") % 10;
 
-        
+
 
         while (count($new_bases) != 0) {
             foreach ($new_bases as $base) {
@@ -454,20 +458,19 @@ class Game extends \Table
             $new_bases = $dynamic_base;
             $dynamic_base = [];
         }
-        
 
-        if($troop_selected_force == 4){
 
-            
+        if ($troop_selected_force == 4) {
+
+
             $all_bases = $this->_bases[$board_name];
 
             $bases_crochet = array_map('strval', array_keys($all_bases));
 
             $bases_crochet_sans_QG = [];
-            
-            foreach ($bases_crochet as $liste_bases_crochet){
-                if (($liste_bases_crochet >=10)&&($liste_bases_crochet <=40))
-                {
+
+            foreach ($bases_crochet as $liste_bases_crochet) {
+                if (($liste_bases_crochet >= 10) && ($liste_bases_crochet <= 40)) {
                     $bases_crochet_sans_QG[] = $liste_bases_crochet;
                 }
             }
@@ -476,8 +479,7 @@ class Game extends \Table
 
             $bases_crochet_ok = [];
 
-            foreach ($diff as $testotherbase)
-            {
+            foreach ($diff as $testotherbase) {
                 $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}'", true));
 
                 if ($nb_troop_on_base == 0) //si la base est vide
@@ -499,12 +501,10 @@ class Game extends \Table
                         $bases_crochet_ok[] = $testotherbase;
                     }
                 }
-
-
             }
-            
-            
-            
+
+
+
             $possible_bases = array_merge($possible_bases, $bases_crochet_ok);
         }
 
@@ -513,13 +513,14 @@ class Game extends \Table
         return $possible_bases;
     }
 
-    function joinValues($array) {
+    function joinValues($array)
+    {
         if (count($array) > 1) {
             return implode("_", $array);
         } elseif (count($array) === 1) {
             return $array[0];
         } else {
-            return ""; 
+            return "";
         }
     }
 

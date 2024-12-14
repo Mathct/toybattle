@@ -25,7 +25,6 @@ body {
     background-image: url('img/TB_texture.jpg');
     background-repeat: repeat;
     background-size: 105px 108px;
-    /*background-position: center;*/
     background-color: rgba(255, 255, 255, 0.2); /* Couleur de fond semi-transparente */
     background-blend-mode: multiply; /* Fusionne couleur et texture */
   }
@@ -47,7 +46,62 @@ body {
     color:white;
   }
 
+
+
 /* Fonts and Tooltips */
+
+@font-face {
+    font-family: 'Livingstone';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Livingstone'), url(img/Livingstone.ttf);
+}
+
+@font-face {
+    font-family: 'Calibri';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Calibri'), url(img/Calibri.ttf);
+  }
+  
+  /* tooltip Card */
+  .tooltip_content {
+    display: flex;
+    justify-content: space-between;
+  
+  }
+  
+  .troop_container {
+    flex: 1;
+   /* margin-right: 10px;*/
+    display: flex;
+    justify-content: center; /* Centre horizontalement */
+    align-items: center; /* Centre verticalement */
+    min-height: 200px;
+  }
+  
+  .info_container {
+    flex: 4;
+    width: 500px;
+  }
+  
+  .tooltip_title {
+    font-family: Livingstone;
+    font-size: 2vw;
+    color:#7a9f34;
+  }
+  
+  .tooltip_desc {
+    font-family: Calibri;
+    font-size: 1vw;
+  }
+
+  .tooltip_info {
+    font-family: Calibri;
+    font-size: 1vw;
+    color:#2a5d9c;
+  }
+  
 
 
 
@@ -70,11 +124,10 @@ body {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 5px 0;
     position: relative;
-    margin-top: 20px;
 }
 
 
@@ -83,7 +136,6 @@ body {
 }
 
 .board {
-
     width: 500px;
     height: 833.5px;
     position: relative;
@@ -94,27 +146,29 @@ body {
 }
 
 .playmat {
-    height: 833.5px;
+
+
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 }
 
 .line {
     height: 90px;
-    width: 700px;
+
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
     margin : 5px 0;
+}
+
+#white_line {
+    width: 532px;
 }
 
 
 .deck {
-    width: 65.625px;
-    height: 87.5px;
+    width: 66px;
+    height: 88px;
     position: relative;
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
@@ -140,14 +194,11 @@ body {
 .rack {
     margin-left: auto;
     margin-right: auto;
-    width: 600px;
     height: 90px;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    gap: 10px; /* Espacement entre les éléments */
-    
 
    /* background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);
     /*background: linear-gradient(to bottom, #f3f3f3 0%, #a1b7d2 100%) ;
@@ -163,44 +214,40 @@ body {
 }
 
 .discard {
-    height: 833.5px;
-    width: 100px;
     display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: flex-end;
     align-items: center;
+    gap: 2px;
 }
 
 .linear_blue {
-/*    border: 5px solid;
+    border: 5px solid;
     border-image: linear-gradient(to top, #4f66a2, #a1b7d2) 1;
-    border-radius: 15px;*/
+    border-radius: 15px;
 }
 
 .linear_red {
-/*    border: 5px solid;
+   border: 5px solid;
     border-image: linear-gradient(to bottom, #d1553e, #f3a7a1) 1;
-    border-radius: 15px;*/
+    border-radius: 15px;
 }
 
 .linear_red_top {
-/*    border: 5px solid;
+    border: 5px solid;
     border-image: linear-gradient(to top, #d1553e, #f3a7a1) 1;
-    border-radius: 15px;*/
+    border-radius: 15px;
 }
 
 .base_all {
     position: absolute;
-    width: 65.625px;
-    height: 109.375px;
+    width: 66px;
+    height: 110px;
     z-index: 300;
 }
 
 .base {
     position: absolute;
-    width: 65.625px;
-    height: 87.5px;
+    width: 66px;
+    height: 88px;
 }
 
 .base_blue {
@@ -216,8 +263,8 @@ body {
 }
 
 .troop {
-    width: 65.625px;
-    height: 87.5px;
+    width: 66px;
+    height: 88px;
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
     transition: transform 0.5s ease-in-out;
@@ -236,8 +283,8 @@ body {
 }
 
 .troop-placeholder {
-    width: 65.625px;
-    height: 87.5px;
+    width: 66px;
+    height: 88px;
     background: transparent; /* when moving a troop to a flex */
 }
 
