@@ -369,10 +369,13 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
+                
                 $numero_base = $explode_base[2];
+                $troop_id = $explode_troop[1];
 
-                game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $numero_base);
+                self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
             }
         }
     }
@@ -442,10 +445,16 @@ class Pending extends APP_GameClass
 
             
 
-            $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
-            $numero_base = $explode_base[2];
+            
 
-            game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $numero_base);
+            $numero_base = $explode_base[2];
+            $troop_id = $explode_troop[1];
+
+            self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+            game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+
+            
         }
 
         if ($varg1 == "btn_no") {

@@ -21,41 +21,43 @@ trait TroopsTrait  // ATTENTION
     {
 
         /// il y aura une verif base speciale qui annule l'effet de la troupe sur le board station
+
+        $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$parg1}'") %10;
         
         
-        if($parg1 == 1)
+        if($force_troop == 1)
         {
             game::$instance->addPending($this->player_id, "Troop1_Step1", $parg2);
         }
 
-        if($parg1 == 2)
+        if($force_troop == 2)
         {
             game::$instance->addPending($this->player_id, "Troop2_Step1", $parg2);
         }
 
-        if($parg1 == 3)
+        if($force_troop == 3)
         {
             game::$instance->addPending($this->player_id, "Troop3_Step1", $parg2);
         }
 
-        if($parg1 == 4)
+        if($force_troop == 4)
         {
-            game::$instance->addPending($this->player_id, "VerifBase", $parg2);
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
 
-        if($parg1 == 5)
+        if($force_troop == 5)
         {
             game::$instance->addPending($this->player_id, "Troop5_Step1", $parg2);
         }
 
-        if($parg1 == 6)
+        if($force_troop == 6)
         {
             game::$instance->addPending($this->player_id, "Troop6_Step1", $parg2);
         }
 
-        if($parg1 > 6)
+        if($force_troop > 6)
         {
-            game::$instance->addPending($this->player_id, "VerifBase", $parg2);
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
     }
 
@@ -181,7 +183,7 @@ trait TroopsTrait  // ATTENTION
         }
 
 
-        game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+        game::$instance->addPending($this->player_id, "VerifBase");
     }
 
     ///////////////////////////
@@ -247,7 +249,7 @@ trait TroopsTrait  // ATTENTION
 
         else{
             
-            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
         
         
@@ -387,10 +389,14 @@ trait TroopsTrait  // ATTENTION
                     )
                 );
 
-                $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode_troop[1]}'") %10;
+                
 
-                $bases = $parg2."_".$explode_base[2];
-                game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $bases);
+                $numero_base = $explode_base[2];
+                $troop_id = $explode_troop[1];
+
+                self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
             }
         }
     }
@@ -447,10 +453,14 @@ trait TroopsTrait  // ATTENTION
 
             
 
-            $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$explode[1]}'") %10;
+            
 
-            $bases = $parg2."_".$explode[4];
-            game::$instance->addPending($this->player_id, "VerifTroop", $force_troop, $bases);
+            $numero_base = $explode[4];
+            $troop_id = $explode[1];
+
+            self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+            game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
         }
 
         if ($varg1 == "btn_no") {
@@ -474,8 +484,8 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $explode = explode("_", $parg1);
-        $base_mastok = end($explode);
+        
+        $base_mastok = $parg1;
 
         $list_base_discard_possible = [];
         $bases_adjacentes_mastok = game::$instance->_bases[$this->board_name][$base_mastok]['adjacents'];
@@ -525,7 +535,7 @@ trait TroopsTrait  // ATTENTION
 
         if(($varg1 == 'btn_continue')||($varg1 == 'btn_no'))
         {
-            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
 
         else 
@@ -554,7 +564,7 @@ trait TroopsTrait  // ATTENTION
                         
                     )
                 );
-                game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+                game::$instance->addPending($this->player_id, "VerifBase");
             }
             
         }
@@ -615,7 +625,7 @@ trait TroopsTrait  // ATTENTION
 
             
 
-            game::$instance->addPending($this->player_id, "VerifBase", $parg2);
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
         
 
@@ -669,7 +679,7 @@ trait TroopsTrait  // ATTENTION
 
         if(($varg1 == 'btn_no')||($varg1 == 'btn_continue'))
         {
-            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
 
         if($varg1 == 'btn_yes')
@@ -706,7 +716,7 @@ trait TroopsTrait  // ATTENTION
                 );
 
 
-                game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+                game::$instance->addPending($this->player_id, "VerifBase");
             }
             
         }
@@ -786,7 +796,7 @@ trait TroopsTrait  // ATTENTION
                 )
             );
 
-            game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+            game::$instance->addPending($this->player_id, "VerifBase");
            
         }
         
@@ -873,7 +883,7 @@ trait TroopsTrait  // ATTENTION
         }
 
 
-        game::$instance->addPending($this->player_id, "VerifBase", $parg1);
+        game::$instance->addPending($this->player_id, "VerifBase");
     
     }
 

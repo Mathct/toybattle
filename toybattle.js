@@ -1756,25 +1756,33 @@ notif_discardTroopFromBoard: function (notif) {
     this.removeFromBoardArray(troop.id);
 
     /* check where to insert the troop */
-    const newTroop = { id: troop.id, type: troop.type };   
+    const newTroop = { id: troop.id, type: troop.type };
+    let insertIndex;   
     if( this.isSpectator == false || player_color == this.RED_COLOR ) {
-        let insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+        console.log( 'your Discard before', this.your_discard);
+        
+        insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+        console.log( 'insertIndex 0', insertIndex);
         if (insertIndex === -1) {
             this.your_discard.push(newTroop); // end of array
         } else {
             this.your_discard.splice(insertIndex, 0, newTroop);
         }
+        console.log( 'your Discard after', this.your_discard);
     }
     else {
-        let insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
+        console.log( 'my Discard before', this.my_discard);
+        insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
+        console.log( 'insertIndex 0', insertIndex);
         if (insertIndex === -1) {
             this.my_discard.push(newTroop); // end of array
         } else {
             this.my_discard.splice(insertIndex, 0, newTroop);
         }
+        console.log( 'my Discard after', this.my_discard);
     }
     
-
+    console.log( 'insertIndex 2', insertIndex);
 
 
     /* room is reserved in the flex */
@@ -1787,7 +1795,7 @@ notif_discardTroopFromBoard: function (notif) {
             insertIndex = this.your_discard.length - insertIndex - 1; //TODO vérifier le bon index
         }
     }
-
+    console.log( 'insertIndex Final', insertIndex);
     if (insertIndex === discardContainer.children.length) {
         discardContainer.appendChild(placeholder);
     } else {
