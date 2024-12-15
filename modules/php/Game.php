@@ -506,7 +506,7 @@ class Game extends \Table
     }
 
     
-    //VERIFICATION DES ZONES et GAIN ETOILE
+    //VERIFICATION DES REGIONS et GAIN MEDAILLES
 
     function testZoneAndStar($numero_base_impactee, $board_name) // a chaque fois qu'une troupe est placée ou discard
     {
@@ -573,12 +573,12 @@ class Game extends \Table
                     if (($allEqual) && ($idplayer != 0))
                     {
                         
-                        // GAIN ZONE POUR JOUEUR $idplayer
+                        // GAIN REGION POUR JOUEUR $idplayer
 
-                        // TEST SI ETOILES ENCORE PRESENTES (pas deja gagnées)
+                        // TEST SI MEDAILLES ENCORE PRESENTES (pas deja gagnées)
                         $etoile = (int)self::getUniqueValueFromDB("SELECT zone_star FROM zone WHERE zone_id = '{$test['value']}'");
 
-                        if($etoile != 0)
+                        if($etoile >= 1)
                         {
                             self::DbQuery("UPDATE zone set zone_star = 0 WHERE zone_id = '{$test['value']}'");
                             self::DbQuery("UPDATE player set player_star = player_star + $etoile WHERE player_id = '{$idplayer}'");
@@ -603,7 +603,7 @@ class Game extends \Table
                 
             }
 
-            if ($count_medals != 0)
+            if ($count_medals >= 1)
 
             {
 
