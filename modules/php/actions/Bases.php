@@ -127,35 +127,41 @@ trait BasesTrait  // ATTENTION
         $all_bases = game::$instance->_bases[$this->board_name];
         $all_bases_a_checker = array_map('strval', array_keys($all_bases));
         $all_bases_sans_QG = [];
+        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
-        foreach ($all_bases_a_checker as $allbase){
-            if (($allbase >=10)&&($allbase <=40)&&($allbase != $parg2))  // j'enleve aussi la base declanchée pour le moment
+        if($counttroophand < 8)
+        {
+            foreach ($all_bases_a_checker as $allbase){
+                if (($allbase >=10)&&($allbase <=40)&&($allbase != $parg2))  // j'enleve aussi la base declanchée pour le moment
+                {
+                    $all_bases_sans_QG[] = $allbase;
+                }
+            }
+
+            if(count($all_bases_sans_QG) != 0)
             {
-                $all_bases_sans_QG[] = $allbase;
+
+                    foreach ($all_bases_sans_QG as $base_sans_QG)
+                    {
+                        $count_troop_on_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_sans_QG}'", true ));
+                        if($count_troop_on_base >=1)
+                        {
+                            
+                            $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_sans_QG}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_sans_QG}')");
+
+                            if ($infos_troopmax[0]['type_arg'] == $this->player_id) // si elle appartient au joueur actif
+                                {
+                                    $ret["selectable"][] = 'base_'.$this->board_name.'_'.$base_sans_QG;
+                                    $test = 1;
+                                }
+                        }
+                        
+                    }
             }
         }
 
-        if(count($all_bases_sans_QG) != 0)
-        {
-
-                foreach ($all_bases_sans_QG as $base_sans_QG)
-                {
-                    $count_troop_on_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_sans_QG}'", true ));
-                    if($count_troop_on_base >=1)
-                    {
-                        
-                        $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_sans_QG}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_sans_QG}')");
-
-                        if ($infos_troopmax[0]['type_arg'] == $this->player_id) // si elle appartient au joueur actif
-                            {
-                                $ret["selectable"][] = 'base_'.$this->board_name.'_'.$base_sans_QG;
-                                $test = 1;
-                            }
-                    }
-                    
-                }
-        }
-
+        
+        
         if($test == 1)
         {
             $ret['titleyou'] = clienttranslate('Special base: ${you} must choose a troop to recover');
