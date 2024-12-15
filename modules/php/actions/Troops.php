@@ -374,7 +374,7 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
-                    clienttranslate('${player_name} places troop'),
+                    clienttranslate('${player_name} places a troop'),
                     array(
                         
                         'base_id' => $varg1,
@@ -395,6 +395,8 @@ trait TroopsTrait  // ATTENTION
                 $troop_id = $explode_troop[1];
 
                 self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+                game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
                 game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
             }
@@ -438,7 +440,7 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->notifyAllPlayers(
                 'moveTroop',
-                clienttranslate('${player_name} places troop'),
+                clienttranslate('${player_name} places a troop'),
                 array(
                     
                     'base_id' => 'base_'.$explode[3].'_'.$explode[4],
@@ -459,6 +461,8 @@ trait TroopsTrait  // ATTENTION
             $troop_id = $explode[1];
 
             self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+            game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
             game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
         }
@@ -564,6 +568,9 @@ trait TroopsTrait  // ATTENTION
                         
                     )
                 );
+
+                game::$instance->testZoneAndStar($infos_troop['location_arg'], $this->board_name);
+
                 game::$instance->addPending($this->player_id, "VerifBase");
             }
             
@@ -624,6 +631,7 @@ trait TroopsTrait  // ATTENTION
             );
 
             
+            game::$instance->testZoneAndStar($infos_troop['location_arg'], $this->board_name);
 
             game::$instance->addPending($this->player_id, "VerifBase");
         }

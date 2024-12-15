@@ -355,7 +355,7 @@ class Pending extends APP_GameClass
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
-                    clienttranslate('${player_name} places troop'),
+                    clienttranslate('${player_name} places a troop'),
                     array(
                         'base_id' => $varg1,
                         'ordre' => $compteur_troop_sur_base + 1,
@@ -374,6 +374,8 @@ class Pending extends APP_GameClass
                 $troop_id = $explode_troop[1];
 
                 self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+
+                game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
                 game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
             }
@@ -430,7 +432,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'moveTroop',
-                clienttranslate('${player_name} places troop'),
+                clienttranslate('${player_name} places a troop'),
                 array(
                     
                     'base_id' => $parg2,
@@ -452,7 +454,9 @@ class Pending extends APP_GameClass
 
             self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
 
-            //game::$instance->testZoneAndStar($numero_base, $this->board_name);
+                        
+            game::$instance->testZoneAndStar($numero_base, $this->board_name);
+            
 
             game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
 

@@ -307,7 +307,6 @@ body {
 .selected {
     outline: 3px solid yellow; 
     border-radius: 4px;
-    cursor: pointer;
     pointer-events: auto ;
   }
 

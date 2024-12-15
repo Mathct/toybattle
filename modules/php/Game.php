@@ -510,94 +510,128 @@ class Game extends \Table
 
     function testZoneAndStar($numero_base_impactee, $board_name) // a chaque fois qu'une troupe est placée ou discard
     {
-        $list_all_zone = [];
-
-        // on recupere toutes les zones du plateau sous forme de tableau de bases concernées
-        foreach(game::$instance->_zones[$board_name] as $zone)
+        if (($numero_base_impactee >= 10)&&($numero_base_impactee< 40))
         {
-            $list_all_zone[] = [
-                'value' => $zone['value'],
-                'bases' => $zone['bases'],
-                'medals' => $zone['medals'],
-            ];
-        }
 
-        //on regarde pour chaque zone 
-        foreach ($list_all_zone as $test)
-        {
-            // si la zone contient la base impactée par un changement 
-            if (in_array($numero_base_impactee, $test['bases']))
+            $list_all_zone = [];
+
+            $couples_region_medal_gain = [];
+            $count_regions = 0;
+            $count_medals = 0;
+
+            // on recupere toutes les zones du plateau sous forme de tableau de bases concernées
+            foreach(game::$instance->_zones[$board_name] as $zone)
             {
-                $list_id_player_sur_zone = [];
-                //puis on va regarder si toute les bases de cette zone sont occuppée et si c'est la même couleur
-                foreach($test['bases'] as $base)
+                $list_all_zone[] = [
+                    'value' => $zone['value'],
+                    'bases' => $zone['bases'],
+                    'medals' => $zone['medals'],
+                ];
+            }
+
+            //on regarde pour chaque zone 
+            foreach ($list_all_zone as $test)
+            {
+                // si la zone contient la base impactée par un changement 
+                if (in_array($numero_base_impactee, $test['bases']))
                 {
-                    // on va placer l'id du joueur qui detient une base et 0 si elle est vide
-
-                    $count_troop_on_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}'", true ));
-
-                    if($count_troop_on_base >=1)
+                    $list_id_player_sur_zone = [];
+                    //puis on va regarder si toute les bases de cette zone sont occuppée et si c'est la même couleur
+                    foreach($test['bases'] as $base)
                     {
-                        
-                        $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
-                        $list_id_player_sur_zone[] = $infos_troopmax[0]['type_arg'];
-                        
-                    }
-                    else
-                    { 
-                        if (($base > 10)&&($base < 40))
-                        {
-                            $list_id_player_sur_zone[] = 0;
-                        }
+                        // on va placer l'id du joueur qui detient une base et 0 si elle est vide
 
+                        $count_troop_on_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}'", true ));
+
+                        if($count_troop_on_base >=1)
+                        {
+                            
+                            $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
+                            $list_id_player_sur_zone[] = $infos_troopmax[0]['type_arg'];
+                            
+                        }
                         else
-                        {
-                            if($base < 10)
-                            {
-                                $list_id_player_sur_zone[] = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_color = '4f66a2' ");
-                            }
-
-                            if($base > 40)
-                            {
-                                $list_id_player_sur_zone[] = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_color = 'd1553e' ");
-                            }
+                        { 
+                            
+                            $list_id_player_sur_zone[] = 0;
+                            
+                            
                         }
-                        
                     }
-                }
 
-                    $firstValue = $list_id_player_sur_zone[0]; // La première valeur du tableau
+                    $idplayer = $list_id_player_sur_zone[0]; // La première valeur du tableau
                     $allEqual = true;
 
-                    foreach ($list_id_player_sur_zone as $value) {
-                        if ($value !== $firstValue) {
+                    foreach ($list_id_player_sur_zone as $value) 
+                    {
+                        if ($value !== $idplayer) {
                             $allEqual = false;
                             break;
                         }
                     }
 
-                    if ($allEqual) 
+                    if (($allEqual) && ($idplayer != 0))
                     {
-                        var_dump ($firstValue, $test['value'], $test['medals']);
-                        // GAIN ZONE POUR JOUEUR $firstValue
+                        
+                        // GAIN ZONE POUR JOUEUR $idplayer
+
+                        // TEST SI ETOILES ENCORE PRESENTES (pas deja gagnées)
+                        $etoile = (int)self::getUniqueValueFromDB("SELECT zone_star FROM zone WHERE zone_id = '{$test['value']}'");
+
+                        if($etoile != 0)
+                        {
+                            self::DbQuery("UPDATE zone set zone_star = 0 WHERE zone_id = '{$test['value']}'");
+                            self::DbQuery("UPDATE player set player_star = player_star + $etoile WHERE player_id = '{$idplayer}'");
+
+                            $count_regions = $count_regions +1;
+                            $count_medals = $count_medals + $etoile;
+
+                            $couples_region_medal_gain[]=
+                            [
+                                'region' => $test['value'],
+                                'medal' => $etoile
+                            ];
+
+                        
+                            
+                        }
+
                     }
+                        
                     
-                    else
-                    {
-                        var_dump ($firstValue, $test['value'], 'no gain');
-                    }
+                }
                 
             }
-            
-        }
 
-        
+            if ($count_medals != 0)
 
-
-        
+            {
 
                 
 
+                $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$idplayer}'");
+
+                game::$instance->notifyAllPlayers(
+                    'gainMedal',
+                    clienttranslate('${player_name} takes control of ${nb_region} region(s) and gains ${nb_medal} medal(s)'),
+                    array(
+                        
+                        'player_name' => $player_name,
+                        'nb_region' => $count_regions,
+                        'nb_medal' => $count_medals,
+                        'infos_region' => $couples_region_medal_gain,
+                        'player_id' => $idplayer,
+                        
+                    )
+                );
+            }
+
+
+
+
+        }
+
+     
 
     }
     

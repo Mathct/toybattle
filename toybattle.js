@@ -1382,6 +1382,12 @@ setupNotifications: function()
         ['drawTroopPublic', 1],
         ['discardTroopFromBoard', 1],
         ['discardTroopFromHand', 1],
+        ['recoverTroopFromBoard', 1],
+        ['moveTroopBoardToBoard', 1],
+        ['recoverTroopFromDiscard', 1],
+        ['hideTroopOnRack', 1],
+        ['gainMedal', 1],
+        
 
     ];
 
@@ -1402,10 +1408,12 @@ notif_displayNotif: function(notif)
 
 /*********************************
  * 
- * one troop is moved from rack to board
+ *  a troop is moved from Rack to Board
+ *    Action PLACE
+ *    Troop 4 Crochet
+ *    Troop 2 Cap'taine
  * 
- * 
- */
+ **********************************/
 
 notif_moveTroop: function(notif)
 {
@@ -1543,12 +1551,22 @@ notif_moveTroop: function(notif)
 },
 
 
+
 /*********************************
  * 
- * one or two troops are drawn. Animation for active players
+ *  one or two troops are drawn.
+ *    ACTION DRAW
+ *    Troop 1 Skully
+ *    Troop 6 Star
+ *    Board 3 Clouds
  * 
+ *********************************/
+
+/*********************************
  * 
- */
+ *  Animation for active player
+ *  
+ *********************************/
 notif_drawTroopPrivate: function (notif) {
     console.log('notif_drawTroopPrivate');
     console.log(notif);
@@ -1637,12 +1655,22 @@ notif_drawTroopPrivate: function (notif) {
 },
 
 
+
 /*********************************
  * 
- * one or two troops are drawn. Animation shown to other players
- * active player is not affected
+ *  one or two troops are drawn.
+ *    ACTION DRAW
+ *    Troop 1 Skully
+ *    Troop 6 Star
+ *    Board 3 Clouds
  * 
- */
+ *********************************/
+
+/*********************************
+ * 
+ *  Animation for other players. active player is not affected
+ *  
+ *********************************/
 
 notif_drawTroopPublic: function (notif) {
     console.log('notif_drawTroopPublic');
@@ -1754,12 +1782,13 @@ notif_drawTroopPublic: function (notif) {
 },
 
 
+
 /*********************************
  * 
- * Troop 3, Mastok effect
- * a troop from the board is discarded 
+ *  a chosen troop from the board is discarded
+ *    Troop 3 Mastok
  * 
- */
+ ************************************/
 
 notif_discardTroopFromBoard: function (notif) {
     console.log('notif_discardTroopFromBoard');
@@ -1875,12 +1904,14 @@ notif_discardTroopFromBoard: function (notif) {
     this.showArrays();
 },
 
+
+
 /*********************************
  * 
- * Troop 5, XB-42 effect
- * a troop from the opponent's rack is discarded 
+ *  a chosen troop from the opponent's rack is discarded 
+ *    Troop 5 XB-42
  * 
- */
+ ************************************/
 
 notif_discardTroopFromHand: function (notif) {
     console.log('notif_discardTroopFromHand');
@@ -2087,6 +2118,135 @@ notif_discardTroopFromHand: function (notif) {
     this.showArrays();
 
 },
+
+
+
+/*********************************
+ * 
+ *  a chosen troop goes from the board to rack 
+ *    Castle Base
+ * 
+ ************************************/
+
+notif_recoverTroopFromBoard: function (notif) {
+    console.log('notif_recoverTroopFromBoard');
+    console.log(notif);
+
+    this.showArrays();
+
+
+
+
+
+
+
+
+    this.showArrays();
+
+},
+
+
+
+/*********************************
+ * 
+ *  a chosen troop moves from board to board 
+ *    Volcano Base
+ * 
+ ***********************************/
+
+notif_moveTroopBoardToBoard: function (notif) {
+    console.log('notif_moveTroopBoardToBoard');
+    console.log(notif);
+
+    this.showArrays();
+
+
+
+
+
+
+
+
+    this.showArrays();
+
+},
+
+
+
+/*********************************
+ * 
+ *  a chosen troop goes back from the cemetery to rack 
+ *    Cemetery base
+ * 
+ ***********************************/
+
+notif_recoverTroopFromDiscard: function (notif) {
+    console.log('notif_recoverTroopFromDiscard');
+    console.log(notif);
+
+    this.showArrays();
+
+
+
+
+
+
+
+
+    this.showArrays();
+
+},
+
+
+
+/*********************************
+ * 
+ *  a chosen troop is hidden for next round 
+ *    Battlefield Base
+ * 
+ ***********************************/
+
+notif_hideTroopOnRack: function (notif) {
+    console.log('notif_hideTroopOnRack');
+    console.log(notif);
+
+    this.showArrays();
+
+
+
+
+
+
+
+
+    this.showArrays();
+
+},
+
+
+
+/*********************************
+ * 
+ *  Regions are occupied and Medals are won 
+ * 
+ ************************************/
+
+notif_gainMedal: function (notif) {
+    console.log('notif_gainMedal');
+    console.log(notif);
+
+    this.showArrays();
+
+
+
+
+
+
+
+
+    this.showArrays();
+},
+
 
 });             
 });

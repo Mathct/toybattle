@@ -199,8 +199,7 @@ trait BasesTrait  // ATTENTION
 
             if ($this->player_pref_confirm == 2)
             {
-                ///// ATTENTION SI LE JOUEUR ENLEVE UNE TROOP SUR UNE BASE
-
+                
 
                 $explode = explode("_", $varg1);
                 $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
@@ -220,6 +219,9 @@ trait BasesTrait  // ATTENTION
                     )
                 );
 
+                
+                ///// ATTENTION SI LE JOUEUR ENLEVE UNE TROOP SUR UNE BASE 
+                game::$instance->testZoneAndStar($infos_troopmax[0]['location_arg'], $this->board_name);
 
                 game::$instance->addPending($this->player_id, "VerifBase");
             }
@@ -250,7 +252,7 @@ trait BasesTrait  // ATTENTION
     {
         if ($varg1 == "btn_yes") {
             
-            ///// ATTENTION SI LE JOUEUR ENLEVE UNE TROOP SUR UNE BASE 
+            
 
 
             $explode = explode("_", $parg1);
@@ -270,6 +272,9 @@ trait BasesTrait  // ATTENTION
                     
                 )
             );
+
+            ///// ATTENTION SI LE JOUEUR ENLEVE UNE TROOP SUR UNE BASE 
+            game::$instance->testZoneAndStar($infos_troopmax[0]['location_arg'], $this->board_name);
 
             game::$instance->addPending($this->player_id, "VerifBase");
 
