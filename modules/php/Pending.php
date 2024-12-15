@@ -504,6 +504,7 @@ class Pending extends APP_GameClass
                     'drawTroopPrivate',
                     clienttranslate('You draw icon1 icon2 (icon a mettre en place plus tard)'),
                     array(
+                        
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,

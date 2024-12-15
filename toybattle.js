@@ -266,6 +266,101 @@ format_string_recursive : function(log, args) {
     return this.inherited(arguments);
 },
 
+/* @Override */
+/*format_string_recursive : function format_string_recursive(log, args)
+{
+    try {
+        log = _(log);
+        var keys = ['worker','wrk2','msg','INFTK','building','objective','you','gold','food','player_name','actplayer'];
+        if (log && args && !args.processed)
+        {
+            args.processed = true;
+            // list of special keys we want to replace with images
+            
+            for ( var i in keys)
+            {
+                var key = keys[i];
+                if (log.indexOf('${' + key + '}') >= 0)
+                {
+                    args[key] = this.getTokenDiv(key, args, args[key]);
+                    log = log.replace('${' + key + '}', args[key]);
+                }
+            }
+        }
+        else if (log && args) 
+            for ( var i in keys)
+            {
+                var key = keys[i];
+                log = log.replace('${' + key + '}', args[key]);
+            }
+    } catch (e) {
+        console.error(log,args,"Exception thrown", e.stack);
+    }
+    return this.inherited({callee: format_string_recursive}, arguments);
+},
+
+getTokenDiv : function(key, args, fixkey)
+{
+    // ... implement whatever html you want here, example from sharedcode.js
+    var token_id = fixkey;
+
+    if (token_id != null)
+    {
+        var logid = "log" + (this.globalid++) + "_" + key;
+
+        if (key == 'worker' || key == 'wrk2')
+        {
+            var x = parseInt(token_id);
+            var posimg = x * 100;
+            var s = "<img class='smallguy espandidown' style='background-position: -" + posimg + "% 0%;'>&#32;&#32;";
+            s = '<span class="spanstyle">' + s + '</span>';
+            return s;
+        }
+        else if (key == 'gold')
+        {
+            var s = "<img class='smallgold espandidown'>&#32;&#32;";
+            s = '<span class="spanstyle">' + s + '</span>';
+            return s;
+        }
+        else if (key == 'food')
+        {
+            var s = "<img class='smallfood espandidown'>&#32;&#32;";
+            s = '<span class="spanstyle">' + s + '</span>';
+            return s;
+        }
+        else if (key == 'INFTK')
+        {
+            var s = "<img class='smallguy espandidown' style='background-position: 0% 0%;'>&#32;&#32;";
+            s = '<span class="spanstyle">' + s + '</span>';
+            return s;
+        }
+        else if (key == 'building')
+        {
+            var x = parseInt(token_id);
+            return ' ' + buildings[x];
+        }
+        else if (key == 'objective')
+        {
+            var x = parseInt(token_id);
+            if (x >= 100) x = 10 + x - 100;
+            return ' ' + objectives[x];
+        }
+        else if (key == 'msg')
+        {
+            var x = parseInt(token_id);
+            return ' ' + msgs[x];
+        }
+        else if (key == 'you')
+            return this.divYou();
+        else if (key == 'player_name' || key == 'actplayer')
+            return this.divActPlayer(token_id);
+    }
+    return "''";
+},*/
+
+
+
+
 attachToNewParentNoDestroy: function (mobile_in, new_parent_in, relation, place_position) 
 {
     const mobile = $(mobile_in);
@@ -1592,6 +1687,7 @@ notif_drawTroopPrivate: function (notif) {
         const troop_color = Math.floor(troop.type / 10) - 1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
         deckContainer.appendChild(troopElement);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
 
         /* check where to insert the troop */
         const newTroop = { id: troop.id, type: troop.type };
