@@ -380,15 +380,7 @@ class Game extends \Table
 
 
 
-
-
-
-
-
-
-
-
-    //GESTION DU POSITIONNEMENT DES TROOPS SUR LES BASES
+    //VERIFICATION DES BASES SELECTIONNABLES EN FONCTION DE LA TROUPE
 
     function getPossibleBase($table_start_bases_player, $troop_id, $player_id)
     {
@@ -513,6 +505,101 @@ class Game extends \Table
         return $possible_bases;
     }
 
+    
+    //VERIFICATION DES ZONES et GAIN ETOILE
+
+    function testZoneAndStar($numero_base_impactee, $board_name) // a chaque fois qu'une troupe est placée ou discard
+    {
+        $list_all_zone = [];
+
+        // on recupere toutes les zones du plateau sous forme de tableau de bases concernées
+        foreach(game::$instance->_zones[$board_name] as $zone)
+        {
+            $list_all_zone[] = [
+                'value' => $zone['value'],
+                'bases' => $zone['bases'],
+                'medals' => $zone['medals'],
+            ];
+        }
+
+        //on regarde pour chaque zone 
+        foreach ($list_all_zone as $test)
+        {
+            // si la zone contient la base impactée par un changement 
+            if (in_array($numero_base_impactee, $test['bases']))
+            {
+                $list_id_player_sur_zone = [];
+                //puis on va regarder si toute les bases de cette zone sont occuppée et si c'est la même couleur
+                foreach($test['bases'] as $base)
+                {
+                    // on va placer l'id du joueur qui detient une base et 0 si elle est vide
+
+                    $count_troop_on_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}'", true ));
+
+                    if($count_troop_on_base >=1)
+                    {
+                        
+                        $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
+                        $list_id_player_sur_zone[] = $infos_troopmax[0]['type_arg'];
+                        
+                    }
+                    else
+                    { 
+                        if (($base > 10)&&($base < 40))
+                        {
+                            $list_id_player_sur_zone[] = 0;
+                        }
+
+                        else
+                        {
+                            if($base < 10)
+                            {
+                                $list_id_player_sur_zone[] = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_color = '4f66a2' ");
+                            }
+
+                            if($base > 40)
+                            {
+                                $list_id_player_sur_zone[] = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_color = 'd1553e' ");
+                            }
+                        }
+                        
+                    }
+                }
+
+                    $firstValue = $list_id_player_sur_zone[0]; // La première valeur du tableau
+                    $allEqual = true;
+
+                    foreach ($list_id_player_sur_zone as $value) {
+                        if ($value !== $firstValue) {
+                            $allEqual = false;
+                            break;
+                        }
+                    }
+
+                    if ($allEqual) 
+                    {
+                        var_dump ($firstValue, $test['value'], $test['medals']);
+                        // GAIN ZONE POUR JOUEUR $firstValue
+                    }
+                    
+                    else
+                    {
+                        var_dump ($firstValue, $test['value'], 'no gain');
+                    }
+                
+            }
+            
+        }
+
+        
+
+
+        
+
+                
+
+
+    }
     
 
 

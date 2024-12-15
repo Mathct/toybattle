@@ -55,7 +55,7 @@ trait TroopsTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "Troop6_Step1", $parg2);
         }
 
-        if($force_troop > 6)
+        if($force_troop >= 7)
         {
             game::$instance->addPending($this->player_id, "VerifBase");
         }

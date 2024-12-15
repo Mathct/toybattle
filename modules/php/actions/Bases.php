@@ -19,13 +19,13 @@ trait BasesTrait  // ATTENTION
 
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
-          
-       
         
+        
+        if(game::$instance->gamestate->table_globals[100] == 1)
 
+        {
+           
             $check = self::getObjectListFromDB("SELECT id id, troop_id troop_id, base base FROM checkbase ORDER BY id ASC LIMIT 1");
-
-          
 
             if($check == null)
             {
@@ -49,7 +49,7 @@ trait BasesTrait  // ATTENTION
                     }
                     else
                     {
-                        game::$instance->addPendingFirst($this->player_id, "NormalTurn");
+                        game::$instance->addPending($this->player_id, "VerifBase");
                     }
                 }
 
@@ -62,11 +62,20 @@ trait BasesTrait  // ATTENTION
                 
 
             }
+
+        }
+
+        if(game::$instance->gamestate->table_globals[100] == 2)
+
+        {
+            var_dump('test2');
+            self::DbQuery("DELETE FROM `checkbase`;");
+            game::$instance->addPendingFirst($this->player_id, "NormalTurn");
+
+
+        }
            
 
-            
-                    
-        
 
         
     }
