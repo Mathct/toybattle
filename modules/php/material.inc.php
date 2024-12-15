@@ -242,7 +242,7 @@ $this->_bases = [
     ],
 ];
 
-$this->_zones = [
+$this->_regions = [
     "castle" => [
         1 => ["value" => 1, "bases" => [11, 12, 13, 14, 18],  "medals" => 3],
         2 => ["value" => 2, "bases" => [13, 15, 17],          "medals" => 1],

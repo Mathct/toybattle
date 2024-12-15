@@ -28,7 +28,7 @@ class Game extends \Table
 {
     //private static array $CARD_TYPES; // ATTENTION
     public $_bases;
-    public $_zones;
+    public $_regions;
     public $_troop_types;
     public $_board_types;
     public $_powers;
@@ -222,10 +222,10 @@ class Game extends \Table
 
         $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $board_selected = $board_name[$this->getGameStateValue('board') - 1];
-        $nb_zones = count($this->_zones[$board_selected]);
+        $nb_zones = count($this->_regions[$board_selected]);
 
         for ($i = 1; $i <= $nb_zones; $i++) {
-            self::DbQuery("INSERT INTO zone (zone_star) VALUES ({$this->_zones[$board_selected][$i]['medals']})");
+            self::DbQuery("INSERT INTO zone (zone_star) VALUES ({$this->_regions[$board_selected][$i]['medals']})");
         }
 
 
@@ -283,7 +283,7 @@ class Game extends \Table
         $result["board_troops"] = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
 
         $result["bases"] = $this->_bases;
-        $result["zones"] = $this->_zones;
+        $result["regions"] = $this->_regions;
         $result["troop_types"] = $this->_troop_types;
         $result["board_types"] = $this->_board_types;
 
@@ -505,13 +505,12 @@ class Game extends \Table
         return $possible_bases;
     }
 
-    
+
     //VERIFICATION DES REGIONS et GAIN MEDAILLES
 
     function testZoneAndStar($numero_base_impactee, $board_name) // a chaque fois qu'une troupe est placée ou discard
     {
-        if (($numero_base_impactee >= 10)&&($numero_base_impactee< 40))
-        {
+        if (($numero_base_impactee >= 10) && ($numero_base_impactee < 40)) {
 
             $list_all_zone = [];
 
@@ -520,8 +519,7 @@ class Game extends \Table
             $count_medals = 0;
 
             // on recupere toutes les zones du plateau sous forme de tableau de bases concernées
-            foreach(game::$instance->_zones[$board_name] as $zone)
-            {
+            foreach (game::$instance->_regions[$board_name] as $zone) {
                 $list_all_zone[] = [
                     'value' => $zone['value'],
                     'bases' => $zone['bases'],
@@ -530,84 +528,63 @@ class Game extends \Table
             }
 
             //on regarde pour chaque zone 
-            foreach ($list_all_zone as $test)
-            {
+            foreach ($list_all_zone as $test) {
                 // si la zone contient la base impactée par un changement 
-                if (in_array($numero_base_impactee, $test['bases']))
-                {
+                if (in_array($numero_base_impactee, $test['bases'])) {
                     $list_id_player_sur_zone = [];
                     //puis on va regarder si toute les bases de cette zone sont occuppée et si c'est la même couleur
-                    foreach($test['bases'] as $base)
-                    {
+                    foreach ($test['bases'] as $base) {
                         // on va placer l'id du joueur qui detient une base et 0 si elle est vide
 
-                        $count_troop_on_base = count(self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}'", true ));
+                        $count_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}'", true));
 
-                        if($count_troop_on_base >=1)
-                        {
-                            
+                        if ($count_troop_on_base >= 1) {
+
                             $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
                             $list_id_player_sur_zone[] = $infos_troopmax[0]['type_arg'];
-                            
-                        }
-                        else
-                        { 
-                            
+                        } else {
+
                             $list_id_player_sur_zone[] = 0;
-                            
-                            
                         }
                     }
 
                     $idplayer = $list_id_player_sur_zone[0]; // La première valeur du tableau
                     $allEqual = true;
 
-                    foreach ($list_id_player_sur_zone as $value) 
-                    {
+                    foreach ($list_id_player_sur_zone as $value) {
                         if ($value !== $idplayer) {
                             $allEqual = false;
                             break;
                         }
                     }
 
-                    if (($allEqual) && ($idplayer != 0))
-                    {
-                        
+                    if (($allEqual) && ($idplayer != 0)) {
+
                         // GAIN REGION POUR JOUEUR $idplayer
 
                         // TEST SI MEDAILLES ENCORE PRESENTES (pas deja gagnées)
                         $etoile = (int)self::getUniqueValueFromDB("SELECT zone_star FROM zone WHERE zone_id = '{$test['value']}'");
 
-                        if($etoile >= 1)
-                        {
+                        if ($etoile >= 1) {
                             self::DbQuery("UPDATE zone set zone_star = 0 WHERE zone_id = '{$test['value']}'");
                             self::DbQuery("UPDATE player set player_star = player_star + $etoile WHERE player_id = '{$idplayer}'");
 
-                            $count_regions = $count_regions +1;
+                            $count_regions = $count_regions + 1;
                             $count_medals = $count_medals + $etoile;
 
-                            $couples_region_medal_gain[]=
-                            [
-                                'region' => $test['value'],
-                                'medal' => $etoile
-                            ];
-
-                        
-                            
+                            $couples_region_medal_gain[] =
+                                [
+                                    'region' => $test['value'],
+                                    'medal' => $etoile
+                                ];
                         }
-
                     }
-                        
-                    
                 }
-                
             }
 
-            if ($count_medals >= 1)
+            if ($count_medals >= 1) {
 
-            {
 
-                
 
                 $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$idplayer}'");
 
@@ -615,26 +592,19 @@ class Game extends \Table
                     'gainMedal',
                     clienttranslate('${player_name} takes control of ${nb_region} region(s) and gains ${nb_medal} medal(s)'),
                     array(
-                        
+
                         'player_name' => $player_name,
                         'nb_region' => $count_regions,
                         'nb_medal' => $count_medals,
                         'infos_region' => $couples_region_medal_gain,
                         'player_id' => $idplayer,
-                        
+
                     )
                 );
             }
-
-
-
-
         }
-
-     
-
     }
-    
+
 
 
 

@@ -58,7 +58,7 @@ setup: function( gamedatas )
     this.connections = [];
 
     this.bases = gamedatas.bases;
-    this.zones = gamedatas.zones;
+    this.regions = gamedatas.regions;
     this.troop_types = gamedatas.troop_types;
     this.board_types = gamedatas.board_types;
     this.board_name = gamedatas.board_name;
@@ -996,8 +996,10 @@ removeTroopFromBaseArray: function( troop ) {
     const index = base_troops.findIndex(t => t.id === troop.id);
     if (index !== -1) {
         this.troops_on_bases[base_id].splice(index, 1);
-        const base_css_id = `base_${this.board_name}_${base_id}`;
-        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);  
+        this.createBaseTooltip(base_id);
+        this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+        //const base_css_id = `base_${this.board_name}_${base_id}`;
+        //this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);  
     }
 
 },
@@ -2048,6 +2050,8 @@ notif_discardTroopFromHand: function (notif) {
         troopElement.id = `troop_${troop.id}`;
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;
+
+        this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
 
 
 
