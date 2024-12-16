@@ -51,7 +51,7 @@ trait BasesTrait  // ATTENTION
 
                     elseif($numero_power == 31) // CLOUDS
                     {
-                        game::$instance->addPending($this->player_id, "Base31_Step1", $troop_id, $base);
+                        game::$instance->addPending($this->player_id, "Base31_Step1", $base);
                     }
 
                     else
@@ -134,6 +134,7 @@ trait BasesTrait  // ATTENTION
         $all_bases = game::$instance->_bases[$this->board_name];
         $all_bases_a_checker = array_map('strval', array_keys($all_bases));
         $all_bases_sans_QG = [];
+        
         $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
         if($counttroophand < 8)
@@ -319,30 +320,79 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} can draw 1 troop');
+        
 
-        $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg2;
+        $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg1;
 
-        $ret['buttons'][] = 'btn_yes';
-        $ret['buttons'][] = 'btn_no';
+        $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
+       
+        if (($counttroopdeck >= 1) && ($counttroophand <= 7))
+        {
+            $ret['titleyou'] = clienttranslate('Special base: ${you} can draw 1 troop');
+            $ret['buttons'][] = 'btn_draw_1';
+            $ret['buttons'][] = 'btn_no';
+        }
+
+        
+        if (($counttroopdeck == 0)||($counttroophand == 8))
+        {
+            $ret['titleyou'] = clienttranslate('Special base: ${you} cannot draw troops');
+            $ret['buttons'][] = 'btn_continue';
+        }
+
+        
         return $ret;
     }
 
     public function Base31_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        if($varg1 == "btn_no")
+        
+        if($varg1 == "btn_draw_1")
         {
-        game::$instance->addPending($this->player_id, "VerifBase");
+
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
+            
+            $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+            
+            game::$instance->notifyPlayer(
+                $this->player_id,
+                'drawTroopPrivate',
+                clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                array(
+                    'player_id' => $this->player_id,
+                    'origine' => "deck",
+                    'new_troops' => $new_troops
+
+
+
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'drawTroopPublic',
+                clienttranslate('${player_name} draws 1 troop'),
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id,
+                    'origine' => "deck",
+                    'nb_troops' => 1,
+                    'nb_troops_hand' => $nb_troops_hand
+
+
+                )
+            );
+            
         }
 
-        if($varg1 == "btn_yes")
-        {
-            game::$instance->addPending($this->player_id, "Base11_Step2", $parg1, $parg2);
-        }
+        game::$instance->addPending($this->player_id, "VerifBase");
 
 
     }
+
+    
 
 
 

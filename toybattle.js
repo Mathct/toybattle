@@ -429,7 +429,7 @@ removeConnections: function() {
 
 
 setupPlayersBoard: function() {
-    Object.values(this.gamedatas.players).forEach(player => {
+    Object.values(this.players).forEach(player => {
         const playerBoardElement = document.getElementById('player_board_' + player.id);
         playerBoardElement.insertAdjacentHTML('beforeend', `
             <div class="a_board" id="a1_board_${player.id}"></div>
@@ -2754,7 +2754,55 @@ notif_gainMedal: function (notif) {
     console.log('notif_gainMedal');
     console.log(notif);
 
-    this.showArrays();
+    //this.showArrays();
+
+    let medals_already_won = this.players[notif.args.player_id].star; 
+    let index = 1;
+    const TB_medals = this.medals[this.board_name];
+    console.log( 'TBmedals', TB_medals);
+
+    const animationDelay = 200;
+
+    Object.entries(TB_medals).forEach(([id, medal]) => {
+        if (notif.args.emptied_regions.includes(medal.region)) {    
+            const medalId = `medal_${id}`;
+            const medalElement = document.getElementById(medalId);
+            const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
+            
+            // Délai basé sur l'index pour décaler les animations
+            const animationDelay = index * 1000; // 1 seconde entre chaque médaille
+            index++;
+            setTimeout(() => {
+                // Étape 1 : Animation de la médaille source
+                
+                medalElement.style.transform = 'scale(5)';
+    
+                setTimeout(() => {
+                    // Réduire l'échelle pour la faire disparaître
+                    medalElement.style.transform = 'scale(0)';
+                    
+                    // Après disparition, traiter la médaille destination
+                    setTimeout(() => {
+                        // Étape 2 : Modifier la médaille destination
+                        medalDestination.classList.remove('null_medal');
+                        medalDestination.classList.add('full_medal');
+                        
+    
+                        // Augmenter la taille de la médaille destination
+                        medalDestination.style.transform = 'scale(2)';
+    
+                        setTimeout(() => {
+                            // Réduire l'échelle de la médaille destination à sa taille normale
+                            medalDestination.style.transform = 'scale(1)';
+    
+                            // Réinitialiser l'index pour la prochaine médaille
+                            
+                        }, 500); // Durée pour redescendre à `scale(1)`
+                    }, 500); // Durée après disparition de la médaille source
+                }, 500); // Durée pour agrandir et réduire la médaille source
+            }, animationDelay); // Décalage pour chaque médaille
+        }
+    });
 
 
 
@@ -2762,8 +2810,7 @@ notif_gainMedal: function (notif) {
 
 
 
-
-    this.showArrays();
+    //this.showArrays();
 },
 
 
