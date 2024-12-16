@@ -59,6 +59,7 @@ setup: function( gamedatas )
 
     this.bases = gamedatas.bases;
     this.regions = gamedatas.regions;
+    this.medals = gamedatas.medals;
     this.troop_types = gamedatas.troop_types;
     this.board_types = gamedatas.board_types;
     this.board_name = gamedatas.board_name;
@@ -435,10 +436,31 @@ setupPlayersBoard: function() {
             <div class="a_board" id="a2_board_${player.id}"></div>
         `);
 
+        const a1BoardElement = document.getElementById('a1_board_' + player.id);
+        const medals_needed = this.medals_to_win[this.board_id-1];
+        console.log( 'medals needed '+medals_needed);
+        const medals_won = player.star;
+        console.log( 'medals won '+medals_won);
+
+        for (let i = 1; i <= medals_needed; i++) {
+            const medalContainer = document.createElement('div');
+            medalContainer.id = `medal_${player.id}_${i}`;
+            
+            if (i <= medals_won) {
+                medalContainer.classList.add('medals', 'full_medal'); // Médailles gagnées
+            } else {
+                medalContainer.classList.add('medals', 'null_medal'); // Médailles manquantes
+            }
+            
+            a1BoardElement.appendChild(medalContainer);
+        }
+
+
+
         if( player.id == this.player_id || (this.isSpectator && player.id == this.spectator_id) )
         {
-            const a1BoardElement = document.getElementById('a1_board_' + player.id);
-                    a1BoardElement.insertAdjacentHTML('beforeend', `
+            const a2BoardElement = document.getElementById('a2_board_' + player.id);
+                    a2BoardElement.insertAdjacentHTML('beforeend', `
                         <div id="help-mode-switch">
                             <input type="checkbox" class="checkbox" id="help-mode-chk" />
                             <label class="label" for="help-mode-chk">
@@ -465,9 +487,9 @@ setupPlayersBoard: function() {
 
         /* slider */
         if(player.id == this.opponent_id) {
-            const a1BoardElement = document.getElementById('a1_board_' + player.id);
+            const a2BoardElement = document.getElementById('a2_board_' + player.id);
             const initialValue = window.localStorage?.getItem("BB_zoom") ?? 100;
-            a1BoardElement.insertAdjacentHTML('beforeend', `
+            a2BoardElement.insertAdjacentHTML('beforeend', `
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24H280c13.3 0 24-10.7 24-24s-10.7-24-24-24H136z"/></svg>
                     <input type="range" min="50" max="200" value="${initialValue}" class="slider" id="zoom_value">
@@ -548,6 +570,7 @@ setupLandscapeMode: function() {
     }
     globalContainer.appendChild(boardContainer);
     this.createBases();
+    this.createMedals();
     this.createTroopsOnBoard();
 
     /*  PlaymatContainer definition 
@@ -795,6 +818,7 @@ setupPortraitMode: function() {
         playmatContainer.appendChild(boardContainer);
         this.createBases();
         this.createTroopsOnBoard();
+        this.createMedals();
     
     
     
@@ -1053,6 +1077,30 @@ createTroopsOnBoard:function() {
         boardContainer.appendChild(troopElement);
     });
     this.createBasesTooltips();
+},
+
+createMedals:function() {
+    const boardContainer = document.getElementById(`board_${this.board_id}`);
+    const TB_medals = this.medals[this.board_name];
+    console.log( 'TBmedals', TB_medals);
+    Object.entries(TB_medals).forEach(([id, medal]) => {
+        if( this.gamedatas.full_regions.includes(medal.region.toString()) ) {
+            console.log( 'Region OK '+medal.region );
+            const medalElement = document.createElement('div');
+            medalElement.id = `medal_${id}`;
+            medalElement.classList.add('medals', 'board_medal');
+            medalElement.style.position = 'absolute';
+            medalElement.style.top = `${medal.top}%`;
+            medalElement.style.left = `${medal.left}%`;
+            medalElement.style.zIndex = 10;
+            console.log( 'medal_Elt', medalElement);
+            boardContainer.appendChild(medalElement);
+        }
+        
+
+
+
+    });
 },
 
 createBasesTooltips: function() {
@@ -2437,7 +2485,9 @@ notif_moveTroopBoardToBoard: function (notif) {
     this.removeTroopFromBaseArray(troop);
     this.removeTroopFromBoardArray(troop.id);
 
-    const destination_id = `${player_color_name}_${notif.args.base_id}`;
+
+    // ATTENTION, ID ELEMENT EST FAUX
+    const destination_id = `${player_color_name}_base_${this.board_name}_${notif.args.base_id}`;
     const destinationContainer = document.getElementById(destination_id);
 
     const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);

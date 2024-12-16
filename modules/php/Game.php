@@ -29,6 +29,7 @@ class Game extends \Table
     //private static array $CARD_TYPES; // ATTENTION
     public $_bases;
     public $_regions;
+    public $_medals;
     public $_troop_types;
     public $_board_types;
     public $_powers;
@@ -284,11 +285,14 @@ class Game extends \Table
 
         $result["bases"] = $this->_bases;
         $result["regions"] = $this->_regions;
+        $result["medals"] = $this->_medals;
         $result["troop_types"] = $this->_troop_types;
         $result["board_types"] = $this->_board_types;
 
         $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckblue'");
         $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckred'");
+
+        $result["full_regions"] = self::getObjectListFromDB("SELECT zone_id id FROM zone WHERE zone_star > 0", true);
 
         $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $result["board_name"] = $board_name[$this->getGameStateValue('board') - 1];
@@ -417,42 +421,27 @@ class Game extends \Table
                         // recuperation du pouvoir de la base (pour gérer le board Pool)
                         $base_power = game::$instance->_bases[$board_name][$base_adjacente]['power'];
 
-                                              
+
                         // Vérifie le nombre de troupes sur la base adjacente
                         $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}'", true));
 
                         if ($nb_troop_on_base == 0) //si la base est vide
                         {
-                            if($base_power == 21)
-                            {
-                                if(($troop_selected_force == 1)||($troop_selected_force == 2)||($troop_selected_force == 8))
-                                {
+                            if ($base_power == 21) {
+                                if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            }
-
-                            elseif($base_power == 23)
-                            {
-                                if(($troop_selected_force == 3)||($troop_selected_force == 4)||($troop_selected_force == 5)||($troop_selected_force == 8))
-                                {
+                            } elseif ($base_power == 23) {
+                                if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            }
-
-                            elseif($base_power == 26)
-                            {
-                                if(($troop_selected_force == 6)||($troop_selected_force == 7)||($troop_selected_force == 8))
-                                {
+                            } elseif ($base_power == 26) {
+                                if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            }
-
-                            else
-                            {
+                            } else {
                                 $possible_bases[] = $base_adjacente;
                             }
-
-                            
                         } else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
                         {
                             $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
@@ -462,74 +451,43 @@ class Game extends \Table
                                 $troop_opponent_force = $infos_troopmax[0]['type'] % 10;
 
                                 if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8)) {
-                                    
-                                    if($base_power == 21)
-                                    {
-                                        if(($troop_selected_force == 1)||($troop_selected_force == 2)||($troop_selected_force == 8))
-                                        {
+
+                                    if ($base_power == 21) {
+                                        if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    }
-        
-                                    elseif($base_power == 23)
-                                    {
-                                        if(($troop_selected_force == 3)||($troop_selected_force == 4)||($troop_selected_force == 5)||($troop_selected_force == 8))
-                                        {
+                                    } elseif ($base_power == 23) {
+                                        if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    }
-        
-                                    elseif($base_power == 26)
-                                    {
-                                        if(($troop_selected_force == 6)||($troop_selected_force == 7)||($troop_selected_force == 8))
-                                        {
+                                    } elseif ($base_power == 26) {
+                                        if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    }
-        
-                                    else
-                                    {
+                                    } else {
                                         $possible_bases[] = $base_adjacente;
-                                    }   
-                                
+                                    }
                                 }
                             } else // si elle appartient au joueur actif, on peut s'y positionner
                             {
-                                if($base_power == 21)
-                                    {
-                                        if(($troop_selected_force == 1)||($troop_selected_force == 2)||($troop_selected_force == 8))
-                                        {
-                                            $possible_bases[] = $base_adjacente;
-                                            
-                                        }
-                                    }
-
-                                elseif($base_power == 23)
-                                {
-                                    if(($troop_selected_force == 3)||($troop_selected_force == 4)||($troop_selected_force == 5)||($troop_selected_force == 8))
-                                    {
+                                if ($base_power == 21) {
+                                    if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
-                                        
                                     }
-                                }
-
-                                elseif($base_power == 26)
-                                {
-                                    if(($troop_selected_force == 6)||($troop_selected_force == 7)||($troop_selected_force == 8))
-                                    {
+                                } elseif ($base_power == 23) {
+                                    if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
-                                        
                                     }
-                                }
-
-                                else
-                                {
+                                } elseif ($base_power == 26) {
+                                    if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
+                                        $possible_bases[] = $base_adjacente;
+                                    }
+                                } else {
                                     $possible_bases[] = $base_adjacente;
-                                    
                                 }
 
                                 $dynamic_base[] = $base_adjacente;  // je mets cette base dans dynamic car on peut continuer au dela d'elle et donc tester ses bases adjacentes
-                                
+
                             }
                         }
                     }
@@ -571,15 +529,12 @@ class Game extends \Table
                 // recuperation du pouvoir de la base (pour gérer le board Pool)
                 $base_power = game::$instance->_bases[$board_name][$testotherbase]['power'];
 
-                if(($base_power != 21)&&($base_power != 26))
-                {
+                if (($base_power != 21) && ($base_power != 26)) {
 
                     if ($nb_troop_on_base == 0) //si la base est vide
                     {
 
                         $bases_crochet_ok[] = $testotherbase;
-                                
-                        
                     } else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
                     {
                         $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}')");
@@ -618,7 +573,7 @@ class Game extends \Table
 
             $list_all_zone = [];
 
-            $couples_region_medal_gain = [];
+            $emptied_regions = [];
             $count_regions = 0;
             $count_medals = 0;
 
@@ -676,11 +631,8 @@ class Game extends \Table
                             $count_regions = $count_regions + 1;
                             $count_medals = $count_medals + $etoile;
 
-                            $couples_region_medal_gain[] =
-                                [
-                                    'region' => $test['value'],
-                                    'medal' => $etoile
-                                ];
+                            $emptied_regions[] = $test['value'];
+                                
                         }
                     }
                 }
@@ -700,7 +652,7 @@ class Game extends \Table
                         'player_name' => $player_name,
                         'nb_region' => $count_regions,
                         'nb_medal' => $count_medals,
-                        'infos_region' => $couples_region_medal_gain,
+                        'emptied_regions' => $emptied_regions,
                         'player_id' => $idplayer,
 
                     )
@@ -712,9 +664,50 @@ class Game extends \Table
 
     // DEBUG
 
-    /*function debug_setCardType (int $id, int $type, int $typeArg = 0) {
-        
-      }*/
+    function debug_placeTroopOnBaseFromDeck(int $player_id, int $base)
+    {
+
+        $players = self::getObjectListFromDB("SELECT player_id FROM player", true);
+
+        if (in_array($player_id, $players)) {
+
+            $infos_player = self::getObjectFromDB("SELECT * FROM player WHERE player_id = {$player_id}");
+
+            if ($infos_player['player_color'] == "4f66a2") {
+                //DECLARATION DU DECK
+                $player_deck = "deckblue";
+            }
+
+            if ($infos_player['player_color'] == "d1553e") {
+                //DECLARATION DU DECK
+                $player_deck = "deckred";
+            }
+
+            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$player_deck}'", true));
+
+            if($counttroopdeck >= 1)
+            {
+                $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+                $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
+
+                $all_bases = $this->_bases[$board_name];
+                $id_bases = array_map('strval', array_keys($all_bases));
+
+                if (in_array($base, $id_bases)) {
+
+                $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$base}'", true));
+                $card = game::$instance->troop->pickCardForLocation($player_deck, 'board', $base);
+                self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$card['id']}'");
+
+
+
+                }
+                
+            }
+
+
+        }
+    }
 
 
 
