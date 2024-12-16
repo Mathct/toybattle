@@ -43,10 +43,17 @@ trait BasesTrait  // ATTENTION
                     $base = $check[0]['base'];
 
                     /////// EN FONCTION DU BOARD //////
-                    if($numero_power == 11)
+
+                    if($numero_power == 11) // CASTLE
                     {
                         game::$instance->addPending($this->player_id, "Base11_Step1", $troop_id, $base);
                     }
+
+                    elseif($numero_power == 31) // CLOUDS
+                    {
+                        game::$instance->addPending($this->player_id, "Base31_Step1", $troop_id, $base);
+                    }
+
                     else
                     {
                         game::$instance->addPending($this->player_id, "VerifBase");
@@ -300,6 +307,41 @@ trait BasesTrait  // ATTENTION
             $explode = explode("_", $parg2);
             game::$instance->addPending($this->player_id, "Base11_Step1", $explode[0], $explode[1]);
         }
+    }
+
+
+    /////////// BASE 31 /////////
+
+    public function argBase31_Step1($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} activates a special base');
+        $ret['titleyou'] = clienttranslate('Special base: ${you} can draw 1 troop');
+
+        $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg2;
+
+        $ret['buttons'][] = 'btn_yes';
+        $ret['buttons'][] = 'btn_no';
+
+        return $ret;
+    }
+
+    public function Base31_Step1($parg1, $parg2, $varg1, $varg2)
+    {
+        if($varg1 == "btn_no")
+        {
+        game::$instance->addPending($this->player_id, "VerifBase");
+        }
+
+        if($varg1 == "btn_yes")
+        {
+            game::$instance->addPending($this->player_id, "Base11_Step2", $parg1, $parg2);
+        }
+
+
     }
 
 
