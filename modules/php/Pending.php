@@ -23,6 +23,8 @@ class Pending extends APP_GameClass
 
         $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
         $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
+
+        $this->player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$this->player_id}'");
         
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
@@ -32,7 +34,7 @@ class Pending extends APP_GameClass
             //DECLARATION DU DECK
             $this->player_deck = "deckblue";
 
-            //DECLARATION DU COULEUR
+            //DECLARATION DE LA COULEUR TITLE
             $this->player_color_title = "blue";
             
             //DECLARATION DES BASES DE DEPART
@@ -52,7 +54,7 @@ class Pending extends APP_GameClass
             //DECLARATION DU DECK
             $this->player_deck = "deckred";
 
-            //DECLARATION DU COULEUR
+            //DECLARATION DE LA COULEUR TITLE
             $this->player_color_title = "red";
 
             //DECLARATION DES BASES DE DEPART
@@ -232,7 +234,7 @@ class Pending extends APP_GameClass
 
         if ($varg1 == null) 
         {
-            game::$instance->addPending($this->player_id, "FinGame");
+            game::$instance->addPending($this->player_id, "FinGame1");
         }
     }
 
@@ -593,14 +595,14 @@ class Pending extends APP_GameClass
 
     /// FONCTION FIN DE GAME CAR PLUS DE TROOP DANS LE DECK ET PLUS DE TROOP DANS LA MAIN////
 
-    function argFinGame($parg1, $parg2)
+    function argFinGame1($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('END GAME: ${actplayer} ne peut plus jouer car plus de troupes dans son deck et aucune troupe jouable');
-        $ret['titleyou'] = clienttranslate('END GAME: ${you} ne pouvez plus jouer: plus de troupes le deck et plus aucune troupe jouable');
+        $ret['title'] = clienttranslate('END GAME: ${actplayer} ne peut plus jouer');
+        $ret['titleyou'] = clienttranslate('END GAME: ${you} ne pouvez plus jouer');
 
 
         $ret['buttons'][] = 'btn_pass';
@@ -610,7 +612,7 @@ class Pending extends APP_GameClass
         return $ret;
     }
 
-    function FinGame($parg1, $parg2, $varg1, $varg2)
+    function FinGame1($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_pass") {
 

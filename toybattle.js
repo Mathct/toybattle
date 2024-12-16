@@ -2223,7 +2223,7 @@ notif_discardTroopFromHand: function (notif) {
 
 /*********************************
  * 
- *  a chosen troop goes from the board to rack 
+ *  a chosen Troop goes from board to rack 
  *    Castle Base
  * 
  ************************************/
@@ -2234,12 +2234,178 @@ notif_recoverTroopFromBoard: function (notif) {
 
     this.showArrays();
 
+    const troop = notif.args.infos_troop;
+    
+    const player_color = this.players[troop.type_arg].color;
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+    const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
+    const troopElement = document.getElementById(`troop_${troop.id}`);
+    const rackId = `${player_color_name}_rack`;
+    const rackContainer = document.getElementById(rackId);
+    
+    this.removeTroopFromBaseArray(troop);
+    this.removeTroopFromBoardArray(troop.id);
+
+
+    if( troop.type_arg == this.player_id) {
+
+        /* check where to insert the troop */
+        const newTroop = { id: troop.id, type: troop.type };
+
+        let insertIndex = this.my_hand.findIndex(t => t.type > newTroop.type);
+        if (insertIndex === -1) {
+            this.my_hand.push(newTroop); // end of array
+        } else {
+            this.my_hand.splice(insertIndex, 0, newTroop);
+        }
+
+        /* room is reserved in the flex */
+        let placeholder = document.createElement('div');
+        placeholder.classList.add('troop-placeholder');
+        if (player_color == this.RED_COLOR) {
+            if (insertIndex === -1) {
+                insertIndex = 0; // TODO vérifier
+            } else {
+                insertIndex = this.my_hand.length - insertIndex - 1; //TODO vérifier le bon index
+            }
+        }
+
+        if (insertIndex === rackContainer.children.length) {
+            rackContainer.appendChild(placeholder);
+        } else {
+            rackContainer.insertBefore(placeholder, rackContainer.children[insertIndex]);
+        }
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+        let deltaX = targetRect.left - startRect.left;
+        let deltaY = targetRect.top - startRect.top;
+
+       /* if (this.isCurrentPlayerRed() && player_color == this.RED_COLOR) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }*/
+
+        // gets rotation, if defined
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+        
+        // new transformation
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none"
+            ? `${existingTransform} ${translateTransform}`
+            : translateTransform;
+
+        troopElement.style.transform = newTransform;
+
+        // Ajout de l'écouteur sans 'once: true'
+        const onTransitionEnd = () => {
+            troopElement.style.transform = '';
+            troopElement.style.top = '';
+            troopElement.style.left = '';
+            troopElement.style.position = '';
+            troopElement.style.zIndex = 10;
+
+            // Remplacement du placeholder par le troopElement
+            rackContainer.replaceChild(troopElement, placeholder);
+
+            // Nettoyage : suppression du gestionnaire
+            troopElement.removeEventListener('transitionend', onTransitionEnd);
+
+           
+        };
+
+        troopElement.addEventListener('transitionend', onTransitionEnd);
+    }
+
+    else {
+
+        /* add to hand JS array */
+        const newTroop = { type: player_color_index };
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            this.your_hand.push(newTroop);
+        }
+        else { // blue spectator
+            this.my_hand.push(newTroop);
+        }
+
+
+
+        /* room is reserved in the flex */
+        const placeholder = document.createElement('div');
+        placeholder.classList.add('troop-placeholder');
+        rackContainer.appendChild(placeholder);
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+        let deltaX = targetRect.left - startRect.left;
+        let deltaY = targetRect.top - startRect.top;
+
+        if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
+
+        // gets rotation, if defined
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+    
+        // new transformation    
+
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none"
+            ? `${existingTransform} ${translateTransform}`
+            : translateTransform;
+
+        troopElement.style.transform = newTransform;
+        troopElement.style.zIndex = 100;
+
+        // Gestionnaire de transition
+        const onTransitionEnd = () => {
+            troopElement.style.transform = '';
+            troopElement.style.top = '';
+            troopElement.style.left = '';
+            troopElement.style.position = '';
+            troopElement.style.zIndex = 10;
+            if (player_color == this.RED_COLOR) {
+                troopElement.classList.add('board-inverted');
+            }
+
+
+        // troop in rack is renamed
+            if (this.isCurrentPlayerRed()) {
+                troopElement.id = `blue_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                troopElement.style.backgroundPosition = `-0% -0%`;
+
+            } else if (this.isCurrentPlayerBlue()) {
+                troopElement.id = `red_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                troopElement.style.backgroundPosition = `-0% -100%`;
+            } else if( this.isSpectator == true ){ // spectator
+                if (player_color == this.RED_COLOR) {
+                    troopElement.id = `red_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -100%`;
+                } else {
+                    troopElement.id = `blue_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+                }
+            }
 
 
 
 
 
+            // Remplacement du placeholder par le troopElement
+            rackContainer.replaceChild(troopElement, placeholder);
 
+            // Nettoyage : suppression du gestionnaire
+            troopElement.removeEventListener('transitionend', onTransitionEnd);
+        };
+
+        troopElement.addEventListener('transitionend', onTransitionEnd);
+
+    }
 
     this.showArrays();
 
@@ -2260,11 +2426,53 @@ notif_moveTroopBoardToBoard: function (notif) {
 
     this.showArrays();
 
+    const troop = notif.args.infos_troop;
+    
+    const player_color = this.players[troop.type_arg].color;
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+    const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
+    const troopElement = document.getElementById(`troop_${troop.id}`);
+
+// TODO changer les emplacements dans les tableaux JS
+    this.removeTroopFromBaseArray(troop);
+    this.removeTroopFromBoardArray(troop.id);
+
+    const destination_id = `${player_color_name}_${notif.args.base_id}`;
+    const destinationContainer = document.getElementById(destination_id);
+
+    const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+    const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
+    let deltaX = endRect.left - startRect.left;
+    let deltaY = endRect.top - startRect.top;
+
+    troopContainer.style.zIndex = troop.ordre * 10;
+
+    // gets rotation, if defined
+    const existingTransform = window.getComputedStyle(troopContainer).transform;
 
 
+    // new transformation
+    const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+    const newTransform = existingTransform !== "none"
+        ? `${existingTransform} ${translateTransform}`
+        : translateTransform;
 
+    troopContainer.style.transform = newTransform;
 
+    const onTransitionEnd = () => {
 
+        troopContainer.style.transform = existingTransform;
+
+        const baseData = TB_bases[troop.location_arg];
+
+        troopContainer.style.top = player_color_index == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
+        troopContainer.style.left = `${baseData.left}%`;
+
+        boardContainer.appendChild(troopContainer);
+        troopContainer.removeEventListener("transitionend", onTransitionEnd);
+    };
+
+    troopContainer.addEventListener("transitionend", onTransitionEnd);
 
 
     this.showArrays();
@@ -2287,10 +2495,171 @@ notif_recoverTroopFromDiscard: function (notif) {
     this.showArrays();
 
 
+    const troop = notif.args.infos_troop;
+    
+    const player_color = this.players[troop.type_arg].color;
+    const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
+    const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
+    const troopElement = document.getElementById(`troop_${troop.id}`);
+    const discardId = `${player_color_name}_discard`;
+    const discardContainer = document.getElementById(discardId);
+
+
+    if( troop.type_arg == this.player_id) {
+
+        /* check where to insert the troop */
+        const newTroop = { id: troop.id, type: troop.type };
+
+        let insertIndex = this.my_hand.findIndex(t => t.type > newTroop.type);
+        if (insertIndex === -1) {
+            this.my_hand.push(newTroop); // end of array
+        } else {
+            this.my_hand.splice(insertIndex, 0, newTroop);
+        }
+
+        /* room is reserved in the flex */
+        let placeholder = document.createElement('div');
+        placeholder.classList.add('troop-placeholder');
+        if (player_color == this.RED_COLOR) {
+            if (insertIndex === -1) {
+                insertIndex = 0; // TODO vérifier
+            } else {
+                insertIndex = this.my_hand.length - insertIndex - 1; //TODO vérifier le bon index
+            }
+        }
+
+        if (insertIndex === rackContainer.children.length) {
+            rackContainer.appendChild(placeholder);
+        } else {
+            rackContainer.insertBefore(placeholder, rackContainer.children[insertIndex]);
+        }
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+        let deltaX = targetRect.left - startRect.left;
+        let deltaY = targetRect.top - startRect.top;
+
+       /* if (this.isCurrentPlayerRed() && player_color == this.RED_COLOR) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }*/
+
+        // gets rotation, if defined
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+        
+        // new transformation
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none"
+            ? `${existingTransform} ${translateTransform}`
+            : translateTransform;
+
+        troopElement.style.transform = newTransform;
+
+        // Ajout de l'écouteur sans 'once: true'
+        const onTransitionEnd = () => {
+            troopElement.style.transform = '';
+            troopElement.style.top = '';
+            troopElement.style.left = '';
+            troopElement.style.position = '';
+            troopElement.style.zIndex = 10;
+
+            // Remplacement du placeholder par le troopElement
+            rackContainer.replaceChild(troopElement, placeholder);
+
+            // Nettoyage : suppression du gestionnaire
+            troopElement.removeEventListener('transitionend', onTransitionEnd);
+
+           
+        };
+
+        troopElement.addEventListener('transitionend', onTransitionEnd);
+    }
+
+    else {
+
+        /* add to hand JS array */
+        const newTroop = { type: player_color_index };
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            this.your_hand.push(newTroop);
+        }
+        else { // blue spectator
+            this.my_hand.push(newTroop);
+        }
 
 
 
+        /* room is reserved in the flex */
+        const placeholder = document.createElement('div');
+        placeholder.classList.add('troop-placeholder');
+        rackContainer.appendChild(placeholder);
 
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+        let deltaX = targetRect.left - startRect.left;
+        let deltaY = targetRect.top - startRect.top;
+
+        if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
+
+        // gets rotation, if defined
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+    
+        // new transformation    
+
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none"
+            ? `${existingTransform} ${translateTransform}`
+            : translateTransform;
+
+        troopElement.style.transform = newTransform;
+        troopElement.style.zIndex = 100;
+
+        // Gestionnaire de transition
+        const onTransitionEnd = () => {
+            troopElement.style.transform = '';
+            troopElement.style.top = '';
+            troopElement.style.left = '';
+            troopElement.style.position = '';
+            troopElement.style.zIndex = 10;
+            if (player_color == this.RED_COLOR) {
+                troopElement.classList.add('board-inverted');
+            }
+
+
+        // troop in rack is renamed
+            if (this.isCurrentPlayerRed()) {
+                troopElement.id = `blue_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                troopElement.style.backgroundPosition = `-0% -0%`;
+
+            } else if (this.isCurrentPlayerBlue()) {
+                troopElement.id = `red_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                troopElement.style.backgroundPosition = `-0% -100%`;
+            } else if( this.isSpectator == true ){ // spectator
+                if (player_color == this.RED_COLOR) {
+                    troopElement.id = `red_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -100%`;
+                } else {
+                    troopElement.id = `blue_troop_${parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+                }
+            }
+
+            // Remplacement du placeholder par le troopElement
+            rackContainer.replaceChild(troopElement, placeholder);
+
+            // Nettoyage : suppression du gestionnaire
+            troopElement.removeEventListener('transitionend', onTransitionEnd);
+        };
+
+        troopElement.addEventListener('transitionend', onTransitionEnd);
+
+    }
 
 
     this.showArrays();

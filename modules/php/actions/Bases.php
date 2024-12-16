@@ -20,8 +20,8 @@ trait BasesTrait  // ATTENTION
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
         
-        
-        if(game::$instance->gamestate->table_globals[100] == 1)
+        // mode + pool et station sans bases speciales
+        if((game::$instance->gamestate->table_globals[100] == 1)&&($this->board_name != 'pool')&&($this->board_name != 'station'))
 
         {
            
@@ -65,10 +65,10 @@ trait BasesTrait  // ATTENTION
 
         }
 
-        if(game::$instance->gamestate->table_globals[100] == 2)
+        if((game::$instance->gamestate->table_globals[100] == 2)||($this->board_name == 'pool')||($this->board_name == 'station'))
 
         {
-            var_dump('test2');
+            
             self::DbQuery("DELETE FROM `checkbase`;");
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
 
@@ -208,6 +208,9 @@ trait BasesTrait  // ATTENTION
                 
 
                 $explode = explode("_", $varg1);
+
+                $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+
                 $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
 
                 game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'hand', 0);
@@ -221,6 +224,7 @@ trait BasesTrait  // ATTENTION
                         
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troopmax[0],
+                        'nb_troops_hand' => $nb_troops_hand,
                         
                     )
                 );
@@ -247,7 +251,7 @@ trait BasesTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} places a troop');
         $ret['titleyou'] = clienttranslate('${you} must confirm');
 
-        
+        $ret["selected"][] = $parg1;
         $ret['buttons'][] = 'btn_yes';
         $ret['buttons'][] = 'btn_no';
 
@@ -262,6 +266,9 @@ trait BasesTrait  // ATTENTION
 
 
             $explode = explode("_", $parg1);
+
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            
             $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
 
             game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'hand', 0);
@@ -275,6 +282,7 @@ trait BasesTrait  // ATTENTION
                     
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troopmax[0],
+                    'nb_troops_hand' => $nb_troops_hand,
                     
                 )
             );
