@@ -51,7 +51,12 @@ setup: function( gamedatas )
     this.BLUE_COLOR = "4f66a2";
     this.RED_COLOR = "d1553e";
     this.BLUE = 0;
-    this.RED = 1;        
+    this.RED = 1;
+    
+    this.TROOP_WIDTH = 66;  
+    this.TROOP_HEIGHT = 88;        
+    this.BOARD_WIDTH = 500;  
+    this.BOARD_HEIGHT = 833.5;
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
 
@@ -407,6 +412,14 @@ setupConnections: function(selectables) {
         element.addEventListener('click', resourceClickHandler);
         this.connections.push({ element, event: 'click', handler: resourceClickHandler });
     });
+
+    const zoomInputHandler = () => {
+        window.localStorage.setItem("TB_zoom", $("zoom_value").value);
+        this.onScreenWidthChange();
+    };
+    
+    $("zoom_value").addEventListener("input", zoomInputHandler);
+    this.connections.push({element: $("zoom_value"), event: "input", handler: zoomInputHandler });
 },
 
 
@@ -438,9 +451,7 @@ setupPlayersBoard: function() {
 
         const a1BoardElement = document.getElementById('a1_board_' + player.id);
         const medals_needed = this.medals_to_win[this.board_id-1];
-        console.log( 'medals needed '+medals_needed);
         const medals_won = player.star;
-        console.log( 'medals won '+medals_won);
 
         for (let i = 1; i <= medals_needed; i++) {
             const medalContainer = document.createElement('div');
@@ -488,7 +499,7 @@ setupPlayersBoard: function() {
         /* slider */
         if(player.id == this.opponent_id) {
             const a2BoardElement = document.getElementById('a2_board_' + player.id);
-            const initialValue = window.localStorage?.getItem("BB_zoom") ?? 100;
+            const initialValue = window.localStorage?.getItem("TB_zoom") ?? 100;
             a2BoardElement.insertAdjacentHTML('beforeend', `
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24H280c13.3 0 24-10.7 24-24s-10.7-24-24-24H136z"/></svg>
@@ -498,7 +509,7 @@ setupPlayersBoard: function() {
             `);
             dojo.connect($("zoom_value"), "oninput", () => {
                 // debug('zoom changed', $('zoom_value').value);
-                window.localStorage.setItem("BB_zoom", $("zoom_value").value);
+                window.localStorage.setItem("TB_zoom", $("zoom_value").value);
                 this.onScreenWidthChange();
             });
         }
@@ -969,7 +980,7 @@ createPlaymat: function() {
     }
     else {
         playmatContainer.style.flexDirection = "column";
-        playmatContainer.style.height = `833.5px`;
+        playmatContainer.style.height = `var(--board-height)`;
         playmatContainer.style.width = `542px`;
         if( this.isCurrentPlayerRed() ) {
             playmatContainer.classList.add('board-inverted');
@@ -1077,10 +1088,8 @@ createTroopsOnBoard:function() {
 createMedals:function() {
     const boardContainer = document.getElementById(`board_${this.board_id}`);
     const TB_medals = this.medals[this.board_name];
-    console.log( 'TBmedals', TB_medals);
     Object.entries(TB_medals).forEach(([id, medal]) => {
         if( this.gamedatas.full_regions.includes(medal.region.toString()) ) {
-            console.log( 'Region OK '+medal.region );
             const medalElement = document.createElement('div');
             medalElement.id = `medal_${id}`;
             medalElement.classList.add('medals', 'board_medal');
@@ -1088,7 +1097,6 @@ createMedals:function() {
             medalElement.style.top = `${medal.top}%`;
             medalElement.style.left = `${medal.left}%`;
             medalElement.style.zIndex = 10;
-            console.log( 'medal_Elt', medalElement);
             boardContainer.appendChild(medalElement);
         }
         
@@ -1203,6 +1211,45 @@ getBoundingClientRectIgnoreZoom: function (element) {
     rect.height /= zoomCorr;
     return rect;
 },
+
+onScreenWidthChange: function() {
+    const board = document.getElementById(`board_${this.board_id}`);       // Élément board
+    const playmat = document.getElementById('playmat_id');   // Élément playmat
+
+    //TODO hauteur proportionnelle à la largeur du board.
+
+    if (board && playmat) {
+
+        // Récupérer les dimensions recalculées
+        const boardRect = this.getBoundingClientRectIgnoreZoom(board);
+        const playmatRect = this.getBoundingClientRectIgnoreZoom(playmat);
+
+        // Choisir la base de référence (largeur ou hauteur)
+        //const baseWidth = Math.min(boardRect.width, playmatRect.width);
+        //const baseHeight = Math.min(boardRect.height, playmatRect.height);
+        const baseWidth = boardRect.width;
+        const baseHeight = baseWidth / this.BOARD_WIDTH * this.BOARD_HEIGHT;
+    //    console.log( 'baseHeight', baseHeight );
+        // Calculer la taille des troops proportionnellement
+        const troopWidth = (this.TROOP_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+        //const troopHeight = (88 / 833.5) * baseHeight; // 88px basé sur la hauteur originale
+        const troopHeight = (this.TROOP_HEIGHT / this.TROOP_WIDTH) * troopWidth; // 88px basé sur la hauteur originale
+
+    //    console.log( 'troopWidth', troopWidth );
+    //    console.log( 'troopHeight', troopHeight );
+
+        // Mettre à jour les variables CSS
+        document.documentElement.style.setProperty('--troop-width', `${troopWidth}px`);
+        document.documentElement.style.setProperty('--troop-height', `${troopHeight}px`);
+        document.documentElement.style.setProperty('--board-height', `${baseHeight}px`);
+    }
+
+    const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
+    //this.scale = Math.min(horizontalScale, verticalScale)*BB_zoom/100;
+    // TO DO 
+
+},
+
 
 /*******************************
  ****** HELP MODE TISAAC *******
@@ -1581,45 +1628,45 @@ notif_moveTroop: function(notif)
 
 
     /* animation for the active player */
-        const troopContainer = document.getElementById(`troop_${troop.id}`);
+        const troopElement = document.getElementById(`troop_${troop.id}`);
         
         const destination_id = this.isCurrentPlayerRed() ? 'red_'+notif.args.base_id : 'blue_'+notif.args.base_id;
         const destinationContainer = document.getElementById(destination_id);
 
-        const startRect = this.getBoundingClientRectIgnoreZoom(troopContainer);
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
         const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
         let deltaX = endRect.left - startRect.left;
         let deltaY = endRect.top - startRect.top;
 
-        troopContainer.style.zIndex = troop.ordre * 10;
+        troopElement.style.zIndex = troop.ordre * 10;
 
         // gets rotation, if defined
-        const existingTransform = window.getComputedStyle(troopContainer).transform;
+        const existingTransform = window.getComputedStyle(troopElement).transform;
 
         // new transformation
         const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
         const newTransform = existingTransform !== "none" 
             ? `${existingTransform} ${translateTransform}` 
             : translateTransform;
-        troopContainer.style.transform = newTransform;
+        troopElement.style.transform = newTransform;
     
         const onTransitionEnd = () => {
             // restore former transform
-            troopContainer.style.transform = existingTransform;
+            troopElement.style.transform = existingTransform;
 
             // defines postion on board
             const baseData = TB_bases[troop.location_arg];
-            troopContainer.style.position = 'absolute';
+            troopElement.style.position = 'absolute';
 
             const troopColor =  Math.floor(troop.type / 10)-1;
-            troopContainer.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
-            troopContainer.style.left = `${baseData.left}%`;
+            troopElement.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
+            troopElement.style.left = `${baseData.left}%`;
 
-            boardContainer.appendChild(troopContainer);
-            troopContainer.removeEventListener("transitionend", onTransitionEnd);
+            boardContainer.appendChild(troopElement);
+            troopElement.removeEventListener("transitionend", onTransitionEnd);
         };
         
-        troopContainer.addEventListener("transitionend", onTransitionEnd);
+        troopElement.addEventListener("transitionend", onTransitionEnd);
     }
     else {
         // remove troop from hand JS array
@@ -1633,16 +1680,16 @@ notif_moveTroop: function(notif)
         // rename Troop id and unhide it
         let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
 
-        const troopContainer = document.getElementById(moving_troop_id);
-        troopContainer.id = `troop_${troop.id}`;
+        const troopElement = document.getElementById(moving_troop_id);
+        troopElement.id = `troop_${troop.id}`;
         const x = troop.type.toString().slice(-1);
-        troopContainer.style.backgroundPositionX = `-${x}00%`;
+        troopElement.style.backgroundPositionX = `-${x}00%`;
     
         
         const destination_id = this.isCurrentPlayerRed() ? 'blue_'+notif.args.base_id : 'red_'+notif.args.base_id;
         const destinationContainer = document.getElementById(destination_id);
     
-        const startRect = this.getBoundingClientRectIgnoreZoom(troopContainer);
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
         const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
         let deltaX = endRect.left - startRect.left;
         let deltaY = endRect.top - startRect.top;
@@ -1651,12 +1698,12 @@ notif_moveTroop: function(notif)
             deltaY = -deltaY;
         }
     
-        troopContainer.style.zIndex = troop.ordre * 10;
+        troopElement.style.zIndex = troop.ordre * 10;
     
 
 
         // gets rotation, if defined
-        const existingTransform = window.getComputedStyle(troopContainer).transform;
+        const existingTransform = window.getComputedStyle(troopElement).transform;
 
         
         // new transformation
@@ -1665,25 +1712,25 @@ notif_moveTroop: function(notif)
             ? `${existingTransform} ${translateTransform}`
             : translateTransform;
     
-        troopContainer.style.transform = newTransform;
+        troopElement.style.transform = newTransform;
     
         const onTransitionEnd = () => {
 
-            troopContainer.style.transform = existingTransform;
+            troopElement.style.transform = existingTransform;
 
             const baseData = TB_bases[troop.location_arg];
-            troopContainer.style.position = 'absolute';
+            troopElement.style.position = 'absolute';
 
             const troopColor =  Math.floor(troop.type / 10)-1;
 
-            troopContainer.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
-            troopContainer.style.left = `${baseData.left}%`;
+            troopElement.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
+            troopElement.style.left = `${baseData.left}%`;
 
-            boardContainer.appendChild(troopContainer);
-            troopContainer.removeEventListener("transitionend", onTransitionEnd);
+            boardContainer.appendChild(troopElement);
+            troopElement.removeEventListener("transitionend", onTransitionEnd);
         };
     
-        troopContainer.addEventListener("transitionend", onTransitionEnd);
+        troopElement.addEventListener("transitionend", onTransitionEnd);
     }
 
     this.showArrays();
@@ -2152,7 +2199,7 @@ notif_discardTroopFromHand: function (notif) {
 
         const onTransitionEnd = () => {
             // restore former transform
-            //troopContainer.style.transform = existingTransform;
+            //troopElement.style.transform = existingTransform;
             troopElement.style.transform = '';
             troopElement.style.top = '';
             troopElement.style.left = '';
@@ -2232,7 +2279,7 @@ notif_discardTroopFromHand: function (notif) {
 
         const onTransitionEnd = () => {
            // restore former transform
-            //troopContainer.style.transform = existingTransform;
+            //troopElement.style.transform = existingTransform;
             troopElement.style.transform = '';
             troopElement.style.top = '';
             troopElement.style.left = '';
@@ -2469,6 +2516,8 @@ notif_moveTroopBoardToBoard: function (notif) {
 
     this.showArrays();
 
+    const TB_bases = this.bases[this.board_name];
+
     const troop = notif.args.infos_troop;
     
     const player_color = this.players[troop.type_arg].color;
@@ -2480,7 +2529,7 @@ notif_moveTroopBoardToBoard: function (notif) {
     this.removeTroopFromBaseArray(troop);
     this.removeTroopFromBoardArray(troop.id);
 
-
+    const boardContainer = document.getElementById(`board_${this.board_id}`);
     // ATTENTION, ID ELEMENT EST FAUX
     const destination_id = `${player_color_name}_base_${this.board_name}_${notif.args.base_id}`;
     const destinationContainer = document.getElementById(destination_id);
@@ -2490,10 +2539,10 @@ notif_moveTroopBoardToBoard: function (notif) {
     let deltaX = endRect.left - startRect.left;
     let deltaY = endRect.top - startRect.top;
 
-    troopContainer.style.zIndex = troop.ordre * 10;
+    troopElement.style.zIndex = notif.args.ordre * 10;
 
     // gets rotation, if defined
-    const existingTransform = window.getComputedStyle(troopContainer).transform;
+    const existingTransform = window.getComputedStyle(troopElement).transform;
 
 
     // new transformation
@@ -2502,22 +2551,22 @@ notif_moveTroopBoardToBoard: function (notif) {
         ? `${existingTransform} ${translateTransform}`
         : translateTransform;
 
-    troopContainer.style.transform = newTransform;
+    troopElement.style.transform = newTransform;
 
     const onTransitionEnd = () => {
 
-        troopContainer.style.transform = existingTransform;
+        troopElement.style.transform = existingTransform;
 
         const baseData = TB_bases[troop.location_arg];
 
-        troopContainer.style.top = player_color_index == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
-        troopContainer.style.left = `${baseData.left}%`;
+        troopElement.style.top = player_color_index == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
+        troopElement.style.left = `${baseData.left}%`;
 
-        boardContainer.appendChild(troopContainer);
-        troopContainer.removeEventListener("transitionend", onTransitionEnd);
+        boardContainer.appendChild(troopElement);
+        troopElement.removeEventListener("transitionend", onTransitionEnd);
     };
 
-    troopContainer.addEventListener("transitionend", onTransitionEnd);
+    troopElement.addEventListener("transitionend", onTransitionEnd);
 
 
     this.showArrays();

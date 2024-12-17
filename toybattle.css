@@ -21,6 +21,13 @@
     border: 0;
 }
 
+:root {
+    --troop-width: 66px;
+    --troop-height: 88px;
+    --board-width: 500px;
+    --board-height: 833.5px;
+}
+
 body {
     background-image: url('img/TB_texture.jpg');
     background-repeat: repeat;
@@ -134,8 +141,8 @@ body {
 }
 
 .board {
-    width: 500px;
-    height: 833.5px;
+    width: var(--board-width);
+    height: var(--board-height);
     position: relative;
     margin: 0 5px;
     border-radius: 5px;
@@ -163,8 +170,8 @@ body {
 
 
 .deck {
-    width: 66px;
-    height: 88px;
+    width: var(--troop-width);
+    height: var(--troop-height);
     position: relative;
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
@@ -233,15 +240,15 @@ body {
 
 .base_all {
     position: absolute;
-    width: 66px;
-    height: 110px;
+    width: var(--troop-width);
+    height: calc(var(--troop-width) + var(--troop-height) / 2);
     z-index: 300;
 }
 
 .base {
     position: absolute;
-    width: 66px;
-    height: 88px;
+    width: var(--troop-width);
+    height: var(--troop-height);
 }
 
 .base_blue {
@@ -257,8 +264,8 @@ body {
 }
 
 .troop {
-    width: 66px;
-    height: 88px;
+    width: var(--troop-width);
+    height: var(--troop-height);
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
     transition: transform 0.5s ease-in-out;
@@ -277,8 +284,8 @@ body {
 }
 
 .troop-placeholder {
-    width: 66px;
-    height: 88px;
+    width: var(--troop-width);
+    height: var(--troop-height);
     background: transparent; /* when moving a troop to a flex */
 }
 

@@ -38,13 +38,22 @@ class Pending extends APP_GameClass
             $this->player_color_title = "blue";
             
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='carribean')||($this->board_name =='station')||($this->board_name =='battlefield'))
+            if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
             {
             $this->start_base = [1];
+            $this->opponent_start_base = [41];
             }
-            if (($this->board_name =='pool')||($this->board_name =='carribean'))
+            
+            if ($this->board_name =='pool')
             {
             $this->start_base = [1,2];
+            $this->opponent_start_base = [41,42];
+            }
+
+            if ($this->board_name =='carribean')
+            {
+            $this->start_base = [1,2];
+            $this->opponent_start_base = [41];
             }
 
         }
@@ -61,11 +70,19 @@ class Pending extends APP_GameClass
             if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
             {
             $this->start_base = [41];
+            $this->opponent_start_base = [1];
             }
 
             if ($this->board_name =='pool')
             {
             $this->start_base = [41,42];
+            $this->opponent_start_base = [1,2];
+            }
+
+            if ($this->board_name =='carribean')
+            {
+            $this->start_base = [41];
+            $this->opponent_start_base = [1,2];
             }
         }
         
