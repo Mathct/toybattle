@@ -427,15 +427,15 @@ class Game extends \Table
 
                         if ($nb_troop_on_base == 0) //si la base est vide
                         {
-                            if ($base_power == 21) {
+                            if (($base_power == 21) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                 if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif ($base_power == 23) {
+                            } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                 if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif ($base_power == 26) {
+                            } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                 if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
@@ -452,15 +452,15 @@ class Game extends \Table
 
                                 if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8)) {
 
-                                    if ($base_power == 21) {
+                                    if (($base_power == 21) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                         if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif ($base_power == 23) {
+                                    } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                         if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif ($base_power == 26) {
+                                    } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                         if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
@@ -470,15 +470,15 @@ class Game extends \Table
                                 }
                             } else // si elle appartient au joueur actif, on peut s'y positionner
                             {
-                                if ($base_power == 21) {
+                                if (($base_power == 21) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                     if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif ($base_power == 23) {
+                                } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                     if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif ($base_power == 26) {
+                                } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                     if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
@@ -529,7 +529,7 @@ class Game extends \Table
                 // recuperation du pouvoir de la base (pour gérer le board Pool)
                 $base_power = game::$instance->_bases[$board_name][$testotherbase]['power'];
 
-                if (($base_power != 21) && ($base_power != 26)) {
+                if ((($base_power != 21) && ($base_power != 26)) || (game::$instance->gamestate->table_globals[100] == 2)) {
 
                     if ($nb_troop_on_base == 0) //si la base est vide
                     {

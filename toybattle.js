@@ -545,8 +545,7 @@ setupBoard: function() {
     // Vérification initiale
     handleTabletChange(mediaQuery);
 
-
-    //this.setupPortraitMode();
+    //this.setupLandscapeMode();
 
 },
 
@@ -582,138 +581,133 @@ setupLandscapeMode: function() {
     globalContainer.appendChild(playmatContainer);
 
 
-
     /*  redRackContainer definition 
-        contains Rack and all Troops in Hand
+    contains Rack and all Troops in Hand
+*/
+    const redRackContainer = this.createRack('red');
+    playmatContainer.appendChild(redRackContainer);
+    
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.my_hand).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted');
+            redRackContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+            
+        });
+    }
+    else {
+        Object.values(this.your_hand).forEach((troop, index) => {
+            const troopElement = this.createBackTroopElement(troop, index);
+            troopElement.classList.add('board-inverted');
+            redRackContainer.appendChild(troopElement);
+
+        });
+    }
+
+
+    /* redDiscard */
+    const redDiscardContainer = this.createDiscard( 'red' );
+
+    redDiscardContainer.style.flexDirection = "row";
+    playmatContainer.appendChild(redDiscardContainer);
+
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.my_discard).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            
+        });
+    }
+    else {
+        Object.values(this.your_discard).forEach((troop) => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+
+    /* whiteLineContainer */
+    const whiteLineContainer = this.createLine( 'white');
+    playmatContainer.appendChild(whiteLineContainer);
+
+    /* blueDeckElement */
+    const blueDeckElement = this.createDeck( 'blue' );
+    whiteLineContainer.appendChild(blueDeckElement);
+
+    const blueDeckCounterElement = this.createDeckCounter( 'blue');
+    blueDeckElement.appendChild(blueDeckCounterElement);
+
+    this.blue_deck_counter = new ebg.counter();
+    this.blue_deck_counter.create('blue_deck_counter_id');
+    this.blue_deck_counter.toValue(this.nb_decks[0]);
+
+    /* redDeckElement */
+    const redDeckElement = this.createDeck( 'red' );
+    redDeckElement.classList.add('board-inverted');
+    whiteLineContainer.appendChild(redDeckElement);
+
+    const redDeckCounterElement = this.createDeckCounter( 'red');
+    redDeckElement.appendChild(redDeckCounterElement);
+
+    this.red_deck_counter = new ebg.counter();
+    this.red_deck_counter.create('red_deck_counter_id');
+    this.red_deck_counter.toValue(this.nb_decks[1]);
+
+
+    /*  blueDiscardContainer definition 
+        contains possible Troops in opacity 50 and all discarded ones TODO
     */
-        const redRackContainer = this.createRack('red');
-        playmatContainer.appendChild(redRackContainer);
-        
-        if( this.isCurrentPlayerRed() ) {
-            Object.values(this.my_hand).reverse().forEach(troop => {
-                const troopElement = this.createTroopElement(troop);
-                troopElement.classList.add('board-inverted');
-                redRackContainer.appendChild(troopElement);
-                this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0); 
-                
-            });
-        }
-        else {
-            Object.values(this.your_hand).forEach((troop, index) => {
-                const troopElement = this.createBackTroopElement(troop, index);
-                troopElement.classList.add('board-inverted');
-                redRackContainer.appendChild(troopElement);
-
-            });
-        }
-
-        /* redDiscard */
-        const redDiscardContainer = this.createDiscard( 'red' );
-
-        redDiscardContainer.style.flexDirection = "row";
-        playmatContainer.appendChild(redDiscardContainer);
-    
-    
-    
-        if( this.isCurrentPlayerRed() ) {
-            Object.values(this.my_discard).forEach(troop => {
-                const troopElement = this.createTroopElement(troop);
-                troopElement.classList.add('board-inverted', 'opa_70');
-                redDiscardContainer.appendChild(troopElement);
-                this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-                
-            });
-        }
-        else {
-            Object.values(this.your_discard).forEach((troop) => {
-                const troopElement = this.createTroopElement(troop);
-                troopElement.classList.add('board-inverted', 'opa_70');
-                redDiscardContainer.appendChild(troopElement);
-                this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-            });
-        }
+    const blueDiscardContainer = this.createDiscard( 'blue' );
+    blueDiscardContainer.style.flexDirection = "row";
+    playmatContainer.appendChild(blueDiscardContainer);
 
 
-
-        /* whiteLineContainer */
-        const whiteLineContainer = this.createLine( 'white');
-        playmatContainer.appendChild(whiteLineContainer);
-    
-        /* blueDeckElement */
-        const blueDeckElement = this.createDeck( 'blue' );
-        whiteLineContainer.appendChild(blueDeckElement);
-
-        const blueDeckCounterElement = this.createDeckCounter( 'blue');
-        blueDeckElement.appendChild(blueDeckCounterElement);
-
-        this.blue_deck_counter = new ebg.counter();
-        this.blue_deck_counter.create('blue_deck_counter_id');
-        this.blue_deck_counter.toValue(this.nb_decks[0]);
-
-        /* redDeckElement */
-        const redDeckElement = this.createDeck( 'red' );
-        redDeckElement.classList.add('board-inverted');
-        whiteLineContainer.appendChild(redDeckElement);
-
-        const redDeckCounterElement = this.createDeckCounter( 'red');
-        redDeckElement.appendChild(redDeckCounterElement);
-
-        this.red_deck_counter = new ebg.counter();
-        this.red_deck_counter.create('red_deck_counter_id');
-        this.red_deck_counter.toValue(this.nb_decks[1]);
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.your_discard).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('opa_70');
+            blueDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+    else {
+        Object.values(this.my_discard).forEach((troop) => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('opa_70');
+            blueDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
 
 
-        /*  blueDiscardContainer definition 
-            contains possible Troops in opacity 50 and all discarded ones TODO
-        */
-        const blueDiscardContainer = this.createDiscard( 'blue' );
-        blueDiscardContainer.style.flexDirection = "row";
-        playmatContainer.appendChild(blueDiscardContainer);
-    
-    
-        if( this.isCurrentPlayerRed() ) {
-            Object.values(this.your_discard).forEach(troop => {
-                const troopElement = this.createTroopElement(troop);
-                troopElement.classList.add('opa_70');
-                blueDiscardContainer.appendChild(troopElement);
-                this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-            });
-        }
-        else {
-            Object.values(this.my_discard).forEach((troop) => {
-                const troopElement = this.createTroopElement(troop);
-                troopElement.classList.add('opa_70');
-                blueDiscardContainer.appendChild(troopElement);
-                this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-            });
-        }
+    /* blueRackContainer */
+    const blueRackContainer = this.createRack('blue');
+    playmatContainer.appendChild(blueRackContainer);
 
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.your_hand).forEach((troop, index) => {
+            const backTroopElement = this.createBackTroopElement(troop, index);
+            blueRackContainer.appendChild(backTroopElement);
 
-        /* blueRackContainer */
-        const blueRackContainer = this.createRack('blue');
-        playmatContainer.appendChild(blueRackContainer);
-    
-        if( this.isCurrentPlayerRed() ) {
-            Object.values(this.your_hand).forEach((troop, index) => {
-                const backTroopElement = this.createBackTroopElement(troop, index);
-                blueRackContainer.appendChild(backTroopElement);
-
-            });
-        }
-        else if( this.isSpectator) {
-            Object.values(this.my_hand).forEach((troop, index) => {
-                const backTroopElement = this.createBackTroopElement(troop, index);
-                blueRackContainer.appendChild(backTroopElement);
-            });
-        }
-        else {
-            Object.values(this.my_hand).forEach(troop => {
-                const troopElement = this.createTroopElement(troop);
-                blueRackContainer.appendChild(troopElement);
-                this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-            });
-        }
-
+        });
+    }
+    else if( this.isSpectator) {
+        Object.values(this.my_hand).forEach((troop, index) => {
+            const backTroopElement = this.createBackTroopElement(troop, index);
+            blueRackContainer.appendChild(backTroopElement);
+        });
+    }
+    else {
+        Object.values(this.my_hand).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            blueRackContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
 
 },
 
@@ -900,7 +894,7 @@ createLine: function( color ) {
     }
     else {
         lineContainer.style.justifyContent = 'center';
-        lineContainer.style.gap = `100px`;
+        lineContainer.style.gap = `20%`;
     }
 
     return lineContainer;
@@ -938,7 +932,7 @@ createRack: function( color ) {
         rackContainer.style.gap = `10px`;
     }
     else {
-        rackContainer.style.width = '532px';
+        rackContainer.style.width = '100%';
         rackContainer.style.gap = `2px`;
     }
 
@@ -976,6 +970,7 @@ createPlaymat: function() {
     else {
         playmatContainer.style.flexDirection = "column";
         playmatContainer.style.height = `833.5px`;
+        playmatContainer.style.width = `542px`;
         if( this.isCurrentPlayerRed() ) {
             playmatContainer.classList.add('board-inverted');
         }
@@ -994,7 +989,7 @@ createDiscard: function( color ) {
         discardContainer.style.height = `833px`;
     }
     else {
-        discardContainer.style.width = `532px`;
+        discardContainer.style.width = `100%`;
         discardContainer.style.height = `200px`;
     }
 
@@ -2805,7 +2800,7 @@ notif_gainMedal: function (notif) {
     });
 
 
-
+    this.players[notif.args.player_id].star += notif.args.nb_medal;
 
 
 
