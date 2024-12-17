@@ -218,7 +218,7 @@ trait BasesTrait  // ATTENTION
             if ($this->player_pref_confirm == 1)
             {
                 $duo_check = $parg1.'_'.$parg2;
-                game::$instance->addPending($this->player_id, "ConfirmBase11", $varg1, $duo_check);
+                game::$instance->addPending($this->player_id, "Base11_Confirm", $varg1, $duo_check);
             }
 
             if ($this->player_pref_confirm == 2)
@@ -260,7 +260,7 @@ trait BasesTrait  // ATTENTION
 
     }
 
-    function argConfirmBase11($parg1, $parg2)
+    function argBase11_Confirm($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -276,7 +276,7 @@ trait BasesTrait  // ATTENTION
         return $ret;
     }
 
-    function ConfirmBase11($parg1, $parg2, $varg1, $varg2)
+    function Base11_Confirm($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_yes") {
             
@@ -555,7 +555,7 @@ trait BasesTrait  // ATTENTION
             {
 
                 $couple_base = $parg1.'_'.$varg1;
-                game::$instance->addPending($this->player_id, "Base41Confirm", $couple_base, $parg2);
+                game::$instance->addPending($this->player_id, "Base41_Confirm", $couple_base, $parg2);
             }
 
             if($this->player_pref_confirm == 2)
@@ -592,7 +592,7 @@ trait BasesTrait  // ATTENTION
 
     }
 
-    public function argBase41Confirm($parg1, $parg2)
+    public function argBase41_Confirm($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -615,7 +615,7 @@ trait BasesTrait  // ATTENTION
         return $ret;
     }
 
-    public function Base41Confirm($parg1, $parg2, $varg1, $varg2)
+    public function Base41_Confirm($parg1, $parg2, $varg1, $varg2)
     {
         if($varg1 == "btn_no")
         {
@@ -701,6 +701,126 @@ trait BasesTrait  // ATTENTION
  
  
      }
+
+     public function argBase51_Step2($parg1, $parg2)
+     {
+         $ret = array();
+         $ret["selectable"] = array();
+         $ret["selected"] = array();
+         $ret['buttons'] = array();
+         $ret['title'] = clienttranslate('${actplayer} activates a special base');
+
+         $ret['titleyou'] = clienttranslate('Special base: ${you} must choose a troop');
+         
+         $troops_discard = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location='discard' AND card_type_arg = '{$this->player_id}'", true );
+         foreach ($troops_discard as $troop_discard)
+         {
+            $ret["selectable"][] = 'troop_'.$troop_discard;
+         }
+
+         $ret['buttons'][] = 'btn_cancel';
+ 
+         
+ 
+         return $ret;
+     }
+ 
+     public function Base51_Step2($parg1, $parg2, $varg1, $varg2)
+     {
+         if($varg1 == "btn_cancel")
+        {
+            game::$instance->addPending($this->player_id, "Base51_Step1", $parg1);
+        }
+ 
+         else
+        {
+            if($this->player_pref_confirm == 1)
+            {
+
+                game::$instance->addPending($this->player_id, "Base51_Confirm", $varg1, $parg1);
+            }
+
+            if($this->player_pref_confirm == 2)
+            {
+                $explode_troop = explode("_", $varg1);
+
+                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+
+                game::$instance->troop->moveCard($explode_troop[1],'hand');
+                self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$explode_troop[1]}'");
+
+                game::$instance->notifyAllPlayers(
+                    'recoverTroopFromDiscard',
+                    clienttranslate('${player_name} recovers a discarded troop'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'infos_troop' => $infos_troop,
+                    )
+                );
+                
+
+                game::$instance->addPending($this->player_id, "VerifBase");
+            
+            }
+ 
+ 
+        }
+
+    }
+
+    public function argBase51_Confirm($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} activates a special base');
+        $ret['titleyou'] = clienttranslate('Special base: ${you} must confirm');
+
+        $ret["selected"][]= $parg1;
+
+
+        $ret['buttons'][] = 'btn_yes';
+        $ret['buttons'][] = 'btn_no';
+
+               
+
+        return $ret;
+    }
+
+    public function Base51_Confirm($parg1, $parg2, $varg1, $varg2)
+    {
+        if($varg1 == "btn_no")
+        {
+            game::$instance->addPending($this->player_id, "Base51_Step1", $parg2);
+        }
+
+        if($varg1 == "btn_yes")
+        {
+            
+            $explode_troop = explode("_", $parg1);
+
+            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+
+            game::$instance->troop->moveCard($explode_troop[1],'hand');
+            self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$explode_troop[1]}'");
+
+            game::$instance->notifyAllPlayers(
+                'recoverTroopFromDiscard',
+                clienttranslate('${player_name} recovers a discarded troop'),
+                array(
+                    'player_name' => $this->player_name,
+                    'infos_troop' => $infos_troop,
+                )
+            );
+
+            game::$instance->addPending($this->player_id, "VerifBase");
+
+        
+        }
+
+
+    }
 
     
 

@@ -2603,8 +2603,8 @@ notif_recoverTroopFromDiscard: function (notif) {
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
     const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
     const troopElement = document.getElementById(`troop_${troop.id}`);
-    const discardId = `${player_color_name}_discard`;
-    const discardContainer = document.getElementById(discardId);
+    const rackId = `${player_color_name}_rack`;
+    const rackContainer = document.getElementById(rackId);
 
 
     if( troop.type_arg == this.player_id) {
