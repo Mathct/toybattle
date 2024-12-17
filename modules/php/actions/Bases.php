@@ -64,6 +64,11 @@ trait BasesTrait  // ATTENTION
                         game::$instance->addPending($this->player_id, "Base51_Step1", $base);
                     }
 
+                    elseif($numero_power == 81) // BATTLE
+                    {
+                        game::$instance->addPending($this->player_id, "Base81_Step1", $base);
+                    }
+
                     else
                     {
                         game::$instance->addPending($this->player_id, "VerifBase");
@@ -821,6 +826,42 @@ trait BasesTrait  // ATTENTION
 
 
     }
+
+
+     /////////// BASE 81 /////////
+
+     public function argBase81_Step1($parg1, $parg2)
+     {
+         $ret = array();
+         $ret["selectable"] = array();
+         $ret["selected"] = array();
+         $ret['buttons'] = array();
+         $ret['title'] = clienttranslate('${actplayer} activates a special base');
+
+         $ret['titleyou'] = clienttranslate('Special base: ${you} can designate a troop from your opponent\'s hand (without seeing it)... Your opponent will not be able to play it on their next turn');
+ 
+         $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg1;
+ 
+         $ret['buttons'][] = 'btn_yes';
+         $ret['buttons'][] = 'btn_no';
+ 
+         return $ret;
+     }
+ 
+     public function Base81_Step1($parg1, $parg2, $varg1, $varg2)
+     {
+         if($varg1 == "btn_no")
+         {
+         game::$instance->addPending($this->player_id, "VerifBase");
+         }
+ 
+         if($varg1 == "btn_yes")
+         {
+            game::$instance->addPending($this->player_id, "VerifBase"); 
+         }
+ 
+ 
+     }
 
     
 
