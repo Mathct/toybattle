@@ -50,14 +50,14 @@
             },
 
             "5": {
-                "name": "Carribean", 
-                "tmdisplay": "carribean", 
+                "name": "Cemetery", 
+                "tmdisplay": "cemetery", 
                 "description": ""
             },
 
             "6": {
-                "name": "Cemetery", 
-                "tmdisplay": "Cemetery", 
+                "name": "Carribean", 
+                "tmdisplay": "carribean", 
                 "description": ""
             },
 

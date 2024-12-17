@@ -2539,6 +2539,11 @@ notif_moveTroopBoardToBoard: function (notif) {
     let deltaX = endRect.left - startRect.left;
     let deltaY = endRect.top - startRect.top;
 
+    if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
+        deltaX = -deltaX;
+        deltaY = -deltaY;
+    }
+
     troopElement.style.zIndex = notif.args.ordre * 10;
 
     // gets rotation, if defined
@@ -2554,15 +2559,18 @@ notif_moveTroopBoardToBoard: function (notif) {
     troopElement.style.transform = newTransform;
 
     const onTransitionEnd = () => {
-
-        troopElement.style.transform = existingTransform;
-
-        const baseData = TB_bases[troop.location_arg];
-
-        troopElement.style.top = player_color_index == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
+        const baseData = TB_bases[notif.args.base_id];
+        const offsetY = player_color_index == this.RED_COLOR ? 2.5 : 0; // Décalage vertical pour les troupes rouges
+    
+        // Fixer top/left pour l'emplacement final
+        troopElement.style.top = `${baseData.top + offsetY}%`;
         troopElement.style.left = `${baseData.left}%`;
-
-        boardContainer.appendChild(troopElement);
+    
+        // Supprimer la transformation après un léger délai
+        setTimeout(() => {
+            troopElement.style.transform = existingTransform;
+        }, 50);
+    
         troopElement.removeEventListener("transitionend", onTransitionEnd);
     };
 

@@ -59,6 +59,11 @@ trait BasesTrait  // ATTENTION
                         game::$instance->addPending($this->player_id, "Base41_Step1", $base);
                     }
 
+                    elseif($numero_power == 51) // CIMETIERE
+                    {
+                        game::$instance->addPending($this->player_id, "Base51_Step1", $base);
+                    }
+
                     else
                     {
                         game::$instance->addPending($this->player_id, "VerifBase");
@@ -643,6 +648,59 @@ trait BasesTrait  // ATTENTION
 
 
     }
+
+
+     /////////// BASE 51 /////////
+
+     public function argBase51_Step1($parg1, $parg2)
+     {
+         $ret = array();
+         $ret["selectable"] = array();
+         $ret["selected"] = array();
+         $ret['buttons'] = array();
+         $ret['title'] = clienttranslate('${actplayer} activates a special base');
+         
+ 
+         $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg1;
+
+         $nb_troops_on_discard = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='discard' AND card_type_arg = '{$this->player_id}'", true));
+         $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
+
+         if(($nb_troops_on_discard >= 1)&&($counttroophand <= 7))
+         {
+            $ret['titleyou'] = clienttranslate('Special base: ${you} can recover a discarded troop');
+
+            $ret['buttons'][] = 'btn_yes';
+            $ret['buttons'][] = 'btn_no';
+
+         }
+
+         else
+         {
+            $ret['titleyou'] = clienttranslate('Special base: ${you} cannot recover a troop');
+            $ret['buttons'][] = 'btn_continue';
+         }
+ 
+         
+ 
+         return $ret;
+     }
+ 
+     public function Base51_Step1($parg1, $parg2, $varg1, $varg2)
+     {
+         if(($varg1 == "btn_no")||($varg1 == "btn_continue"))
+         {
+            game::$instance->addPending($this->player_id, "VerifBase");
+         }
+ 
+         if($varg1 == "btn_yes")
+         {
+            game::$instance->addPending($this->player_id, "Base51_Step2", $parg1);
+            
+         }
+ 
+ 
+     }
 
     
 
