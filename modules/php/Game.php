@@ -669,6 +669,21 @@ class Game extends \Table
         }
     }
 
+    // DEBLOQUER TROUPE EN FIN DE TOUR
+
+    function deblock_troops(int $player_id)
+    {
+        $troops_blocked = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked != 0", true );
+
+        foreach ($troops_blocked as $troop_deblock)
+        {
+            self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_id = '{$troop_deblock}'");
+        }
+
+    }
+
+
+
 
     // DEBUG
 

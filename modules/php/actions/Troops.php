@@ -703,12 +703,12 @@ trait TroopsTrait  // ATTENTION
 
         if($varg1 == 'btn_yes')
         {
-            if($this->player_pref_discard == 1)
+            if($this->player_pref_discard_block == 1)
             {
                 game::$instance->addPending($this->player_id, "Troop5_Step2", $parg1);
             }
 
-            if($this->player_pref_discard == 2)
+            if($this->player_pref_discard_block == 2)
             {
                 $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
                 $count = count($troop_id_opponent_hand);

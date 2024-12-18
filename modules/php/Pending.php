@@ -91,9 +91,9 @@ class Pending extends APP_GameClass
 
         $this->player_pref_confirm = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 100");
 
-        /// PREFERENCE DE DISCARD
+        /// PREFERENCE DE DISCARD OR BLOCK
 
-        $this->player_pref_discard = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 101");
+        $this->player_pref_discard_block = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 101");
     }
 
 
@@ -244,6 +244,7 @@ class Pending extends APP_GameClass
             }
 
             game::$instance->giveExtraTime($this->player_id);
+            game::$instance->deblock_troops($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
@@ -587,6 +588,7 @@ class Pending extends APP_GameClass
             }
 
             game::$instance->giveExtraTime($this->player_id);
+            game::$instance->deblock_troops($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
@@ -637,6 +639,7 @@ class Pending extends APP_GameClass
         if ($varg1 == "btn_pass") {
 
             game::$instance->giveExtraTime($this->player_id);
+            game::$instance->deblock_troops($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
     }

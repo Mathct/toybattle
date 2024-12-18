@@ -30,6 +30,7 @@ trait BasesTrait  // ATTENTION
             if($check == null)
             {
                 game::$instance->giveExtraTime($this->player_id);
+                game::$instance->deblock_troops($this->player_id);
                 game::$instance->addPendingFirst($this->player_id, "NormalTurn");
             }
 
@@ -94,6 +95,7 @@ trait BasesTrait  // ATTENTION
             
             self::DbQuery("DELETE FROM `checkbase`;");
             game::$instance->giveExtraTime($this->player_id);
+            game::$instance->deblock_troops($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
 
 
@@ -842,7 +844,7 @@ trait BasesTrait  // ATTENTION
 
          $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg1;
 
-         $counttroophandopponent_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}'", true));
+         $counttroophandopponent_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true));
 
          if ($counttroophandopponent_noblocked >= 1)
          {
@@ -875,12 +877,12 @@ trait BasesTrait  // ATTENTION
  
          if($varg1 == "btn_yes")
          {
-            if($this->player_pref_discard == 1)
+            if($this->player_pref_discard_block == 1)
             {
                 game::$instance->addPending($this->player_id, "Base81_Step2", $parg1);
             }
 
-            if($this->player_pref_discard == 2)
+            if($this->player_pref_discard_block == 2)
             {
                 
 
@@ -903,19 +905,24 @@ trait BasesTrait  // ATTENTION
 
         $ret['titleyou'] = clienttranslate('${you} must choose a troop to discard');
 
-        $troop_id_opponent_hand_noblocked = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true );
-        $count = count($troop_id_opponent_hand_noblocked);
+        $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
+        $count = count($troop_id_opponent_hand);
+
+        $troops_blocked = self::getObjectListFromDB( "SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked != 0", true );
 
         for ($i=1; $i<=$count; $i++)
         {
-            if($this->player_color_title == 'blue')
+            if(!in_array($i, $troops_blocked))
             {
-                $ret["selectable"][] = 'red_troop_'.$i;
-            }
+                if($this->player_color_title == 'blue')
+                {
+                    $ret["selectable"][] = 'red_troop_'.$i;
+                }
 
-            if($this->player_color_title == 'red')
-            {
-                $ret["selectable"][] = 'blue_troop_'.$i;
+                if($this->player_color_title == 'red')
+                {
+                    $ret["selectable"][] = 'blue_troop_'.$i;
+                }
             }
         }
 
@@ -937,6 +944,15 @@ trait BasesTrait  // ATTENTION
 
         else
         {
+            $explode = explode("_", $varg1);
+
+            $troops_noblocked = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true );
+            $count = count($troops_noblocked);
+            $rand = bga_rand(1, $count);
+
+            $troopid_blocked = $troops_noblocked[$rand-1];
+
+            self::DbQuery("UPDATE troop set card_blocked = $explode[2] WHERE card_id = '{$troopid_blocked}'");
 
 
 
