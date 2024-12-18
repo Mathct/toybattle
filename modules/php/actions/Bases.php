@@ -20,8 +20,8 @@ trait BasesTrait  // ATTENTION
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
         
-        // mode + pool et station sans bases speciales
-        if((game::$instance->gamestate->table_globals[100] == 1)&&($this->board_name != 'pool')&&($this->board_name != 'station'))
+        // mode + pool et station sans bases speciales 
+        if((game::$instance->gamestate->table_globals[100] == 1)&&($this->board_name != 'pool')&&($this->board_name != 'station')&&($this->board_name != 'carribean'))
 
         {
            
@@ -155,7 +155,7 @@ trait BasesTrait  // ATTENTION
         if($counttroophand < 8)
         {
             foreach ($all_bases_a_checker as $allbase){
-                if (($allbase >=10)&&($allbase <=40)&&($allbase != $parg2))  // j'enleve aussi la base declanchée pour le moment
+                if (($allbase >=10)&&($allbase <=40)&&($allbase != $parg2))  // ATTENTION !!!!! j'enleve aussi la base declanchée pour le moment
                 {
                     $all_bases_sans_QG[] = $allbase;
                 }
@@ -838,19 +838,35 @@ trait BasesTrait  // ATTENTION
          $ret['buttons'] = array();
          $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
-         $ret['titleyou'] = clienttranslate('Special base: ${you} can designate a troop from your opponent\'s hand (without seeing it)... Your opponent will not be able to play it on their next turn');
- 
          $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg1;
+
+         $counttroophandopponent = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}'", true));
+
+         if ($counttroophandopponent >= 1)
+         {
+            $ret['titleyou'] = clienttranslate('Special base: ${you} can designate a troop from your opponent\'s hand (without seeing it)... Your opponent will not be able to play it on their next turn');
+            $ret['buttons'][] = 'btn_yes';
+            $ret['buttons'][] = 'btn_no';
  
-         $ret['buttons'][] = 'btn_yes';
-         $ret['buttons'][] = 'btn_no';
+         }
+
+         if ($counttroophandopponent == 0)
+         {
+            $ret['titleyou'] = clienttranslate('Special base: Your opponent has no troops in hand');
+            $ret['buttons'][] = 'btn_continue';
+            
  
+         }
+
+         
+ 
+         
          return $ret;
      }
  
      public function Base81_Step1($parg1, $parg2, $varg1, $varg2)
      {
-         if($varg1 == "btn_no")
+         if(($varg1 == "btn_no")||($varg1 == "btn_continue"))
          {
          game::$instance->addPending($this->player_id, "VerifBase");
          }

@@ -212,9 +212,9 @@ $this->_bases = [
         13 => ["value" => 13, "adjacents" => [12, 15, 16],                 "power" => 0, "top" => 0, "left" => 0],
         14 => ["value" => 14, "adjacents" => [11, 15, 18],                 "power" => 0, "top" => 0, "left" => 0],
         15 => ["value" => 15, "adjacents" => [11, 12, 13, 14, 16, 17, 18], "power" => 0, "top" => 0, "left" => 0],
-        16 => ["value" => 16, "adjacents" => [13, 15, 17, 19, 20],         "power" => 0, "top" => 0, "left" => 0],
-        17 => ["value" => 17, "adjacents" => [15, 16, 18, 19],             "power" => 0, "top" => 0, "left" => 0],
-        18 => ["value" => 18, "adjacents" => [14, 15, 17, 19, 21],         "power" => 0, "top" => 0, "left" => 0],
+        16 => ["value" => 16, "adjacents" => [13, 15, 17, 19, 20],         "power" => 71, "top" => 0, "left" => 0],
+        17 => ["value" => 17, "adjacents" => [15, 16, 18, 19],             "power" => 71, "top" => 0, "left" => 0],
+        18 => ["value" => 18, "adjacents" => [14, 15, 17, 19, 21],         "power" => 71, "top" => 0, "left" => 0],
         19 => ["value" => 19, "adjacents" => [16, 17, 18, 20, 21, 22, 23], "power" => 0, "top" => 0, "left" => 0],
         20 => ["value" => 20, "adjacents" => [16, 19, 23],                 "power" => 0, "top" => 0, "left" => 0],
         21 => ["value" => 21, "adjacents" => [18, 19, 22],                 "power" => 0, "top" => 0, "left" => 0],
@@ -466,6 +466,6 @@ $this->_medals = [
 ];
 
 
-$this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [], [81]];
+$this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81]];
 
 $this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8];

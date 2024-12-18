@@ -20,42 +20,53 @@ trait TroopsTrait  // ATTENTION
     public function VerifTroop($parg1, $parg2, $varg1, $varg2)
     {
 
-        /// il y aura une verif base speciale qui annule l'effet de la troupe sur le board station
+        ///Annule l'effet de la troupe sur les bases speciales du board "station" (71)
+        $numero_power = game::$instance->_bases[$this->board_name][$parg2]['power'];
 
-        $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$parg1}'") %10;
-        
-        
-        if($force_troop == 1)
+        if (($numero_power != 71)||(game::$instance->gamestate->table_globals[100] == 2))
         {
-            game::$instance->addPending($this->player_id, "Troop1_Step1", $parg2);
+
+            $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$parg1}'") %10;
+            
+            
+            if($force_troop == 1)
+            {
+                game::$instance->addPending($this->player_id, "Troop1_Step1", $parg2);
+            }
+
+            if($force_troop == 2)
+            {
+                game::$instance->addPending($this->player_id, "Troop2_Step1", $parg2);
+            }
+
+            if($force_troop == 3)
+            {
+                game::$instance->addPending($this->player_id, "Troop3_Step1", $parg2);
+            }
+
+            if($force_troop == 4)
+            {
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
+
+            if($force_troop == 5)
+            {
+                game::$instance->addPending($this->player_id, "Troop5_Step1", $parg2);
+            }
+
+            if($force_troop == 6)
+            {
+                game::$instance->addPending($this->player_id, "Troop6_Step1", $parg2);
+            }
+
+            if($force_troop >= 7)
+            {
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
+
         }
 
-        if($force_troop == 2)
-        {
-            game::$instance->addPending($this->player_id, "Troop2_Step1", $parg2);
-        }
-
-        if($force_troop == 3)
-        {
-            game::$instance->addPending($this->player_id, "Troop3_Step1", $parg2);
-        }
-
-        if($force_troop == 4)
-        {
-            game::$instance->addPending($this->player_id, "VerifBase");
-        }
-
-        if($force_troop == 5)
-        {
-            game::$instance->addPending($this->player_id, "Troop5_Step1", $parg2);
-        }
-
-        if($force_troop == 6)
-        {
-            game::$instance->addPending($this->player_id, "Troop6_Step1", $parg2);
-        }
-
-        if($force_troop >= 7)
+        else
         {
             game::$instance->addPending($this->player_id, "VerifBase");
         }
