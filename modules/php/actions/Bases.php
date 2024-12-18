@@ -29,6 +29,7 @@ trait BasesTrait  // ATTENTION
 
             if($check == null)
             {
+                game::$instance->giveExtraTime($this->player_id);
                 game::$instance->addPendingFirst($this->player_id, "NormalTurn");
             }
 
@@ -92,6 +93,7 @@ trait BasesTrait  // ATTENTION
         {
             
             self::DbQuery("DELETE FROM `checkbase`;");
+            game::$instance->giveExtraTime($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
 
 
@@ -840,9 +842,9 @@ trait BasesTrait  // ATTENTION
 
          $ret["selected"][]= 'base_'.$this->board_name.'_'.$parg1;
 
-         $counttroophandopponent = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}'", true));
+         $counttroophandopponent_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}'", true));
 
-         if ($counttroophandopponent >= 1)
+         if ($counttroophandopponent_noblocked >= 1)
          {
             $ret['titleyou'] = clienttranslate('Special base: ${you} can designate a troop from your opponent\'s hand (without seeing it)... Your opponent will not be able to play it on their next turn');
             $ret['buttons'][] = 'btn_yes';
@@ -850,7 +852,7 @@ trait BasesTrait  // ATTENTION
  
          }
 
-         if ($counttroophandopponent == 0)
+         if ($counttroophandopponent_noblocked == 0)
          {
             $ret['titleyou'] = clienttranslate('Special base: Your opponent has no troops in hand');
             $ret['buttons'][] = 'btn_continue';
@@ -873,8 +875,73 @@ trait BasesTrait  // ATTENTION
  
          if($varg1 == "btn_yes")
          {
-            game::$instance->addPending($this->player_id, "VerifBase"); 
+            if($this->player_pref_discard == 1)
+            {
+                game::$instance->addPending($this->player_id, "Base81_Step2", $parg1);
+            }
+
+            if($this->player_pref_discard == 2)
+            {
+                
+
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
+            
          }
+ 
+ 
+     }
+
+
+     public function argBase81_Step2($parg1, $parg2)
+     {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} places a troop');
+
+        $ret['titleyou'] = clienttranslate('${you} must choose a troop to discard');
+
+        $troop_id_opponent_hand_noblocked = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true );
+        $count = count($troop_id_opponent_hand_noblocked);
+
+        for ($i=1; $i<=$count; $i++)
+        {
+            if($this->player_color_title == 'blue')
+            {
+                $ret["selectable"][] = 'red_troop_'.$i;
+            }
+
+            if($this->player_color_title == 'red')
+            {
+                $ret["selectable"][] = 'blue_troop_'.$i;
+            }
+        }
+
+
+        $ret['buttons'][] = 'btn_cancel';
+
+         
+ 
+         
+         return $ret;
+     }
+ 
+     public function Base81_Step2($parg1, $parg2, $varg1, $varg2)
+     {
+        if($varg1 == 'btn_cancel')
+        {
+            game::$instance->addPending($this->player_id, "Base81_Step1", $parg1);
+        }
+
+        else
+        {
+
+
+
+            game::$instance->addPending($this->player_id, "VerifBase");
+        }
  
  
      }

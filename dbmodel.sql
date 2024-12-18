@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `troop` (
   `card_location` varchar(50) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
   `card_ordre` int(2) unsigned DEFAULT 1,
+  `card_blocked` int(2) unsigned DEFAULT 0,
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

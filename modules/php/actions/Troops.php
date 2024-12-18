@@ -210,12 +210,12 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
+        $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
 
-        if($counttroophand >= 1)
+        if($counttroophand_noblocked >= 1)
         {
             $place_ok = 0;
-            $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+            $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
             foreach ($list_troop as $troop)
             {
                 $troop_id = 'troop_'.$troop;
@@ -275,7 +275,7 @@ trait TroopsTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} places a troop');
         $ret['titleyou'] = clienttranslate('${you} must choose a troop');
 
-        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'  AND card_blocked = 0", true);
         foreach ($list_troop as $troop)
         {
             $troop_id = 'troop_'.$troop;

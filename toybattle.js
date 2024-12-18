@@ -1679,9 +1679,11 @@ notif_moveTroop: function(notif)
 
         // rename Troop id and unhide it
         let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
-
+        console.log( 'moving_troop_id', moving_troop_id);
         const troopElement = document.getElementById(moving_troop_id);
+        console.log( 'troopelementid', troopElement.id);
         troopElement.id = `troop_${troop.id}`;
+        console.log( 'troopid', `troop_${troop.id}`);
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;
     
@@ -2539,15 +2541,42 @@ notif_moveTroopBoardToBoard: function (notif) {
     let deltaX = endRect.left - startRect.left;
     let deltaY = endRect.top - startRect.top;
 
-    if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
+    console.log( 'player_color',player_color);
+
+    if (this.isCurrentPlayerRed() && player_color == this.BLUE_COLOR) {
         deltaX = -deltaX;
         deltaY = -deltaY;
     }
+    if (this.isCurrentPlayerBlue() && player_color == this.BLUE_COLOR) {
+
+    }
+    if( this.isSpectator && player_color == this.BLUE_COLOR) {
+
+    }
+    if (this.isCurrentPlayerRed() && player_color == this.RED_COLOR) {
+
+    }
+    if (this.isCurrentPlayerBlue() && player_color == this.RED_COLOR) {
+        deltaX = -deltaX;
+        deltaY = -deltaY;
+    }
+    if( this.isSpectator && player_color == this.RED_COLOR) {
+        deltaX = -deltaX;
+        deltaY = -deltaY;
+
+    }
+
 
     troopElement.style.zIndex = notif.args.ordre * 10;
 
     // gets rotation, if defined
     const existingTransform = window.getComputedStyle(troopElement).transform;
+
+    console.log('existing transform', existingTransform);
+
+    console.log( 'troop_top0', troopElement.style.top);
+    console.log( 'troop_left0', troopElement.style.left);
+
 
 
     // new transformation
@@ -2559,17 +2588,23 @@ notif_moveTroopBoardToBoard: function (notif) {
     troopElement.style.transform = newTransform;
 
     const onTransitionEnd = () => {
-        const baseData = TB_bases[notif.args.base_id];
-        const offsetY = player_color_index == this.RED_COLOR ? 2.5 : 0; // Décalage vertical pour les troupes rouges
+        //const baseData = TB_bases[notif.args.base_id];
+        //const offsetY = player_color_index == this.RED_COLOR ? 2.5 : 0; // Décalage vertical pour les troupes rouges
     
         // Fixer top/left pour l'emplacement final
-        troopElement.style.top = `${baseData.top + offsetY}%`;
-        troopElement.style.left = `${baseData.left}%`;
+        troopElement.style.top = destinationContainer.style.top;
+        troopElement.style.left = destinationContainer.style.left;
+
+
+        //troopElement.style.top += deltaY;
+        //troopElement.style.left += deltaX;
+        troopElement.style.transition = 'none';
+        troopElement.style.transform = existingTransform;
+
+        console.log( 'troop_top', troopElement.style.top);
+        console.log( 'troop_left', troopElement.style.left);
     
-        // Supprimer la transformation après un léger délai
-        setTimeout(() => {
-            troopElement.style.transform = existingTransform;
-        }, 50);
+        
     
         troopElement.removeEventListener("transitionend", onTransitionEnd);
     };
@@ -2602,7 +2637,10 @@ notif_recoverTroopFromDiscard: function (notif) {
     const player_color = this.players[troop.type_arg].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
     const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
+
     const troopElement = document.getElementById(`troop_${troop.id}`);
+    dojo.removeClass(`troop_${troop.id}`, 'opa_70');
+
     const rackId = `${player_color_name}_rack`;
     const rackContainer = document.getElementById(rackId);
 
@@ -2833,24 +2871,28 @@ notif_gainMedal: function (notif) {
                     // Réduire l'échelle pour la faire disparaître
                     medalElement.style.transform = 'scale(0)';
                     
-                    // Après disparition, traiter la médaille destination
-                    setTimeout(() => {
-                        // Étape 2 : Modifier la médaille destination
-                        medalDestination.classList.remove('null_medal');
-                        medalDestination.classList.add('full_medal');
-                        
-    
-                        // Augmenter la taille de la médaille destination
-                        medalDestination.style.transform = 'scale(2)';
-    
+                    if (medalDestination) 
+                    {
+
+                        // Après disparition, traiter la médaille destination
                         setTimeout(() => {
-                            // Réduire l'échelle de la médaille destination à sa taille normale
-                            medalDestination.style.transform = 'scale(1)';
-    
-                            // Réinitialiser l'index pour la prochaine médaille
+                            // Étape 2 : Modifier la médaille destination
+                            medalDestination.classList.remove('null_medal');
+                            medalDestination.classList.add('full_medal');
                             
-                        }, 500); // Durée pour redescendre à `scale(1)`
-                    }, 500); // Durée après disparition de la médaille source
+        
+                            // Augmenter la taille de la médaille destination
+                            medalDestination.style.transform = 'scale(2)';
+        
+                            setTimeout(() => {
+                                // Réduire l'échelle de la médaille destination à sa taille normale
+                                medalDestination.style.transform = 'scale(1)';
+        
+                                // Réinitialiser l'index pour la prochaine médaille
+                                
+                            }, 500); // Durée pour redescendre à `scale(1)`
+                        }, 500); // Durée après disparition de la médaille source
+                    }
                 }, 500); // Durée pour agrandir et réduire la médaille source
             }, animationDelay); // Décalage pour chaque médaille
         }

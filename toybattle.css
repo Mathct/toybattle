@@ -297,6 +297,11 @@ body {
     opacity:0.7;
 }
 
+.opa_70.selectable,
+.opa_70.selected {
+    opacity: 1 !important;
+}
+
 .medals {
     background-image: url('img/TB_Medals.png');
     background-size: 200% 100%;

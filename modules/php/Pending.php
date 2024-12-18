@@ -115,6 +115,8 @@ class Pending extends APP_GameClass
         $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
         $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
+        $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
+
 
 
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
@@ -129,8 +131,8 @@ class Pending extends APP_GameClass
         }
 
 
-        // TESTE SI TROUPE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
-        if ($counttroophand >= 1) 
+        // TESTE SI TROUPE NON BLOQUEE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
+        if ($counttroophand_noblocked >= 1) 
         {
             $place_ok = 0;
             $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
@@ -241,6 +243,7 @@ class Pending extends APP_GameClass
                 );
             }
 
+            game::$instance->giveExtraTime($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
@@ -268,7 +271,7 @@ class Pending extends APP_GameClass
 
 
 
-        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
             foreach ($list_troop as $troop)
             {
                 $troop_id = 'troop_'.$troop;
@@ -583,7 +586,7 @@ class Pending extends APP_GameClass
                 );
             }
 
-
+            game::$instance->giveExtraTime($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
@@ -633,6 +636,7 @@ class Pending extends APP_GameClass
     {
         if ($varg1 == "btn_pass") {
 
+            game::$instance->giveExtraTime($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
     }

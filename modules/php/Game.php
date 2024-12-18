@@ -657,6 +657,14 @@ class Game extends \Table
 
                     )
                 );
+
+                // attendre que les animations de medailles soient terminées
+
+                /*$time = 1200 * $count_medals;
+                self::notifyAllPlayers( 'simplePause', '', [ 'time' => $time] ); */
+
+                // Test Fin de partie
+
             }
         }
     }
@@ -732,7 +740,7 @@ class Game extends \Table
         $pending =  self::getObjectFromDB("SELECT* FROM pending order by id desc limit 1");
         $this->callPending($pending, true, $arg1);
         self::DbQuery("delete from pending where id=" . $pending['id']);
-        $this->giveExtraTime(self::getActivePlayerId());
+        //$this->giveExtraTime(self::getActivePlayerId());
         $this->gamestate->nextState('next');
     }
 
@@ -744,7 +752,7 @@ class Game extends \Table
         $pending =  self::getObjectFromDB("SELECT* FROM pending order by id desc limit 1");
         $this->callPending($pending, true, $arg1);
         self::DbQuery("delete from pending where id=" . $pending['id']);
-        $this->giveExtraTime(self::getActivePlayerId());
+        //$this->giveExtraTime(self::getActivePlayerId());
         $this->gamestate->nextState('next');
     }
 
