@@ -409,7 +409,16 @@ trait TroopsTrait  // ATTENTION
 
                 if($win == 0)
                 {
-                    game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                    if(in_array($numero_base, $this->opponent_start_base))
+                    {
+                        game::$instance->addPending($this->player_id, "FinGame1", 3);
+                    }
+                    else
+                    {
+                        game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                    }
+
+                    
                 }
 
                 if($win == 1)
@@ -497,7 +506,15 @@ trait TroopsTrait  // ATTENTION
 
             if($win == 0)
             {
-                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                if(in_array($numero_base, $this->opponent_start_base))
+                    {
+                        game::$instance->addPending($this->player_id, "FinGame1", 3);
+                    }
+                    else
+                    {
+                        game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                    }
+                
             }
 
             if($win == 1)

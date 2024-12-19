@@ -271,13 +271,13 @@ class Game extends \Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         if (!$this->isSpectator()) {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id , card_type type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
             $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
             $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}' ORDER BY card_type");
         } else {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS card_id, FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS card_id, FLOOR(card_type / 10), card_blocked blocked type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
             $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type  FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}' ORDER BY card_type");
             $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}' ORDER BY card_type");
         }
@@ -670,7 +670,7 @@ class Game extends \Table
                 // attendre que les animations de medailles soient terminées
 
                 $time = 620 * $count_medals;
-                self::notifyAllPlayers( 'simplePause', '', [ 'time' => $time] );
+                self::notifyAllPlayers('simplePause', '', ['time' => $time]);
 
                 // Test Fin de partie
 
@@ -678,11 +678,9 @@ class Game extends \Table
                 $total_player_medals = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$idplayer}'");
 
 
-                if($total_player_medals >= $max_medals)
-                {
+                if ($total_player_medals >= $max_medals) {
                     $win = 1;
                 }
-
             }
         }
 
@@ -710,7 +708,7 @@ class Game extends \Table
                 'unhideTroopOnRack_private',
                 '',
                 array(
-                    
+
                     'infos_troop_before' => $infos_troop_before,
                     'infos_troop_after' => $infos_troop_after,
 
@@ -722,13 +720,12 @@ class Game extends \Table
                 'unhideTroopOnRack_public',
                 '',
                 array(
-                    
+
                     'card_deblocked' => $infos_troop_before['blocked'],
 
 
                 )
             );
-            
         }
     }
 
