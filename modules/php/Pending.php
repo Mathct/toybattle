@@ -25,12 +25,11 @@ class Pending extends APP_GameClass
         $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
         $this->player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$this->player_id}'");
-        
+
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
-        if ($p['player_color'] == "4f66a2") 
-        {
+        if ($p['player_color'] == "4f66a2") {
             //DECLARATION DU DECK
             $this->player_deck = "deckblue";
 
@@ -39,30 +38,25 @@ class Pending extends APP_GameClass
 
             //DECLARATION DU NUMERO DE COULEUR
             $this->player_color_number = 1;
-            
+
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
-            {
-            $this->start_base = [1];
-            $this->opponent_start_base = [41];
-            }
-            
-            if ($this->board_name =='pool')
-            {
-            $this->start_base = [1,2];
-            $this->opponent_start_base = [41,42];
+            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield')) {
+                $this->start_base = [1];
+                $this->opponent_start_base = [41];
             }
 
-            if ($this->board_name =='carribean')
-            {
-            $this->start_base = [1,2];
-            $this->opponent_start_base = [41];
+            if ($this->board_name == 'pool') {
+                $this->start_base = [1, 2];
+                $this->opponent_start_base = [41, 42];
             }
 
+            if ($this->board_name == 'carribean') {
+                $this->start_base = [1, 2];
+                $this->opponent_start_base = [41];
+            }
         }
 
-        if ($p['player_color'] == "d1553e") 
-        {
+        if ($p['player_color'] == "d1553e") {
             //DECLARATION DU DECK
             $this->player_deck = "deckred";
 
@@ -73,25 +67,22 @@ class Pending extends APP_GameClass
             $this->player_color_number = 2;
 
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
-            {
-            $this->start_base = [41];
-            $this->opponent_start_base = [1];
+            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield')) {
+                $this->start_base = [41];
+                $this->opponent_start_base = [1];
             }
 
-            if ($this->board_name =='pool')
-            {
-            $this->start_base = [41,42];
-            $this->opponent_start_base = [1,2];
+            if ($this->board_name == 'pool') {
+                $this->start_base = [41, 42];
+                $this->opponent_start_base = [1, 2];
             }
 
-            if ($this->board_name =='carribean')
-            {
-            $this->start_base = [41];
-            $this->opponent_start_base = [1,2];
+            if ($this->board_name == 'carribean') {
+                $this->start_base = [41];
+                $this->opponent_start_base = [1, 2];
             }
         }
-        
+
 
         /// PREFERENCE DE CONFIRMATION
 
@@ -125,40 +116,31 @@ class Pending extends APP_GameClass
 
 
 
-        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
-        {
+        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
             $ret['buttons'][] = 'btn_draw_2';
         }
 
-        if ((($counttroopdeck == 1) && ($counttroophand <= 7)) || (($counttroopdeck >= 1) && ($counttroophand == 7))) 
-        {
+        if ((($counttroopdeck == 1) && ($counttroophand <= 7)) || (($counttroopdeck >= 1) && ($counttroophand == 7))) {
 
             $ret['buttons'][] = 'btn_draw_1';
         }
 
 
         // TESTE SI TROUPE NON BLOQUEE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
-        if ($counttroophand_noblocked >= 1) 
-        {
+        if ($counttroophand_noblocked >= 1) {
             $place_ok = 0;
             $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
-            foreach ($list_troop as $troop)
-            {
-                $troop_id = 'troop_'.$troop;
+            foreach ($list_troop as $troop) {
+                $troop_id = 'troop_' . $troop;
                 $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
-                if(count($possible_base) >= 1)
-                {
+                if (count($possible_base) >= 1) {
                     $place_ok = 1;
                 }
-
-
             }
-            
-            if ($place_ok == 1)
-            {
+
+            if ($place_ok == 1) {
                 $ret['buttons'][] = 'btn_place_troop';
             }
-            
         }
 
 
@@ -169,24 +151,21 @@ class Pending extends APP_GameClass
     function NormalTurn($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2")) && ($this->player_pref_confirm == 1)) 
-        {
+        if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2")) && ($this->player_pref_confirm == 1)) {
             game::$instance->addPending($this->player_id, "ConfirmDraw", $varg1);
         }
 
-        if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2")) && ($this->player_pref_confirm == 2)) 
-        {
-            
+        if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2")) && ($this->player_pref_confirm == 2)) {
+
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
-            if ($varg1 == 'btn_draw_2') 
-            {
+            if ($varg1 == 'btn_draw_2') {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
-                
-                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
-                $type2 = $this->player_color_number.$new_troops[1]['type']%10;
-                
+
+                $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
+                $type2 = $this->player_color_number . $new_troops[1]['type'] % 10;
+
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
@@ -205,7 +184,7 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                $type0 = $this->player_color_number."0";
+                $type0 = $this->player_color_number . "0";
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
@@ -223,11 +202,10 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($varg1 == 'btn_draw_1') 
-            {
+            if ($varg1 == 'btn_draw_1') {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
-                
-                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+
+                $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
                 game::$instance->notifyPlayer(
                     $this->player_id,
@@ -244,7 +222,7 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                $type0 = $this->player_color_number."0";
+                $type0 = $this->player_color_number . "0";
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
@@ -267,13 +245,11 @@ class Pending extends APP_GameClass
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
-        if (($varg1 == "btn_place_troop")) 
-        {
+        if (($varg1 == "btn_place_troop")) {
             game::$instance->addPending($this->player_id, "ChooseTroop");
         }
 
-        if ($varg1 == null) 
-        {
+        if ($varg1 == null) {
             game::$instance->addPending($this->player_id, "FinGame1");
         }
     }
@@ -286,25 +262,21 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} places a troop');
-        $ret['titleyou'] = clienttranslate('${you} must choose a troop');
+        $ret['title'] = clienttranslate('${actplayer} places a Troop');
+        $ret['titleyou'] = clienttranslate('${you} must choose a Troop to place');
 
 
 
         $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
-            foreach ($list_troop as $troop)
-            {
-                $troop_id = 'troop_'.$troop;
-                $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
-                if(count($possible_base) >= 1)
-                {
-                    $ret["selectable"][] = $troop_id;
-                }
-
-
+        foreach ($list_troop as $troop) {
+            $troop_id = 'troop_' . $troop;
+            $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
+            if (count($possible_base) >= 1) {
+                $ret["selectable"][] = $troop_id;
             }
+        }
 
-        
+
 
         $ret['buttons'][] = 'btn_cancel';
 
@@ -314,13 +286,9 @@ class Pending extends APP_GameClass
 
     function ChooseTroop($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "btn_cancel") 
-        {
+        if ($varg1 == "btn_cancel") {
             game::$instance->addPending($this->player_id, "NormalTurn");
-        } 
-        
-        else 
-        {
+        } else {
             game::$instance->addPending($this->player_id, "ChooseBase", $varg1);
         }
     }
@@ -331,32 +299,29 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} places a troop');
-        
+        $ret['title'] = clienttranslate('${actplayer} places a Troop');
 
-             
+
+
 
         $ret["selected"][] = $parg1;
 
-                
+
         $possible_base = game::$instance->getPossibleBase($this->start_base, $parg1, $this->player_id);
 
-        if(count($possible_base) >= 1)
-        {
+        if (count($possible_base) >= 1) {
             $ret['titleyou'] = clienttranslate('${you} must choose a base');
+        } else {
+            $ret['titleyou'] = clienttranslate('${you} cannot place this Troop');
         }
-        else
-        {
-            $ret['titleyou'] = clienttranslate('${you} cannot place this troop');
-        }
-        
+
         foreach ($possible_base as $base) {
 
             $ret["selectable"][] = "base_" . $this->board_name . "_" . $base;
         }
-        
-        
-        
+
+
+
         $ret['buttons'][] = 'btn_cancel';
 
 
@@ -366,21 +331,15 @@ class Pending extends APP_GameClass
     function ChooseBase($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ($varg1 == "btn_cancel") 
-        {
+        if ($varg1 == "btn_cancel") {
             game::$instance->addPending($this->player_id, "ChooseTroop");
-        } 
-        
-        else 
-        {
+        } else {
 
-            if ($this->player_pref_confirm == 1) 
-            {
+            if ($this->player_pref_confirm == 1) {
                 game::$instance->addPending($this->player_id, "ConfirmPlace", $parg1, $varg1);
             }
 
-            if ($this->player_pref_confirm == 2) 
-            {
+            if ($this->player_pref_confirm == 2) {
                 $explode_troop = explode("_", $parg1);
                 $explode_base = explode("_", $varg1);
 
@@ -413,11 +372,11 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                
+
                 $numero_base = $explode_base[2];
                 $troop_id = $explode_troop[1];
 
-                self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+                self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
 
                 game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
@@ -445,7 +404,7 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} places a troop');
+        $ret['title'] = clienttranslate('${actplayer} places a Troop');
         $ret['titleyou'] = clienttranslate('${you} must confirm');
 
         $ret["selected"][] = $parg1;
@@ -479,7 +438,7 @@ class Pending extends APP_GameClass
                 'moveTroop',
                 clienttranslate('${player_name} places ${log1}'),
                 array(
-                    
+
                     'base_id' => $parg2,
                     'ordre' => $compteur_troop_sur_base + 1,
                     'player_name' => $this->player_name,
@@ -491,22 +450,20 @@ class Pending extends APP_GameClass
                 )
             );
 
-            
 
-            
+
+
 
             $numero_base = $explode_base[2];
             $troop_id = $explode_troop[1];
 
-            self::DbQuery( "INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})" );
+            self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
 
-                        
+
             game::$instance->testZoneAndStar($numero_base, $this->board_name);
-            
+
 
             game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
-
-            
         }
 
         if ($varg1 == "btn_no") {
@@ -521,7 +478,7 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} draws troops');
+        $ret['title'] = clienttranslate('${actplayer} draws Troops');
         $ret['titleyou'] = clienttranslate('${you} must confirm');
 
 
@@ -540,25 +497,24 @@ class Pending extends APP_GameClass
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
 
-            if ($parg1 == 'btn_draw_2') 
-            {
+            if ($parg1 == 'btn_draw_2') {
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
-                
 
-              
-                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
-                $type2 = $this->player_color_number.$new_troops[1]['type']%10;
-                    
-               
-                
+
+
+                $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
+                $type2 = $this->player_color_number . $new_troops[1]['type'] % 10;
+
+
+
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
                     clienttranslate('You draw ${log1} ${log2}'),
                     array(
-                        
+
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -572,7 +528,7 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                $type0 = $this->player_color_number."0";
+                $type0 = $this->player_color_number . "0";
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
@@ -590,11 +546,10 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($parg1 == 'btn_draw_1') 
-            {
+            if ($parg1 == 'btn_draw_1') {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
-                
-                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+
+                $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
                 game::$instance->notifyPlayer(
                     $this->player_id,
@@ -611,7 +566,7 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                $type0 = $this->player_color_number."0";
+                $type0 = $this->player_color_number . "0";
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
@@ -665,8 +620,8 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('END GAME: ${actplayer} ne peut plus jouer');
-        $ret['titleyou'] = clienttranslate('END GAME: ${you} ne pouvez plus jouer');
+        $ret['title'] = clienttranslate('END GAME: ${actplayer} cannot draw or place a Troop');
+        $ret['titleyou'] = clienttranslate('END GAME: ${you} cannot draw or place a Troop');
 
 
         $ret['buttons'][] = 'btn_pass';
