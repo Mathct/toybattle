@@ -682,6 +682,52 @@ class Game extends \Table
 
     }
 
+/// ICONES POUR LOG
+
+    function getLogsType( $type ) 
+{
+    if($type == 10)
+    {return "<div class='icon_log icon_blue icon_troop_0' title=''></div>";}
+    if($type == 11)
+    {return "<div class='icon_log icon_blue icon_troop_1' title=''></div>";}
+    if($type == 12)
+    {return "<div class='icon_log icon_blue icon_troop_2' title=''></div>";}
+    if($type == 13)
+    {return "<div class='icon_log icon_blue icon_troop_3' title=''></div>";}
+    if($type == 14)
+    {return "<div class='icon_log icon_blue icon_troop_4' title=''></div>";}
+    if($type == 15)
+    {return "<div class='icon_log icon_blue icon_troop_5' title=''></div>";}
+    if($type == 16)
+    {return "<div class='icon_log icon_blue icon_troop_6' title=''></div>";}
+    if($type == 17)
+    {return "<div class='icon_log icon_blue icon_troop_7' title=''></div>";}
+    if($type == 18)
+    {return "<div class='icon_log icon_blue icon_troop_8' title=''></div>";}
+    if($type == 20)
+    {return "<div class='icon_log icon_red icon_troop_0' title=''></div>";}
+    if($type == 21)
+    {return "<div class='icon_log icon_red icon_troop_1' title=''></div>";}
+    if($type == 22)
+    {return "<div class='icon_log icon_red icon_troop_2' title=''></div>";}
+    if($type == 23)
+    {return "<div class='icon_log icon_red icon_troop_3' title=''></div>";}
+    if($type == 24)
+    {return "<div class='icon_log icon_red icon_troop_4' title=''></div>";}
+    if($type == 25)
+    {return "<div class='icon_log icon_red icon_troop_5' title=''></div>";}
+    if($type == 26)
+    {return "<div class='icon_log icon_red icon_troop_6' title=''></div>";}
+    if($type == 27)
+    {return "<div class='icon_log icon_red icon_troop_7' title=''></div>";}
+    if($type == 28)
+    {return "<div class='icon_log icon_red icon_troop_8' title=''></div>";}
+    
+       
+
+}
+
+
 
 
 

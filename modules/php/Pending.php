@@ -36,6 +36,9 @@ class Pending extends APP_GameClass
 
             //DECLARATION DE LA COULEUR TITLE
             $this->player_color_title = "blue";
+
+            //DECLARATION DU NUMERO DE COULEUR
+            $this->player_color_number = 1;
             
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
@@ -65,6 +68,9 @@ class Pending extends APP_GameClass
 
             //DECLARATION DE LA COULEUR TITLE
             $this->player_color_title = "red";
+
+            //DECLARATION DU NUMERO DE COULEUR
+            $this->player_color_number = 2;
 
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name =='castle')||($this->board_name =='clouds')||($this->board_name =='jungle')||($this->board_name =='cemetery')||($this->board_name =='station')||($this->board_name =='battlefield'))
@@ -178,16 +184,20 @@ class Pending extends APP_GameClass
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
-
+                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+                $type2 = $this->player_color_number.$new_troops[1]['type']%10;
+                
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw icon1 icon2 (icon a mettre en place plus tard)'),
+                    clienttranslate('You draw ${log1} ${log2}'),
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
-                        'old_troops' => $old_troops
+                        'old_troops' => $old_troops,
+                        'log1' => game::$instance->getLogsType($type1),
+                        'log2' => game::$instance->getLogsType($type2),
 
 
 
@@ -195,15 +205,18 @@ class Pending extends APP_GameClass
                     )
                 );
 
+                $type0 = $this->player_color_number."0";
+
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws 2 troops'),
+                    clienttranslate('${player_name} draws ${log0} ${log0}'),
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 2,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0)
 
 
                     )
@@ -214,29 +227,35 @@ class Pending extends APP_GameClass
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
                 
+                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                    clienttranslate('You draw ${log1}'),
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
-                        'new_troops' => $new_troops
+                        'new_troops' => $new_troops,
+                        'log1' => game::$instance->getLogsType($type1),
 
 
 
                     )
                 );
 
+                $type0 = $this->player_color_number."0";
+
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws 1 troop'),
+                    clienttranslate('${player_name} draws ${log0}'),
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 1,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
 
 
                     )
@@ -375,10 +394,11 @@ class Pending extends APP_GameClass
 
                 $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
 
+                $type1 = $infos_troop['type'];
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
-                    clienttranslate('${player_name} places a troop'),
+                    clienttranslate('${player_name} places ${log1}'),
                     array(
                         'base_id' => $varg1,
                         'ordre' => $compteur_troop_sur_base + 1,
@@ -386,7 +406,8 @@ class Pending extends APP_GameClass
                         'player_id' => $this->player_id,
                         'origine' => "hand",
                         'infos_troop' => $infos_troop,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log1' => game::$instance->getLogsType($type1),
 
 
                     )
@@ -452,10 +473,11 @@ class Pending extends APP_GameClass
 
             $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
 
+            $type1 = $infos_troop['type'];
 
             game::$instance->notifyAllPlayers(
                 'moveTroop',
-                clienttranslate('${player_name} places a troop'),
+                clienttranslate('${player_name} places ${log1}'),
                 array(
                     
                     'base_id' => $parg2,
@@ -464,7 +486,8 @@ class Pending extends APP_GameClass
                     'player_id' => $this->player_id,
                     'origine' => "hand",
                     'infos_troop' => $infos_troop,
-                    'nb_troops_hand' => $nb_troops_hand
+                    'nb_troops_hand' => $nb_troops_hand,
+                    'log1' => game::$instance->getLogsType($type1),
                 )
             );
 
@@ -521,17 +544,27 @@ class Pending extends APP_GameClass
             {
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
+
+                
+
+              
+                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+                $type2 = $this->player_color_number.$new_troops[1]['type']%10;
+                    
+               
                 
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw icon1 icon2 (icon a mettre en place plus tard)'),
+                    clienttranslate('You draw ${log1} ${log2}'),
                     array(
                         
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
-                        'old_troops' => $old_troops
+                        'old_troops' => $old_troops,
+                        'log1' => game::$instance->getLogsType($type1),
+                        'log2' => game::$instance->getLogsType($type2),
 
 
 
@@ -539,15 +572,18 @@ class Pending extends APP_GameClass
                     )
                 );
 
+                $type0 = $this->player_color_number."0";
+
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws 2 troops'),
+                    clienttranslate('${player_name} draws ${log0} ${log0}'),
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 2,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
 
 
                     )
@@ -558,29 +594,35 @@ class Pending extends APP_GameClass
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
                 
+                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                    clienttranslate('You draw ${log1}'),
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
-                        'new_troops' => $new_troops
+                        'new_troops' => $new_troops,
+                        'log1' => game::$instance->getLogsType($type1),
 
 
 
                     )
                 );
 
+                $type0 = $this->player_color_number."0";
+
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws 1 troop'),
+                    clienttranslate('${player_name} draws ${log0}'),
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 1,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
 
 
                     )

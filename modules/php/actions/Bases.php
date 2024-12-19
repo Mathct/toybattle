@@ -243,15 +243,17 @@ trait BasesTrait  // ATTENTION
                 game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'hand', 0);
                 self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troopmax[0]['id']}'" );
 
+                $type1 = $infos_troopmax[0]['type'];
                 
                 game::$instance->notifyAllPlayers(
                     'recoverTroopFromBoard',
-                    clienttranslate('${player_name} recovers a troop'),
+                    clienttranslate('${player_name} recovers ${log1} from board'),
                     array(
                         
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troopmax[0],
                         'nb_troops_hand' => $nb_troops_hand,
+                        'log1' => game::$instance->getLogsType($type1),
                         
                     )
                 );
@@ -301,15 +303,17 @@ trait BasesTrait  // ATTENTION
             game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'hand', 0);
             self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troopmax[0]['id']}'" );
 
+            $type1 = $infos_troopmax[0]['type'];
             
             game::$instance->notifyAllPlayers(
                 'recoverTroopFromBoard',
-                clienttranslate('${player_name} recovers a troop'),
+                clienttranslate('${player_name} recovers ${log1} from board'),
                 array(
                     
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troopmax[0],
                     'nb_troops_hand' => $nb_troops_hand,
+                    'log1' => game::$instance->getLogsType($type1),
                     
                 )
             );
@@ -375,30 +379,36 @@ trait BasesTrait  // ATTENTION
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
             
             $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+
+            $type1 = $this->player_color_number.$new_troops[0]['type']%10;
             
             game::$instance->notifyPlayer(
                 $this->player_id,
                 'drawTroopPrivate',
-                clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                clienttranslate('You draw ${log1}'),
                 array(
                     'player_id' => $this->player_id,
                     'origine' => "deck",
-                    'new_troops' => $new_troops
+                    'new_troops' => $new_troops,
+                    'log1' => game::$instance->getLogsType($type1),
 
 
 
                 )
             );
 
+            $type0 = $this->player_color_number."0";
+
             game::$instance->notifyAllPlayers(
                 'drawTroopPublic',
-                clienttranslate('${player_name} draws 1 troop'),
+                clienttranslate('${player_name} draws ${log0}'),
                 array(
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
                     'origine' => "deck",
                     'nb_troops' => 1,
-                    'nb_troops_hand' => $nb_troops_hand
+                    'nb_troops_hand' => $nb_troops_hand,
+                    'log0' => game::$instance->getLogsType($type0),
 
 
                 )
@@ -578,14 +588,17 @@ trait BasesTrait  // ATTENTION
                 game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'board', $explode2[2]);
                 self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$infos_troopmax[0]['id']}'");
     
+                $type1 = $infos_troopmax[0]['type'];
+
                 game::$instance->notifyAllPlayers(
                     'moveTroopBoardToBoard',
-                    clienttranslate('${player_name} moves an opposing troop'),
+                    clienttranslate('${player_name} moves ${log1}'),
                     array(
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troopmax[0],
                         'base_id' => $explode2[2],
                         'ordre' => $compteur_troop_sur_base + 1,
+                        'log1' => game::$instance->getLogsType($type1),
                         
                     )
                 );
@@ -641,14 +654,17 @@ trait BasesTrait  // ATTENTION
             game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'board', $explode[5]);
             self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$infos_troopmax[0]['id']}'");
 
+            $type1 = $infos_troopmax[0]['type'];
+
             game::$instance->notifyAllPlayers(
                 'moveTroopBoardToBoard',
-                clienttranslate('${player_name} moves an opposing troop'),
+                clienttranslate('${player_name} moves ${log1}'),
                 array(
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troopmax[0],
                     'base_id' => $explode[5],
                     'ordre' => $compteur_troop_sur_base + 1,
+                    'log1' => game::$instance->getLogsType($type1),
                     
                 )
             );
@@ -758,12 +774,15 @@ trait BasesTrait  // ATTENTION
                 game::$instance->troop->moveCard($explode_troop[1],'hand');
                 self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$explode_troop[1]}'");
 
+                $type1 = $infos_troop['type'];
+
                 game::$instance->notifyAllPlayers(
                     'recoverTroopFromDiscard',
-                    clienttranslate('${player_name} recovers a discarded troop'),
+                    clienttranslate('${player_name} recovers ${log1} from discard'),
                     array(
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troop,
+                        'log1' => game::$instance->getLogsType($type1),
                     )
                 );
                 
@@ -814,12 +833,15 @@ trait BasesTrait  // ATTENTION
             game::$instance->troop->moveCard($explode_troop[1],'hand');
             self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$explode_troop[1]}'");
 
+            $type1 = $infos_troop['type'];
+
             game::$instance->notifyAllPlayers(
                 'recoverTroopFromDiscard',
-                clienttranslate('${player_name} recovers a discarded troop'),
+                clienttranslate('${player_name} recovers ${log1} from discard'),
                 array(
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troop,
+                    'log1' => game::$instance->getLogsType($type1),
                 )
             );
 
@@ -885,6 +907,33 @@ trait BasesTrait  // ATTENTION
             if($this->player_pref_discard_block == 2)
             {
                 
+                $troops_noblocked = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true );
+                $count = count($troops_noblocked);
+                $rand = bga_rand(1, $count);
+                $troopid_blocked = $troops_noblocked[$rand-1];
+
+                $all_valeur_block = self::getObjectListFromDB( "SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
+                $count_all_troupe = count($all_valeur_block);
+                $possible =[];
+                for ($i=1; $i <=$count_all_troupe; $i++)
+                {
+                    if(!in_array($i, $all_valeur_block))
+                    {
+                        $possible[] = $i;
+                    }
+                    
+                }
+                $cout_possible = count($possible);
+                $rand2 = bga_rand(1, $cout_possible);
+                $choix = $possible[$rand2-1];
+
+
+
+
+
+                self::DbQuery("UPDATE troop set card_blocked = $choix WHERE card_id = '{$troopid_blocked}'");
+                
+
 
                 game::$instance->addPending($this->player_id, "VerifBase");
             }
@@ -903,7 +952,7 @@ trait BasesTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $ret['titleyou'] = clienttranslate('${you} must choose a troop to discard');
+        $ret['titleyou'] = clienttranslate('${you} must choose a troop to block');
 
         $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
         $count = count($troop_id_opponent_hand);
@@ -953,8 +1002,6 @@ trait BasesTrait  // ATTENTION
             $troopid_blocked = $troops_noblocked[$rand-1];
 
             self::DbQuery("UPDATE troop set card_blocked = $explode[2] WHERE card_id = '{$troopid_blocked}'");
-
-
 
             game::$instance->addPending($this->player_id, "VerifBase");
         }

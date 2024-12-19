@@ -26,44 +26,44 @@
         "name": "Game_board",
         "values": {
             "1": {
-                "name": "Castle (recommended for beginners)", 
-                "tmdisplay": "Castle (recommended for beginners)", 
+                "name": "Castle Field (recommended for beginners)", 
+                "tmdisplay": "Castle Field (recommended for beginners)", 
                 "description": "Recommended for beginners"
             },
 
             "2": {
-                "name": "Pool", 
-                "tmdisplay": "Pool", 
+                "name": "Tropical Pool", 
+                "tmdisplay": "Tropical Pool", 
                 "description": ""
             },
     
             "3": {
-                "name": "Clouds", 
-                "tmdisplay": "Clouds", 
+                "name": "City of Clouds", 
+                "tmdisplay": "City of Clouds", 
                 "description": ""
             },
 
             "4": {
-                "name": "Jungle", 
-                "tmdisplay": "Jungle", 
+                "name": "Volvanic Jungle", 
+                "tmdisplay": "Volcanic Jungle", 
                 "description": ""
             },
 
             "5": {
-                "name": "Cemetery", 
-                "tmdisplay": "cemetery", 
+                "name": "Cursed Cemetery", 
+                "tmdisplay": "Cursed Cemetery", 
                 "description": ""
             },
 
             "6": {
-                "name": "Carribean", 
-                "tmdisplay": "carribean", 
+                "name": "Carribean Sea", 
+                "tmdisplay": "Carribean Sea", 
                 "description": ""
             },
 
             "7": {
-                "name": "Station", 
-                "tmdisplay": "Station", 
+                "name": "Station Metal-X", 
+                "tmdisplay": "Station Metal-X", 
                 "description": ""
             },
 

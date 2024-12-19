@@ -84,12 +84,24 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_1 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_1 icon_red"></span>';
+        }
+
+        
+
         $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
         $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
         {
-            $ret['titleyou'] = clienttranslate('SKULLY: ${you} can draw 2 troops');
+            $ret['titleyou'] = clienttranslate('#icon# can draw 2 troops');
             $ret['buttons'][] = 'btn_draw_2';
             $ret['buttons'][] = 'btn_no';
             
@@ -97,7 +109,7 @@ trait TroopsTrait  // ATTENTION
 
         if ((($counttroopdeck == 1) && ($counttroophand <= 7))||(($counttroopdeck >= 1) && ($counttroophand == 7)))
         {
-            $ret['titleyou'] = clienttranslate('SKULLY: ${you} can draw 1 troop');
+            $ret['titleyou'] = clienttranslate('#icon# can draw 1 troop');
             $ret['buttons'][] = 'btn_draw_1';
             $ret['buttons'][] = 'btn_no';
         }
@@ -105,7 +117,7 @@ trait TroopsTrait  // ATTENTION
         
         if (($counttroopdeck == 0)||($counttroophand==8))
         {
-            $ret['titleyou'] = clienttranslate('SKULLY: ${you} cannot draw troops');
+            $ret['titleyou'] = clienttranslate('#icon# cannot draw troops');
             $ret['buttons'][] = 'btn_continue';
         }
         
@@ -125,16 +137,20 @@ trait TroopsTrait  // ATTENTION
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
                 
+                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
+                $type2 = $this->player_color_number.$new_troops[1]['type']%10;
 
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw icon1 icon2 (icon a mettre en place plus tard)'),
+                    clienttranslate('You draw ${log1} ${log2}'),
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
-                        'old_troops' => $old_troops
+                        'old_troops' => $old_troops,
+                        'log1' => game::$instance->getLogsType($type1),
+                        'log2' => game::$instance->getLogsType($type2),
 
 
 
@@ -142,15 +158,18 @@ trait TroopsTrait  // ATTENTION
                     )
                 );
 
+                $type0 = $this->player_color_number."0";
+
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws 2 troops'),
+                    clienttranslate('${player_name} draws ${log0} ${log0}'),
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 2,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
 
 
                     )
@@ -160,30 +179,36 @@ trait TroopsTrait  // ATTENTION
             if ($varg1 == 'btn_draw_1') 
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+
+                $type1 = $this->player_color_number.$new_troops[0]['type']%10;
                 
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                    clienttranslate('You draw ${log1}'),
                     array(
                         'player_id' => $this->player_id,
                         'origine' => "deck",
-                        'new_troops' => $new_troops
+                        'new_troops' => $new_troops,
+                        'log1' => game::$instance->getLogsType($type1),
 
 
 
                     )
                 );
 
+                $type0 = $this->player_color_number."0";
+
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws 1 troop'),
+                    clienttranslate('${player_name} draws ${log0}'),
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 1,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
 
 
                     )
@@ -210,6 +235,16 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_red"></span>';
+        }
+
         $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
 
         if($counttroophand_noblocked >= 1)
@@ -230,7 +265,7 @@ trait TroopsTrait  // ATTENTION
 
             if ($place_ok == 1)
             {
-            $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} can place an other troop');
+            $ret['titleyou'] = clienttranslate('#icon# can place an other troop');
             $ret['buttons'][] = 'btn_place_troop';
             $ret['buttons'][] = 'btn_no';
             }
@@ -238,7 +273,7 @@ trait TroopsTrait  // ATTENTION
 
         else
         {
-            $ret['titleyou'] = clienttranslate('CAP\'TAINE: ${you} cannot place an other troop');
+            $ret['titleyou'] = clienttranslate('#icon# cannot place an other troop');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -273,7 +308,19 @@ trait TroopsTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
-        $ret['titleyou'] = clienttranslate('${you} must choose a troop');
+
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_red"></span>';
+        }
+
+
+        $ret['titleyou'] = clienttranslate('#icon# must choose a troop');
 
         $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'  AND card_blocked = 0", true);
         foreach ($list_troop as $troop)
@@ -317,6 +364,15 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
         
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_red"></span>';
+        }
             
 
         $ret["selected"][] = $parg1;
@@ -329,11 +385,11 @@ trait TroopsTrait  // ATTENTION
 
         if(count($possible_base) >= 1)
         {
-            $ret['titleyou'] = clienttranslate('${you} must choose a base');
+            $ret['titleyou'] = clienttranslate('#icon# must choose a base');
         }
         else
         {
-            $ret['titleyou'] = clienttranslate('${you} cannot place this troop');
+            $ret['titleyou'] = clienttranslate('#icon# cannot place this troop');
         }
         
         foreach ($possible_base as $base) {
@@ -382,10 +438,11 @@ trait TroopsTrait  // ATTENTION
 
                 $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
 
+                $type1 = $infos_troop['type'];
 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
-                    clienttranslate('${player_name} places a troop'),
+                    clienttranslate('${player_name} places ${log1}'),
                     array(
                         
                         'base_id' => $varg1,
@@ -394,7 +451,8 @@ trait TroopsTrait  // ATTENTION
                         'player_id' => $this->player_id,
                         'origine' => "hand",
                         'infos_troop' => $infos_troop,
-                        'nb_troops_hand' => $nb_troops_hand
+                        'nb_troops_hand' => $nb_troops_hand,
+                        'log1' => game::$instance->getLogsType($type1)
 
 
                     )
@@ -421,7 +479,18 @@ trait TroopsTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
-        $ret['titleyou'] = clienttranslate('${you} must confirm');
+
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_red"></span>';
+        }
+
+        $ret['titleyou'] = clienttranslate('#icon# must confirm');
 
         $explode = explode("_", $parg1);
         $ret["selected"][] = "troop_".$explode[1];
@@ -449,9 +518,11 @@ trait TroopsTrait  // ATTENTION
             $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode[1]}'");
 
 
+            $type1 = $infos_troop['type'];
+
             game::$instance->notifyAllPlayers(
                 'moveTroop',
-                clienttranslate('${player_name} places a troop'),
+                clienttranslate('${player_name} places ${log1}'),
                 array(
                     
                     'base_id' => 'base_'.$explode[3].'_'.$explode[4],
@@ -460,7 +531,8 @@ trait TroopsTrait  // ATTENTION
                     'player_id' => $this->player_id,
                     'origine' => "hand",
                     'infos_troop' => $infos_troop,
-                    'nb_troops_hand' => $nb_troops_hand
+                    'nb_troops_hand' => $nb_troops_hand,
+                    'log1' => game::$instance->getLogsType($type1),
                 )
             );
 
@@ -499,6 +571,16 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_3 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_3 icon_red"></span>';
+        }
+
         
         $base_mastok = $parg1;
 
@@ -522,13 +604,13 @@ trait TroopsTrait  // ATTENTION
 
         if(count($list_base_discard_possible) == 0)
         {
-            $ret['titleyou'] = clienttranslate('MASTOK: ${you} cannot discard an adjacent troop');
+            $ret['titleyou'] = clienttranslate('#icon# cannot discard an adjacent troop');
             $ret['buttons'][] = 'btn_continue';
         }
 
         else
         {
-            $ret['titleyou'] = clienttranslate('MASTOK: ${you} can discard an adjacent troop');
+            $ret['titleyou'] = clienttranslate('#icon# can discard an adjacent troop');
 
             foreach($list_base_discard_possible as $base_discard)
             {
@@ -569,13 +651,16 @@ trait TroopsTrait  // ATTENTION
 
                 self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'" );
 
+                $type1 = $infos_troop['type'];
+
                 game::$instance->notifyAllPlayers(
                     'discardTroopFromBoard',
-                    clienttranslate('${player_name} discards an opposing troop from the board'),
+                    clienttranslate('${player_name} discards ${log1} from the board'),
                     array(
                         
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troop,
+                        'log1' => game::$instance->getLogsType($type1),
                         
                     )
                 );
@@ -598,7 +683,17 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $ret['titleyou'] = clienttranslate('${you} must confirm');
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_3 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_3 icon_red"></span>';
+        }
+
+        $ret['titleyou'] = clienttranslate('#icon# must confirm');
 
         $ret["selected"][] = $parg1;
 
@@ -630,13 +725,16 @@ trait TroopsTrait  // ATTENTION
 
             self::DbQuery( "UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'" );
 
+            $type1 = $infos_troop['type'];
+
             game::$instance->notifyAllPlayers(
                 'discardTroopFromBoard',
-                clienttranslate('${player_name} discards an opposing troop from the board'),
+                clienttranslate('${player_name} discards ${log1} from the board'),
                 array(
                     
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troop,
+                    'log1' => game::$instance->getLogsType($type1),
                     
                 )
             );
@@ -665,12 +763,22 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_5 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_5 icon_red"></span>';
+        }
+
         $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
         $count = count($troop_id_opponent_hand);
 
         if ($count >=1)
         {
-            $ret['titleyou'] = clienttranslate('XB-42: ${you} can discard a troop from the opponent\'s hand');
+            $ret['titleyou'] = clienttranslate('#icon# can discard a troop from the opponent\'s hand');
 
             $ret['buttons'][] = 'btn_yes';
             $ret['buttons'][] = 'btn_no';
@@ -679,7 +787,7 @@ trait TroopsTrait  // ATTENTION
 
         if ($count == 0)
         {
-            $ret['titleyou'] = clienttranslate('XB-42: ${you} cannot discard a troop from the opponent\'s hand');
+            $ret['titleyou'] = clienttranslate('#icon# cannot discard a troop from the opponent\'s hand');
 
             $ret['buttons'][] = 'btn_continue';
             
@@ -721,15 +829,18 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->troop->moveCard($rand_troop_id, 'discard', 0);
 
+                $type1 = $infos_troop['type'];
+
                 game::$instance->notifyAllPlayers(
                     'discardTroopFromHand',
-                    clienttranslate('${player_name} discards an opposing troop from the hand'),
+                    clienttranslate('${player_name} discards ${log1} from the hand'),
                     array(
                         
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troop, // info_troop a discard avant discard
                         'selected_troop' => $selected_troop, // 0 si le joueur n'a pas choisi... de 1 à 8 si le joueur a choisi lui même
                         'nb_cards_in_hand' => $count, 
+                        'log1' => game::$instance->getLogsType($type1),
                         
                     )
                 );
@@ -753,7 +864,17 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
-        $ret['titleyou'] = clienttranslate('${you} must choose a troop to discard');
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_5 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_5 icon_red"></span>';
+        }
+
+        $ret['titleyou'] = clienttranslate('#icon# choose a troop to discard');
 
         $troop_id_opponent_hand = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true );
         $count = count($troop_id_opponent_hand);
@@ -802,6 +923,8 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->troop->moveCard($rand_troop_id, 'discard', 0);
 
+            $type1 = $infos_troop['type'];
+
             game::$instance->notifyAllPlayers(
                 'discardTroopFromHand',
                 clienttranslate('${player_name} discards an opposing troop from the hand'),
@@ -811,6 +934,7 @@ trait TroopsTrait  // ATTENTION
                     'infos_troop' => $infos_troop, // info_troop a discard avant discard
                     'selected_troop' => $selected_troop, // 0 si le joueur n'a pas choisi... de 1 à 8 si le joueur a choisi lui même
                     'nb_cards_in_hand' => $count, 
+                    'log1' => game::$instance->getLogsType($type1),
                     
                 )
             );
@@ -837,13 +961,23 @@ trait TroopsTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a troop');
 
+        if($this->player_color_title == 'blue')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_6 icon_blue"></span>';
+        }
+
+        if($this->player_color_title == 'red')
+        {
+            $ret['icon'] = '<span class="icon_bandeau icon_troop_6 icon_red"></span>';
+        }
+
         $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
         $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
        
         if (($counttroopdeck >= 1) && ($counttroophand <= 7))
         {
-            $ret['titleyou'] = clienttranslate('STAR: ${you} can draw 1 troop');
+            $ret['titleyou'] = clienttranslate('#icon# can draw 1 troop');
             $ret['buttons'][] = 'btn_draw_1';
             $ret['buttons'][] = 'btn_no';
         }
@@ -851,7 +985,7 @@ trait TroopsTrait  // ATTENTION
         
         if (($counttroopdeck == 0)||($counttroophand == 8))
         {
-            $ret['titleyou'] = clienttranslate('STAR: ${you} cannot draw troops');
+            $ret['titleyou'] = clienttranslate('#icon# cannot draw troops');
             $ret['buttons'][] = 'btn_continue';
         }
         
@@ -868,30 +1002,36 @@ trait TroopsTrait  // ATTENTION
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
             
             $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
+
+            $type1 = $this->player_color_number.$new_troops[0]['type']%10;
             
             game::$instance->notifyPlayer(
                 $this->player_id,
                 'drawTroopPrivate',
-                clienttranslate('You draw icon1 (icon a mettre en place plus tard)'),
+                clienttranslate('You draw ${log1}'),
                 array(
                     'player_id' => $this->player_id,
                     'origine' => "deck",
-                    'new_troops' => $new_troops
+                    'new_troops' => $new_troops,
+                    'log1' => game::$instance->getLogsType($type1),
 
 
 
                 )
             );
 
+            $type0 = $this->player_color_number."0";
+
             game::$instance->notifyAllPlayers(
                 'drawTroopPublic',
-                clienttranslate('${player_name} draws 1 troop'),
+                clienttranslate('${player_name} draws ${log0}'),
                 array(
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
                     'origine' => "deck",
                     'nb_troops' => 1,
-                    'nb_troops_hand' => $nb_troops_hand
+                    'nb_troops_hand' => $nb_troops_hand,
+                    'log0' => game::$instance->getLogsType($type0),
 
 
                 )

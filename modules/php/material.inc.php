@@ -3,49 +3,49 @@
 $this->_troop_types = [
     1 => [
         "name" => clienttranslate("Skully"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
-        "desc2" => clienttranslate("<span style=\"font-weight: bold;\">Remark</span>: If you want to do this, wait until the other player has their 5 hand cards for the round. Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand."),
+        "desc1" => clienttranslate("You may draw 2 Troops from your reserve and place them on your rack."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: If you already have 7 Troops on your rack, you draw only one."),
     ],
 
     2 => [
-        "name" => clienttranslate("Cap'Taine"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
-        "desc2" => clienttranslate("<span style=\"font-weight: bold;\">Remark</span>: If you want to do this, wait until the other player has their 5 hand cards for the round. Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand."),
+        "name" => clienttranslate("Cap'N"),
+        "desc1" => clienttranslate("You may place 1 extra Troop on the Terrain and apply its effect."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: First apply all the effects of Troops you just placed, then apply any special base effects."),
     ],
 
     3 => [
-        "name" => clienttranslate("Mastok"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
-        "desc2" => clienttranslate("<span style=\"font-weight: bold;\">Remark</span>: If you want to do this, wait until the other player has their 5 hand cards for the round. Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand."),
+        "name" => clienttranslate("Jumbo"),
+        "desc1" => clienttranslate("You may choose 1 visible enemy Troop - adjacent to Jumbo - and discard it faceup."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: Troops are adjacent if they are connected by a single section of path."),
     ],
 
     4 => [
-        "name" => clienttranslate("Crochet"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
-        "desc2" => clienttranslate("<span style=\"font-weight: bold;\">Remark</span>: If you want to do this, wait until the other player has their 5 hand cards for the round. Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand."),
+        "name" => clienttranslate("Hook"),
+        "desc1" => clienttranslate("You may ignore the connection rule and place Hook on any <span style=\"font-weight: bold;\">base</span> whether or not it is connected to your H.Q."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: To place Hook on the enemy H.Q. (which is not a base), it must be connected to your H.Q."),
     ],
 
     5 => [
         "name" => clienttranslate("XB-42"),
-        "desc1" => clienttranslate("<span style=\"font-weight: bold;\">Remark</span>: At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "desc1" => clienttranslate("You may take, at random, 1 Troop from your opponent's rack and discard it faceup."),
         "desc2" => clienttranslate(""),
     ],
 
     6 => [
         "name" => clienttranslate("Star"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "desc1" => clienttranslate("You may draw 1 Troop from your reserve and place it on your rack."),
         "desc2" => clienttranslate(""),
     ],
 
     7 => [
         "name" => clienttranslate("Roxy"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "desc1" => clienttranslate("Roxy has no effect."),
         "desc2" => clienttranslate(""),
     ],
 
     8 => [
         "name" => clienttranslate("Kwak"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "desc1" => clienttranslate("Kwak has no effect.<br> As a <span style=\"font-weight: bold;\">joker</span>, Kwak may be placed on top of any enemy Troop, but any enemy Troop may also cover it."),
         "desc2" => clienttranslate(""),
     ],
 ];
@@ -53,43 +53,43 @@ $this->_troop_types = [
 
 $this->_board_types = [
     1 => [
-        "name" => clienttranslate("Castle"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "name" => clienttranslate("Castle Field"),
+        "desc1" => clienttranslate("You may choose 1 of your other Troops, no matter where it is on the Terrain, and place it back on your rack."),
         "desc2" => clienttranslate(""),
     ],
     2 => [
-        "name" => clienttranslate("Clouds"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "name" => clienttranslate("City of Clouds"),
+        "desc1" => clienttranslate("You may draw 1 Troop from your reserve and place it on your rack."),
         "desc2" => clienttranslate(""),
     ],
     3 => [
-        "name" => clienttranslate("Volcano"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
-        "desc2" => clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round. Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand."),
+        "name" => clienttranslate("Volcanic Jungle"),
+        "desc1" => clienttranslate("You may choose 1 enemy Troop that is adjacent to this special base.<br>Move it to a base that is adjacent to its starting place, ignoring the placement rules."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: Troops and bases are adjacent if they are connected by a single section of path."),
     ],
     4 => [
-        "name" => clienttranslate("Cemetery"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "name" => clienttranslate("Cursed Cemetery"),
+        "desc1" => clienttranslate("You may choose 1 of your Troops in the discard and place it on your rack."),
         "desc2" => clienttranslate(""),
     ],
     5 => [
-        "name" => clienttranslate("Carribean"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "name" => clienttranslate("Carribean Sea"),
+        "desc1" => clienttranslate("This Terrain has no special bases, but it is asymmetric with 2 blue H.Q. and 1 red H.Q."),
         "desc2" => clienttranslate(""),
     ],
     6 => [
         "name" => clienttranslate("Battlefield"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
-        "desc2" => clienttranslate("If you want to do this, wait until the other player has their 5 hand cards for the round. Then put one of your hand cards face up on the discard pile and put the top card from the draw deck in your hand."),
+        "desc1" => clienttranslate("Point to 1 Troop on your opponent's rack, without looking at it. Your opponent mays it down, facedown, and cannot place it on their turn. At the end of their turn, your opponent places the Troop back on their rack: it's available again."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: The lying Troop still counts towards the maximum of 8 Troops on your rack."),
     ],
     7 => [
-        "name" => clienttranslate("Tropico"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "name" => clienttranslate("Tropical Pool"),
+        "desc1" => clienttranslate("Only Troops with the indicated value can be placed on these special bases and H.Q."),
         "desc2" => clienttranslate(""),
     ],
     8 => [
-        "name" => clienttranslate("Metal"),
-        "desc1" => clienttranslate("At the end of the Card Phase of <span style=\"font-weight: bold;\">each year</span>: You may discard 1 card from your hand and draw 1 new card."),
+        "name" => clienttranslate("Station Metal-X"),
+        "desc1" => clienttranslate("Troops effects are not appied on these special bases."),
         "desc2" => clienttranslate(""),
     ],
 ];
