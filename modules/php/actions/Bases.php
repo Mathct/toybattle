@@ -531,8 +531,20 @@ trait BasesTrait  // ATTENTION
                     )
                 );
 
+                $win = game::$instance->testZoneAndStar($explode2[2], $this->board_name);
 
-                game::$instance->addPending($this->player_id, "VerifBase");
+                if($win == 0)
+                {
+                    game::$instance->addPending($this->player_id, "VerifBase");
+                }
+
+                if($win == 1)
+                {
+                    game::$instance->addPending($this->player_id, "FinGame1", 2);
+                }
+
+
+                
             }
         }
     }
@@ -589,7 +601,20 @@ trait BasesTrait  // ATTENTION
 
                 )
             );
-            game::$instance->addPending($this->player_id, "VerifBase");
+
+            $win = game::$instance->testZoneAndStar($explode[5], $this->board_name);
+
+            if($win == 0)
+            {
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
+
+            if($win == 1)
+            {
+                game::$instance->addPending($this->player_id, "FinGame1", 2);
+            }
+
+            
         }
     }
 
