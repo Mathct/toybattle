@@ -207,9 +207,19 @@ trait BasesTrait  // ATTENTION
 
 
                 ///// ATTENTION SI LE JOUEUR ENLEVE UNE TROOP SUR UNE BASE 
-                game::$instance->testZoneAndStar($infos_troopmax[0]['location_arg'], $this->board_name);
+                $win = game::$instance->testZoneAndStar($infos_troopmax[0]['location_arg'], $this->board_name);
 
-                game::$instance->addPending($this->player_id, "VerifBase");
+                if($win == 0)
+                {
+                    game::$instance->addPending($this->player_id, "VerifBase");
+                }
+
+                if($win == 1)
+                {
+                    game::$instance->addPending($this->player_id, "FinGame1", 2);
+                }
+
+                
             }
         }
     }
@@ -262,9 +272,19 @@ trait BasesTrait  // ATTENTION
             );
 
             ///// ATTENTION SI LE JOUEUR ENLEVE UNE TROOP SUR UNE BASE 
-            game::$instance->testZoneAndStar($infos_troopmax[0]['location_arg'], $this->board_name);
+            $win = game::$instance->testZoneAndStar($infos_troopmax[0]['location_arg'], $this->board_name);
 
-            game::$instance->addPending($this->player_id, "VerifBase");
+            if($win == 0)
+            {
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
+
+            if($win == 1)
+            {
+                game::$instance->addPending($this->player_id, "FinGame1", 2);
+            }
+
+            
         }
 
         if ($varg1 == "btn_no") {

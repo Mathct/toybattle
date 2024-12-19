@@ -405,9 +405,19 @@ trait TroopsTrait  // ATTENTION
 
                 self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
 
-                game::$instance->testZoneAndStar($numero_base, $this->board_name);
+                $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
-                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                if($win == 0)
+                {
+                    game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                }
+
+                if($win == 1)
+                {
+                    game::$instance->addPending($this->player_id, "FinGame1", 2);
+                }
+
+                
             }
         }
     }
@@ -483,9 +493,19 @@ trait TroopsTrait  // ATTENTION
 
             self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
 
-            game::$instance->testZoneAndStar($numero_base, $this->board_name);
+            $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
-            game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+            if($win == 0)
+            {
+                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+            }
+
+            if($win == 1)
+            {
+                game::$instance->addPending($this->player_id, "FinGame1", 2);
+            }
+
+            
         }
 
         if ($varg1 == "btn_no") {
@@ -584,9 +604,19 @@ trait TroopsTrait  // ATTENTION
                     )
                 );
 
-                game::$instance->testZoneAndStar($infos_troop['location_arg'], $this->board_name);
+                $win = game::$instance->testZoneAndStar($infos_troop['location_arg'], $this->board_name);
 
-                game::$instance->addPending($this->player_id, "VerifBase");
+                if($win == 0)
+                {
+                    game::$instance->addPending($this->player_id, "VerifBase");
+                }
+
+                if($win == 1)
+                {
+                    game::$instance->addPending($this->player_id, "FinGame1", 2);
+                }
+
+                
             }
         }
     }
@@ -652,9 +682,20 @@ trait TroopsTrait  // ATTENTION
             );
 
 
-            game::$instance->testZoneAndStar($infos_troop['location_arg'], $this->board_name);
+            $win = game::$instance->testZoneAndStar($infos_troop['location_arg'], $this->board_name);
+            
+            if($win == 0)
+            {
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
 
-            game::$instance->addPending($this->player_id, "VerifBase");
+            if($win == 1)
+            {
+                game::$instance->addPending($this->player_id, "FinGame1", 2);
+            }
+            
+
+            
         }
     }
 

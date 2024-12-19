@@ -378,9 +378,19 @@ class Pending extends APP_GameClass
 
                 self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
 
-                game::$instance->testZoneAndStar($numero_base, $this->board_name);
+                $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
-                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                if($win == 0)
+                {
+                    game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                }
+
+                if($win == 1)
+                {
+                    game::$instance->addPending($this->player_id, "FinGame1", 2);
+                }
+
+                
             }
         }
     }
@@ -460,10 +470,20 @@ class Pending extends APP_GameClass
             self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
 
 
-            game::$instance->testZoneAndStar($numero_base, $this->board_name);
+            $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
-
+           if($win == 0)
+           {
             game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+           }
+
+           if($win == 1)
+           {
+            game::$instance->addPending($this->player_id, "FinGame1", 2);
+           }
+
+
+            
         }
 
         if ($varg1 == "btn_no") {
@@ -620,8 +640,121 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('END GAME: ${actplayer} cannot draw or place a Troop');
-        $ret['titleyou'] = clienttranslate('END GAME: ${you} cannot draw or place a Troop');
+        $ret['title'] = clienttranslate('END GAME');
+        $ret['titleyou'] = clienttranslate('END GAME');
+
+
+        return $ret;
+    }
+
+    function FinGame1($parg1, $parg2, $varg1, $varg2)
+    {
+
+        self::DbQuery("UPDATE pending set function = 'FinGame2' WHERE player_id = '{$this->player_id_opponent}'");
+
+        if ($parg1== "1") {
+
+            game::$instance->notifyAllPlayers(
+                'message',
+                clienttranslate('${player_name} cannot draw or place a Troop'),
+                array(
+                    'player_name' => $this->player_name,
+                    
+                )
+            );
+
+            $star_player = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id}'");
+            $star_opponent = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id_opponent}'");
+            
+            if($star_player > $star_opponent)
+            {
+                game::$instance->notifyAllPlayers(
+                    'score',
+                    '',
+                    array(
+                        'playerid' => $this->player_id,
+                        'score' => 1,
+                        
+                    )
+                );
+            }
+
+            else
+            {
+
+                game::$instance->notifyAllPlayers(
+                    'score',
+                    '',
+                    array(
+                        'playerid' => $this->player_id_opponent,
+                        'score' => 1,
+                        
+                    )
+                );
+
+            }
+        }
+
+        if ($parg1== "2") {
+
+            game::$instance->notifyAllPlayers(
+                'message',
+                clienttranslate('${player_name} won the necessary medals'),
+                array(
+                    'player_name' => $this->player_name,
+                    
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'score',
+                '',
+                array(
+                    'playerid' => $this->player_id,
+                    'score' => 1,
+                    
+                )
+            );
+
+            
+
+            
+        }
+
+        if ($parg1== "3") {
+
+            game::$instance->notifyAllPlayers(
+                'message',
+                clienttranslate('${player_name} captured an opposing starting base'),
+                array(
+                    'player_name' => $this->player_name,
+                    
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'score',
+                '',
+                array(
+                    'playerid' => $this->player_id,
+                    'score' => 1,
+                    
+                )
+            );
+            
+        }
+
+        game::$instance->addPending($this->player_id, "FinGame2");
+    }
+
+    function argFinGame2($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('END GAME');
+        $ret['titleyou'] = clienttranslate('END GAME');
 
 
         $ret['buttons'][] = 'btn_pass';
@@ -631,13 +764,13 @@ class Pending extends APP_GameClass
         return $ret;
     }
 
-    function FinGame1($parg1, $parg2, $varg1, $varg2)
+    function FinGame2($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_pass") {
 
             game::$instance->giveExtraTime($this->player_id);
-            game::$instance->deblock_troops($this->player_id);
-            game::$instance->addPendingFirst($this->player_id, "NormalTurn");
+            game::$instance->addPendingFirst($this->player_id, "FinGame2");
         }
     }
+
 }

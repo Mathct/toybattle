@@ -569,6 +569,8 @@ class Game extends \Table
 
     function testZoneAndStar($numero_base_impactee, $board_name) // a chaque fois qu'une troupe est placée ou discard
     {
+        $win = 0;
+
         if (($numero_base_impactee >= 10) && ($numero_base_impactee < 40)) {
 
             $list_all_zone = [];
@@ -632,7 +634,6 @@ class Game extends \Table
                             $count_medals = $count_medals + $etoile;
 
                             $emptied_regions[] = $test['value'];
-                                
                         }
                     }
                 }
@@ -644,9 +645,17 @@ class Game extends \Table
 
                 $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$idplayer}'");
 
+                if ($count_regions == 1 && $count_medals == 1) {
+                    $txt = clienttranslate('${player_name} controls ${nb_region} region and takes ${nb_medal} Medal');
+                } else if ($count_regions == 1 && $count_medals > 1) {
+                    $txt = clienttranslate('${player_name} controls ${nb_region} region and takes ${nb_medal} Medals');
+                } else {
+                    $txt = clienttranslate('${player_name} controls ${nb_region} regions and takes ${nb_medal} Medals');
+                }
+
                 game::$instance->notifyAllPlayers(
                     'gainMedal',
-                    clienttranslate('${player_name} takes control of ${nb_region} region(s) and gains ${nb_medal} medal(s)'),
+                    $txt,
                     array(
 
                         'player_name' => $player_name,
@@ -661,71 +670,95 @@ class Game extends \Table
                 // attendre que les animations de medailles soient terminées
 
                 $time = 620 * $count_medals;
-                self::notifyAllPlayers( 'simplePause', '', [ 'time' => $time] ); 
+                self::notifyAllPlayers( 'simplePause', '', [ 'time' => $time] );
 
                 // Test Fin de partie
 
+                $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
+                $total_player_medals = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$idplayer}'");
+
+
+                if($total_player_medals >= $max_medals)
+                {
+                    $win = 1;
+                }
+
             }
         }
+
+        return $win;
     }
 
     // DEBLOQUER TROUPE EN FIN DE TOUR
 
     function deblock_troops(int $player_id)
     {
-        $troops_blocked = self::getObjectListFromDB( "SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked != 0", true );
+        $troops_blocked = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked != 0", true);
 
-        foreach ($troops_blocked as $troop_deblock)
-        {
+        foreach ($troops_blocked as $troop_deblock) {
             self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_id = '{$troop_deblock}'");
         }
-
     }
 
-/// ICONES POUR LOG
+    /// ICONES POUR LOG
 
-    function getLogsType( $type ) 
-{
-    if($type == 10)
-    {return "<div class='icon_log icon_blue icon_troop_0' title=''></div>";}
-    if($type == 11)
-    {return "<div class='icon_log icon_blue icon_troop_1' title=''></div>";}
-    if($type == 12)
-    {return "<div class='icon_log icon_blue icon_troop_2' title=''></div>";}
-    if($type == 13)
-    {return "<div class='icon_log icon_blue icon_troop_3' title=''></div>";}
-    if($type == 14)
-    {return "<div class='icon_log icon_blue icon_troop_4' title=''></div>";}
-    if($type == 15)
-    {return "<div class='icon_log icon_blue icon_troop_5' title=''></div>";}
-    if($type == 16)
-    {return "<div class='icon_log icon_blue icon_troop_6' title=''></div>";}
-    if($type == 17)
-    {return "<div class='icon_log icon_blue icon_troop_7' title=''></div>";}
-    if($type == 18)
-    {return "<div class='icon_log icon_blue icon_troop_8' title=''></div>";}
-    if($type == 20)
-    {return "<div class='icon_log icon_red icon_troop_0' title=''></div>";}
-    if($type == 21)
-    {return "<div class='icon_log icon_red icon_troop_1' title=''></div>";}
-    if($type == 22)
-    {return "<div class='icon_log icon_red icon_troop_2' title=''></div>";}
-    if($type == 23)
-    {return "<div class='icon_log icon_red icon_troop_3' title=''></div>";}
-    if($type == 24)
-    {return "<div class='icon_log icon_red icon_troop_4' title=''></div>";}
-    if($type == 25)
-    {return "<div class='icon_log icon_red icon_troop_5' title=''></div>";}
-    if($type == 26)
-    {return "<div class='icon_log icon_red icon_troop_6' title=''></div>";}
-    if($type == 27)
-    {return "<div class='icon_log icon_red icon_troop_7' title=''></div>";}
-    if($type == 28)
-    {return "<div class='icon_log icon_red icon_troop_8' title=''></div>";}
-    
-       
-
-}
+    function getLogsType($type)
+    {
+        if ($type == 10) {
+            return "<div class='icon_log icon_blue icon_troop_0' title=''></div>";
+        }
+        if ($type == 11) {
+            return "<div class='icon_log icon_blue icon_troop_1' title=''></div>";
+        }
+        if ($type == 12) {
+            return "<div class='icon_log icon_blue icon_troop_2' title=''></div>";
+        }
+        if ($type == 13) {
+            return "<div class='icon_log icon_blue icon_troop_3' title=''></div>";
+        }
+        if ($type == 14) {
+            return "<div class='icon_log icon_blue icon_troop_4' title=''></div>";
+        }
+        if ($type == 15) {
+            return "<div class='icon_log icon_blue icon_troop_5' title=''></div>";
+        }
+        if ($type == 16) {
+            return "<div class='icon_log icon_blue icon_troop_6' title=''></div>";
+        }
+        if ($type == 17) {
+            return "<div class='icon_log icon_blue icon_troop_7' title=''></div>";
+        }
+        if ($type == 18) {
+            return "<div class='icon_log icon_blue icon_troop_8' title=''></div>";
+        }
+        if ($type == 20) {
+            return "<div class='icon_log icon_red icon_troop_0' title=''></div>";
+        }
+        if ($type == 21) {
+            return "<div class='icon_log icon_red icon_troop_1' title=''></div>";
+        }
+        if ($type == 22) {
+            return "<div class='icon_log icon_red icon_troop_2' title=''></div>";
+        }
+        if ($type == 23) {
+            return "<div class='icon_log icon_red icon_troop_3' title=''></div>";
+        }
+        if ($type == 24) {
+            return "<div class='icon_log icon_red icon_troop_4' title=''></div>";
+        }
+        if ($type == 25) {
+            return "<div class='icon_log icon_red icon_troop_5' title=''></div>";
+        }
+        if ($type == 26) {
+            return "<div class='icon_log icon_red icon_troop_6' title=''></div>";
+        }
+        if ($type == 27) {
+            return "<div class='icon_log icon_red icon_troop_7' title=''></div>";
+        }
+        if ($type == 28) {
+            return "<div class='icon_log icon_red icon_troop_8' title=''></div>";
+        }
+    }
 
 
 
@@ -754,8 +787,7 @@ class Game extends \Table
 
             $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$player_deck}'", true));
 
-            if($counttroopdeck >= 1)
-            {
+            if ($counttroopdeck >= 1) {
                 $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
                 $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
@@ -764,17 +796,11 @@ class Game extends \Table
 
                 if (in_array($base, $id_bases)) {
 
-                $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$base}'", true));
-                $card = game::$instance->troop->pickCardForLocation($player_deck, 'board', $base);
-                self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$card['id']}'");
-
-
-
+                    $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$base}'", true));
+                    $card = game::$instance->troop->pickCardForLocation($player_deck, 'board', $base);
+                    self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$card['id']}'");
                 }
-                
             }
-
-
         }
     }
 
