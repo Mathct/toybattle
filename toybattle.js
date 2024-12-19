@@ -272,99 +272,6 @@ format_string_recursive : function(log, args) {
     return this.inherited(arguments);
 },
 
-/* @Override */
-/*format_string_recursive : function format_string_recursive(log, args)
-{
-    try {
-        log = _(log);
-        var keys = ['worker','wrk2','msg','INFTK','building','objective','you','gold','food','player_name','actplayer'];
-        if (log && args && !args.processed)
-        {
-            args.processed = true;
-            // list of special keys we want to replace with images
-            
-            for ( var i in keys)
-            {
-                var key = keys[i];
-                if (log.indexOf('${' + key + '}') >= 0)
-                {
-                    args[key] = this.getTokenDiv(key, args, args[key]);
-                    log = log.replace('${' + key + '}', args[key]);
-                }
-            }
-        }
-        else if (log && args) 
-            for ( var i in keys)
-            {
-                var key = keys[i];
-                log = log.replace('${' + key + '}', args[key]);
-            }
-    } catch (e) {
-        console.error(log,args,"Exception thrown", e.stack);
-    }
-    return this.inherited({callee: format_string_recursive}, arguments);
-},
-
-getTokenDiv : function(key, args, fixkey)
-{
-    // ... implement whatever html you want here, example from sharedcode.js
-    var token_id = fixkey;
-
-    if (token_id != null)
-    {
-        var logid = "log" + (this.globalid++) + "_" + key;
-
-        if (key == 'worker' || key == 'wrk2')
-        {
-            var x = parseInt(token_id);
-            var posimg = x * 100;
-            var s = "<img class='smallguy espandidown' style='background-position: -" + posimg + "% 0%;'>&#32;&#32;";
-            s = '<span class="spanstyle">' + s + '</span>';
-            return s;
-        }
-        else if (key == 'gold')
-        {
-            var s = "<img class='smallgold espandidown'>&#32;&#32;";
-            s = '<span class="spanstyle">' + s + '</span>';
-            return s;
-        }
-        else if (key == 'food')
-        {
-            var s = "<img class='smallfood espandidown'>&#32;&#32;";
-            s = '<span class="spanstyle">' + s + '</span>';
-            return s;
-        }
-        else if (key == 'INFTK')
-        {
-            var s = "<img class='smallguy espandidown' style='background-position: 0% 0%;'>&#32;&#32;";
-            s = '<span class="spanstyle">' + s + '</span>';
-            return s;
-        }
-        else if (key == 'building')
-        {
-            var x = parseInt(token_id);
-            return ' ' + buildings[x];
-        }
-        else if (key == 'objective')
-        {
-            var x = parseInt(token_id);
-            if (x >= 100) x = 10 + x - 100;
-            return ' ' + objectives[x];
-        }
-        else if (key == 'msg')
-        {
-            var x = parseInt(token_id);
-            return ' ' + msgs[x];
-        }
-        else if (key == 'you')
-            return this.divYou();
-        else if (key == 'player_name' || key == 'actplayer')
-            return this.divActPlayer(token_id);
-    }
-    return "''";
-},*/
-
-
 
 /*************************************************
  * 
@@ -1067,7 +974,7 @@ removeTroopFromBaseArray: function( troop ) {
     if (index !== -1) {
         this.troops_on_bases[base_id].splice(index, 1);
         this.createBaseTooltip(base_id);
-        this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+        
         //const base_css_id = `base_${this.board_name}_${base_id}`;
         //this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);  
     }
@@ -1487,12 +1394,11 @@ setupNotifications: function()
         ['discardTroopFromBoard', 1],
         ['discardTroopFromHand', 1],
         ['recoverTroopFromBoard', 1],
-        ['moveTroopBoardToBoard', 1],
         ['recoverTroopFromDiscard', 1],
+        ['moveTroopBoardToBoard', 1],
         ['hideTroopOnRack', 1],
         ['gainMedal', 1],
-        
-
+        ['score', 1],
     ];
 
     notifs.forEach((notif) => {
@@ -1906,6 +1812,7 @@ notif_discardTroopFromBoard: function (notif) {
     const troop = notif.args.infos_troop;
     this.removeTroopFromBaseArray(troop);
     this.removeTroopFromBoardArray(troop.id);
+    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
     
     const player_color = this.players[troop.type_arg].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -2025,7 +1932,7 @@ notif_discardTroopFromHand: function (notif) {
     if( troop.type_arg == this.player_id) {
         this.removeTroopFromMyHandArray( troop.id);
     }
-   else {
+    else {
         // remove troop from hand JS array
         if( this.isSpectator == false || player_color == this.RED_COLOR ) {
             this.your_hand.pop();
@@ -2259,6 +2166,7 @@ notif_recoverTroopFromBoard: function (notif) {
 
             troopElement.removeEventListener('transitionend', onTransitionEnd);         
         };
+        this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
 
         troopElement.addEventListener('transitionend', onTransitionEnd);
     }
@@ -2526,6 +2434,9 @@ notif_moveTroopBoardToBoard: function (notif) {
     this.removeTroopFromBaseArray(troop);
     this.removeTroopFromBoardArray(troop.id);
 
+    this.troops_on_bases[notif.args.base_id].push(troop);
+    this.createBaseTooltip(notif.args.base_id);
+
     const destination_id = `${player_color_name}_base_${this.board_name}_${notif.args.base_id}`;
     const destinationContainer = document.getElementById(destination_id);
 
@@ -2660,6 +2571,12 @@ notif_gainMedal: function (notif) {
     
 
     //this.showArrays();
+},
+
+
+notif_score: function( notif )
+{
+    this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
 },
 
 
