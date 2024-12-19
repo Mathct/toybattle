@@ -250,7 +250,7 @@ class Pending extends APP_GameClass
         }
 
         if ($varg1 == null) {
-            game::$instance->addPending($this->player_id, "FinGame1");
+            game::$instance->addPending($this->player_id, "FinGame1", 1);
         }
     }
 
