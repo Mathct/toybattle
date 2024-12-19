@@ -805,13 +805,37 @@ trait BasesTrait  // ATTENTION
                 }
                 $cout_possible = count($possible);
                 $rand2 = bga_rand(1, $cout_possible);
-                $choix = $possible[$rand2 - 1];
+                $choix_auto = $possible[$rand2 - 1];
 
 
 
+                $infos_troop_before = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troopid_blocked}'");
 
+                self::DbQuery("UPDATE troop set card_blocked = $choix_auto WHERE card_id = '{$troopid_blocked}'");
 
-                self::DbQuery("UPDATE troop set card_blocked = $choix WHERE card_id = '{$troopid_blocked}'");
+                $infos_troop_after = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troopid_blocked}'");
+
+                game::$instance->notifyPlayer(
+                    $this->player_id_opponent,
+                    'hideTroopOnRack_private',
+                    clienttranslate('${player_name} blocks your Troop (icon a mettre en place)'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'infos_troop_before' => $infos_troop_before,
+                        'infos_troop_after' => $infos_troop_after,
+    
+    
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'hideTroopOnRack_public',
+                    clienttranslate('${player_name} blocks a Troop'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'card_blocked' => $choix_auto,
+                    )
+                );
 
 
 
@@ -870,7 +894,33 @@ trait BasesTrait  // ATTENTION
 
             $troopid_blocked = $troops_noblocked[$rand - 1];
 
+            $infos_troop_before = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troopid_blocked}'");
+
             self::DbQuery("UPDATE troop set card_blocked = $explode[2] WHERE card_id = '{$troopid_blocked}'");
+
+            $infos_troop_after = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troopid_blocked}'");
+
+            game::$instance->notifyPlayer(
+                $this->player_id_opponent,
+                'hideTroopOnRack_private',
+                clienttranslate('${player_name} blocks your Troop (icon a mettre en place)'),
+                array(
+                    'player_name' => $this->player_name,
+                    'infos_troop_before' => $infos_troop_before,
+                    'infos_troop_after' => $infos_troop_after,
+
+
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'hideTroopOnRack_public',
+                clienttranslate('${player_name} blocks a Troop'),
+                array(
+                    'player_name' => $this->player_name,
+                    'card_blocked' => $explode[2],
+                )
+            );
 
             game::$instance->addPending($this->player_id, "VerifBase");
         }
