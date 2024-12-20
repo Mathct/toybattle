@@ -359,13 +359,25 @@ trait BasesTrait  // ATTENTION
 
             game::$instance->notifyAllPlayers(
                 'drawTroopPublic',
-                clienttranslate('${player_name} draws ${log0}'),
+                '',
                 array(
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
                     'origine' => "deck",
                     'nb_troops' => 1,
                     'nb_troops_hand' => $nb_troops_hand,
+                    'log0' => game::$instance->getLogsType($type0),
+
+
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'message_allplayers_without_player',
+                clienttranslate('${player_name} draws ${log0}'),
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id,
                     'log0' => game::$instance->getLogsType($type0),
 
 

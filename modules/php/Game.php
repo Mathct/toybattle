@@ -276,7 +276,7 @@ class Game extends \Table
             $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
             $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}' ORDER BY card_type");
         } else {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS card_id, FLOOR(card_type / 10), card_blocked blocked type FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS card_id, FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
             $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
             $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type  FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}' ORDER BY card_type");
             $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}' ORDER BY card_type");

@@ -188,7 +188,7 @@ class Pending extends APP_GameClass
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws ${log0} ${log0}'),
+                    '',
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
@@ -196,6 +196,18 @@ class Pending extends APP_GameClass
                         'nb_troops' => 2,
                         'nb_troops_hand' => $nb_troops_hand,
                         'log0' => game::$instance->getLogsType($type0)
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'message_allplayers_without_player',
+                    clienttranslate('${player_name} draws ${log0} ${log0}'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
+                        'log0' => game::$instance->getLogsType($type0),
 
 
                     )
@@ -226,13 +238,25 @@ class Pending extends APP_GameClass
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws ${log0}'),
+                    '',
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 1,
                         'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'message_allplayers_without_player',
+                    clienttranslate('${player_name} draws ${log0}'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
                         'log0' => game::$instance->getLogsType($type0),
 
 
@@ -550,7 +574,7 @@ class Pending extends APP_GameClass
                     'drawTroopPrivate',
                     clienttranslate('You draw ${log1} ${log2}'),
                     array(
-
+                        
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -568,13 +592,25 @@ class Pending extends APP_GameClass
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws ${log0} ${log0}'),
+                    '',
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 2,
                         'nb_troops_hand' => $nb_troops_hand,
+                        
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'message_allplayers_without_player',
+                    clienttranslate('${player_name} draws ${log0} ${log0}'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
                         'log0' => game::$instance->getLogsType($type0),
 
 
@@ -606,13 +642,25 @@ class Pending extends APP_GameClass
 
                 game::$instance->notifyAllPlayers(
                     'drawTroopPublic',
-                    clienttranslate('${player_name} draws ${log0}'),
+                    '',
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'nb_troops' => 1,
                         'nb_troops_hand' => $nb_troops_hand,
+                        'log0' => game::$instance->getLogsType($type0),
+
+
+                    )
+                );
+
+                game::$instance->notifyAllPlayers(
+                    'message_allplayers_without_player',
+                    clienttranslate('${player_name} draws ${log0}'),
+                    array(
+                        'player_name' => $this->player_name,
+                        'player_id' => $this->player_id,
                         'log0' => game::$instance->getLogsType($type0),
 
 

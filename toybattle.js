@@ -1400,12 +1400,15 @@ setupNotifications: function()
         ['hideTroopOnRack', 1],
         ['gainMedal', 1],
         ['score', 1],
+        ['message_allplayers_without_player', 1],
     ];
 
     notifs.forEach((notif) => {
         dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
         this.notifqueue.setSynchronous(notif[0], notif[1]);
     });
+
+    this.notifqueue.setIgnoreNotificationCheck( 'message_allplayers_without_player', (notif) => (notif.args.player_id == this.player_id) );
 
 },
 
@@ -2578,6 +2581,11 @@ notif_gainMedal: function (notif) {
 notif_score: function( notif )
 {
     this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
+},
+
+notif_message_allplayers_without_player: function( notif )
+{
+    // juste un message envoyé en php
 },
 
 
