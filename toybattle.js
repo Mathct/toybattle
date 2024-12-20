@@ -87,6 +87,8 @@ setup: function( gamedatas )
     this.troops_on_bases = [];
 
     this.nb_decks = [gamedatas.nb_deck_blue, gamedatas.nb_deck_red];
+
+    this.troops_blocked = [gamedatas._blue_blocked, gamedatas._red_blocked ];
     
     this.setupPlayersBoard();
     this.setupBoard();
@@ -472,8 +474,15 @@ setupLandscapeMode: function() {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.my_hand).reverse().forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.id}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);
+            }
             troopElement.classList.add('board-inverted');
             redRackContainer.appendChild(troopElement);
+
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0); 
             
         });
@@ -568,6 +577,12 @@ setupLandscapeMode: function() {
     else {
         Object.values(this.my_hand).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.id}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);
+            }
             blueRackContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
         });
@@ -749,9 +764,6 @@ createTroopElement: function( troop ) {
     const troopElement = document.createElement('div');
     troopElement.id = `troop_${troop.id}`;
     troopElement.classList.add('troop');
-    //TOCHECK191224
-    //const troop_type =  troop.type < 10 ? 0 : troop.type % 10;
-    //const troop_color = troop.type < 10 ? troop.type - 1 : Math.floor(troop.type / 10)-1;
     const troop_type =  troop.type % 10;
     const troop_color = Math.floor(troop.type / 10)-1;
     troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;

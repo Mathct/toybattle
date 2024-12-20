@@ -404,6 +404,15 @@ trait TroopsTrait  // ATTENTION
 
                 $type1 = $infos_troop['type'];
 
+                $numbers_no_blocked = [];
+                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+                for ($i = 1; $i <= $nb_troops_hand; $i++) {
+                    if (!in_array($i, $troops_blocked)) {
+                        $numbers_no_blocked[]= $i;
+                    }
+                }
+
+                
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
                     clienttranslate('${player_name} places ${log1}'),
@@ -416,7 +425,8 @@ trait TroopsTrait  // ATTENTION
                         'origine' => "hand",
                         'infos_troop' => $infos_troop,
                         'nb_troops_hand' => $nb_troops_hand,
-                        'log1' => game::$instance->getLogsType($type1)
+                        'log1' => game::$instance->getLogsType($type1),
+                        'numbers_no_blocked' => $numbers_no_blocked,
 
 
                     )
@@ -501,6 +511,14 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
+            $numbers_no_blocked = [];
+                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+                for ($i = 1; $i <= $nb_troops_hand; $i++) {
+                    if (!in_array($i, $troops_blocked)) {
+                        $numbers_no_blocked[]= $i;
+                    }
+                }
+
             game::$instance->notifyAllPlayers(
                 'moveTroop',
                 clienttranslate('${player_name} places ${log1}'),
@@ -514,6 +532,7 @@ trait TroopsTrait  // ATTENTION
                     'infos_troop' => $infos_troop,
                     'nb_troops_hand' => $nb_troops_hand,
                     'log1' => game::$instance->getLogsType($type1),
+                    'numbers_no_blocked' => $numbers_no_blocked,
                 )
             );
 

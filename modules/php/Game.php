@@ -282,6 +282,8 @@ class Game extends \Table
             $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}' ORDER BY card_type");
         }
         $result["board_troops"] = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
+        $result["blue_blocked"] = self::getObjectListFromDB("SELECT card_blocked blocked FROM troop WHERE card_blocked > 0 AND card_type_arg = '{$spectator_id}'");
+        $result["red_blocked"] = self::getObjectListFromDB("SELECT card_blocked blocked FROM troop WHERE card_blocked > 0 AND card_type_arg = '{$no_spectator_id}'");
 
         $result["bases"] = $this->_bases;
         $result["regions"] = $this->_regions;

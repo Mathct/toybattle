@@ -435,4 +435,18 @@ body {
 
 
 
+.checks {
+    
+    width: var(--troop-width);
+    height: var(--troop-height);
+    background-image: url('img/TB_Checks.png');
+    background-size: 200% 100%;
+}
 
+.check_blue {
+    background-position: 0% 0%;
+}
+
+.check_red {
+    background-position: -100% 0%;
+}
