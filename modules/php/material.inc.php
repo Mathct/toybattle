@@ -58,39 +58,39 @@ $this->_board_types = [
         "desc2" => clienttranslate(""),
     ],
     2 => [
-        "name" => clienttranslate("City of Clouds"),
-        "desc1" => clienttranslate("You may draw 1 Troop from your reserve and place it on your rack."),
-        "desc2" => clienttranslate(""),
-    ],
-    3 => [
-        "name" => clienttranslate("Volcanic Jungle"),
-        "desc1" => clienttranslate("You may choose 1 enemy Troop that is adjacent to this special base.<br>Move it to a base that is adjacent to its starting place, ignoring the placement rules."),
-        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: Troops and bases are adjacent if they are connected by a single section of path."),
-    ],
-    4 => [
-        "name" => clienttranslate("Cursed Cemetery"),
-        "desc1" => clienttranslate("You may choose 1 of your Troops in the discard and place it on your rack."),
-        "desc2" => clienttranslate(""),
-    ],
-    5 => [
-        "name" => clienttranslate("Carribean Sea"),
-        "desc1" => clienttranslate("This Terrain has no special bases, but it is asymmetric with 2 blue H.Q. and 1 red H.Q."),
-        "desc2" => clienttranslate(""),
-    ],
-    6 => [
-        "name" => clienttranslate("Battlefield"),
-        "desc1" => clienttranslate("Point to 1 Troop on your opponent's rack, without looking at it. Your opponent mays it down, facedown, and cannot place it on their turn. At the end of their turn, your opponent places the Troop back on their rack: it's available again."),
-        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: The lying Troop still counts towards the maximum of 8 Troops on your rack."),
-    ],
-    7 => [
         "name" => clienttranslate("Tropical Pool"),
         "desc1" => clienttranslate("Only Troops with the indicated value can be placed on these special bases and H.Q."),
         "desc2" => clienttranslate(""),
     ],
-    8 => [
+    3 => [
+        "name" => clienttranslate("City of Clouds"),
+        "desc1" => clienttranslate("You may draw 1 Troop from your reserve and place it on your rack."),
+        "desc2" => clienttranslate(""),
+    ],
+    4 => [
+        "name" => clienttranslate("Volcanic Jungle"),
+        "desc1" => clienttranslate("You may choose 1 enemy Troop that is adjacent to this special base.<br>Move it to a base that is adjacent to its starting place, ignoring the placement rules."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: Troops and bases are adjacent if they are connected by a single section of path."),
+    ],
+    5 => [
+        "name" => clienttranslate("Cursed Cemetery"),
+        "desc1" => clienttranslate("You may choose 1 of your Troops in the discard and place it on your rack."),
+        "desc2" => clienttranslate(""),
+    ],
+    6 => [
+        "name" => clienttranslate("Carribean Sea"),
+        "desc1" => clienttranslate("This Terrain has no special bases, but it is asymmetric with 2 blue H.Q. and 1 red H.Q."),
+        "desc2" => clienttranslate(""),
+    ],
+    7 => [
         "name" => clienttranslate("Station Metal-X"),
         "desc1" => clienttranslate("Troops effects are not appied on these special bases."),
         "desc2" => clienttranslate(""),
+    ],
+    8 => [
+        "name" => clienttranslate("Battlefield"),
+        "desc1" => clienttranslate("Point to 1 Troop on your opponent's rack, without looking at it. Your opponent mays it down, facedown, and cannot place it on their turn. At the end of their turn, your opponent places the Troop back on their rack: it's available again."),
+        "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: The lying Troop still counts towards the maximum of 8 Troops on your rack."),
     ],
 ];
 
@@ -223,22 +223,22 @@ $this->_bases = [
         41 => ["value" => 41, "adjacents" => [22, 23],                     "power" => 0, "top" => 1.2, "left" => 82],
     ],
     "battlefield" => [
-        1  => ["value" => 1,  "adjacents" => [11, 12],         "power" => 0,  "top" => 84.5, "left" => 43.5],
-        11 => ["value" => 11, "adjacents" => [1, 13],          "power" => 0,  "top" => 81.9, "left" => 15.2],
-        12 => ["value" => 12, "adjacents" => [1, 15],          "power" => 0,  "top" => 81.9, "left" => 71.7],
+        1  => ["value" => 1,  "adjacents" => [11, 12],         "power" => 0,  "top" => 83.5, "left" => 43.5],
+        11 => ["value" => 11, "adjacents" => [1, 13],          "power" => 0,  "top" => 81.9, "left" => 15.3],
+        12 => ["value" => 12, "adjacents" => [1, 15],          "power" => 0,  "top" => 81.9, "left" => 71.5],
         13 => ["value" => 13, "adjacents" => [11, 14, 16, 17], "power" => 0,  "top" => 65.7, "left" => 16.1],
-        14 => ["value" => 14, "adjacents" => [13, 15, 17, 18], "power" => 81, "top" => 67.2, "left" => 43.9],
-        15 => ["value" => 15, "adjacents" => [14, 18, 19],     "power" => 0,  "top" => 65.7, "left" => 72],
-        16 => ["value" => 16, "adjacents" => [13, 20],         "power" => 81, "top" => 43.5, "left" => 5.4],
-        17 => ["value" => 17, "adjacents" => [13, 14, 20, 21], "power" => 0,  "top" => 43.5, "left" => 31.2],
-        18 => ["value" => 18, "adjacents" => [14, 15, 21, 22], "power" => 0,  "top" => 43.5, "left" => 56.7],
-        19 => ["value" => 19, "adjacents" => [15, 22],         "power" => 81, "top" => 43.5, "left" => 81.3],
+        14 => ["value" => 14, "adjacents" => [13, 15, 17, 18], "power" => 81, "top" => 65.7, "left" => 44],
+        15 => ["value" => 15, "adjacents" => [14, 18, 19],     "power" => 0,  "top" => 65.7, "left" => 71.5],
+        16 => ["value" => 16, "adjacents" => [13, 20],         "power" => 81, "top" => 43.4, "left" => 6.9],
+        17 => ["value" => 17, "adjacents" => [13, 14, 20, 21], "power" => 0,  "top" => 43.4, "left" => 31.2],
+        18 => ["value" => 18, "adjacents" => [14, 15, 21, 22], "power" => 0,  "top" => 43.4, "left" => 56.7],
+        19 => ["value" => 19, "adjacents" => [15, 22],         "power" => 81, "top" => 43.4, "left" => 81.0],
         20 => ["value" => 20, "adjacents" => [16, 17, 21, 23], "power" => 0,  "top" => 21.1, "left" => 16.1],
-        21 => ["value" => 21, "adjacents" => [17, 18, 20, 22], "power" => 81, "top" => 19.7, "left" => 43.9],
-        22 => ["value" => 22, "adjacents" => [18, 19, 21, 24], "power" => 0,  "top" => 21.1, "left" => 72],
-        23 => ["value" => 23, "adjacents" => [20, 41],         "power" => 0,  "top" => 4.9, "left" => 15.4],
-        24 => ["value" => 24, "adjacents" => [22, 41],         "power" => 0,  "top" => 4.9, "left" => 71.8],
-        41 => ["value" => 41, "adjacents" => [23, 24],         "power" => 0,  "top" => 2.6, "left" => 43.5],
+        21 => ["value" => 21, "adjacents" => [17, 18, 20, 22], "power" => 81, "top" => 21.1, "left" => 44],
+        22 => ["value" => 22, "adjacents" => [18, 19, 21, 24], "power" => 0,  "top" => 21.1, "left" => 71.5],
+        23 => ["value" => 23, "adjacents" => [20, 41],         "power" => 0,  "top" => 4.9, "left" => 15.3],
+        24 => ["value" => 24, "adjacents" => [22, 41],         "power" => 0,  "top" => 4.9, "left" => 71.5],
+        41 => ["value" => 41, "adjacents" => [23, 24],         "power" => 0,  "top" => 3.4, "left" => 43.5],
     ],
 ];
 

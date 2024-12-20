@@ -716,7 +716,7 @@ class Game extends \Table
                 )
             );
 
-            game::$instance->notifyPlayer(
+            game::$instance->notifyAllPlayers(
                 'unhideTroopOnRack_public',
                 '',
                 array(

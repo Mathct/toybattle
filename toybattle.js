@@ -875,6 +875,7 @@ createBases: function() {
         const baseElement = document.createElement('div');
         baseElement.id = `base_${this.board_name}_${baseId}`;
         baseElement.classList.add('base_all');
+        //baseElement.classList.add('selected');
         
         baseElement.style.top = `${baseData.top}%`;
         baseElement.style.left = `${baseData.left}%`;
