@@ -716,7 +716,7 @@ class Pending extends APP_GameClass
 
 
 
-    /// FONCTION FIN DE GAME CAR PLUS DE TROOP DANS LE DECK ET PLUS DE TROOP DANS LA MAIN////
+    /// FONCTION FIN DE GAME ////
 
     function argFinGame1($parg1, $parg2)
     {

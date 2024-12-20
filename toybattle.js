@@ -88,7 +88,7 @@ setup: function( gamedatas )
 
     this.nb_decks = [gamedatas.nb_deck_blue, gamedatas.nb_deck_red];
 
-    this.troops_blocked = [gamedatas._blue_blocked, gamedatas._red_blocked ];
+    this.troops_blocked = [gamedatas.blue_blocked, gamedatas.red_blocked ];
     
     this.setupPlayersBoard();
     this.setupBoard();
@@ -476,7 +476,7 @@ setupLandscapeMode: function() {
             const troopElement = this.createTroopElement(troop);
             if( troop.blocked > 0) {
                 const checkElement = document.createElement('div');
-                checkElement.id = `check_${troop.id}`;
+                checkElement.id = `check_${troop.blocked}`;
                 checkElement.classList.add('checks', 'check_blue');
                 troopElement.appendChild(checkElement);
             }
@@ -490,6 +490,14 @@ setupLandscapeMode: function() {
     else {
         Object.values(this.your_hand).forEach((troop, index) => {
             const troopElement = this.createBackTroopElement(troop, index);
+            console.log( this.troops_blocked);
+            console.log( 'index ', index+1);
+            if( this.troops_blocked[1].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);                
+            }
             troopElement.classList.add('board-inverted');
             redRackContainer.appendChild(troopElement);
 
@@ -563,15 +571,29 @@ setupLandscapeMode: function() {
 
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.your_hand).forEach((troop, index) => {
-            const backTroopElement = this.createBackTroopElement(troop, index);
-            blueRackContainer.appendChild(backTroopElement);
+            const troopElement = this.createBackTroopElement(troop, index);
+            console.log(this.troops_blocked[0] );
+            console.log(index + 1 );
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);                
+            }
+            blueRackContainer.appendChild(troopElement);
 
         });
     }
     else if( this.isSpectator) {
         Object.values(this.my_hand).forEach((troop, index) => {
-            const backTroopElement = this.createBackTroopElement(troop, index);
-            blueRackContainer.appendChild(backTroopElement);
+            const troopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);                
+            }
+            blueRackContainer.appendChild(troopElement);
         });
     }
     else {
@@ -579,8 +601,8 @@ setupLandscapeMode: function() {
             const troopElement = this.createTroopElement(troop);
             if( troop.blocked > 0) {
                 const checkElement = document.createElement('div');
-                checkElement.id = `check_${troop.id}`;
-                checkElement.classList.add('checks', 'check_blue');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_red');
                 troopElement.appendChild(checkElement);
             }
             blueRackContainer.appendChild(troopElement);
