@@ -213,9 +213,31 @@ class Game extends \Table
 
         // BOARD DU MOIS
         if ($this->gamestate->table_globals[101] == 10) {
-            // A FAIRE ... POUR LE MOMENT C'EST UN RANDOM
-            $random = bga_rand(1, 8);
-            $this->setGameStateValue('board', $random);
+            $valeurs = [1, 2, 3, 4, 5, 6, 7, 8];
+            $mois_depart = "Décembre 2024";
+
+
+            $mois = [
+                "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+            ];
+        
+             // Extraire le mois et l'année de $mois_depart
+            list($mois_nom, $annee_depart) = explode(" ", $mois_depart);
+            $index_depart = array_search($mois_nom, $mois); // Trouve l'indice du mois dans la liste
+
+            // Récupérer le mois et l'année actuels
+            $mois_actuel = intval(date('n')) - 1; // 'n' renvoie le mois (1 à 12), on convertit en 0-indexé
+            $annee_actuelle = intval(date('Y'));
+
+            // Calculer la différence totale en mois
+            $diff_mois = ($annee_actuelle - intval($annee_depart)) * 12 + ($mois_actuel - $index_depart);
+
+            // Obtenir l'indice circulaire dans le tableau
+            $index_cible = ($diff_mois % count($valeurs) + count($valeurs)) % count($valeurs); // Toujours positif
+        
+                                   
+            $this->setGameStateValue('board', $valeurs[$index_cible]);
         }
 
 
