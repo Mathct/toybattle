@@ -693,42 +693,20 @@ class Game extends \Table
 
     function deblock_troops(int $player_id)
     {
-        $player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$player_id}'");
+        
+        self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_type_arg = '{$player_id}' AND card_blocked > 0");
 
-        $troops_blocked = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked != 0", true);
+        game::$instance->notifyAllPlayers(
+            'unhideTroopOnRack',
+            '',
+            array(
 
-        foreach ($troops_blocked as $troop_deblock) {
-
-            $infos_troop_before = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troop_deblock}'");
-
-            self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_id = '{$troop_deblock}'");
-
-            $infos_troop_after = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troop_deblock}'");
-
-            game::$instance->notifyPlayer(
-                $player_id_opponent,
-                'unhideTroopOnRack_private',
-                '',
-                array(
-
-                    'infos_troop_before' => $infos_troop_before,
-                    'infos_troop_after' => $infos_troop_after,
+                'player_id' => $player_id,
 
 
-                )
-            );
-
-            game::$instance->notifyAllPlayers(
-                'unhideTroopOnRack_public',
-                '',
-                array(
-
-                    'card_deblocked' => $infos_troop_before['blocked'],
-
-
-                )
-            );
-        }
+            )
+        );
+        
     }
 
     /// ICONES POUR LOG

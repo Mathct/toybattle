@@ -118,7 +118,10 @@ setup: function( gamedatas )
 //
 onEnteringState: function( stateName, args )
 {
-    console.log( 'Entering state: '+stateName, args );
+    
+    if( stateName != 'pending') {
+        console.log('Entering state: '+stateName, args);
+    }
     
     switch( stateName ) {
         case 'playerTurn':
@@ -169,7 +172,9 @@ onEnteringState: function( stateName, args )
 
 onLeavingState: function( stateName )
 {
-    console.log( 'Leaving state: '+stateName );
+    if( stateName != 'pending') {
+        console.log('Leaving state: '+stateName);
+    }
     
     dojo.query(".selectable").removeClass("selectable");
     dojo.query(".selected").removeClass("selected");
@@ -1431,10 +1436,13 @@ setupNotifications: function()
         ['recoverTroopFromBoard', 1],
         ['recoverTroopFromDiscard', 1],
         ['moveTroopBoardToBoard', 1],
-        ['hideTroopOnRack', 1],
+        ['hideTroopOnRackPrivate', 1],
+        ['hideTroopOnRackPublic', 1],
+        ['unhideTroopOnRack', 1],
         ['gainMedal', 1],
         ['score', 1],
         ['message_allplayers_without_player', 1],
+
     ];
 
     notifs.forEach((notif) => {
@@ -2529,24 +2537,74 @@ notif_moveTroopBoardToBoard: function (notif) {
  * 
  ***********************************/
 
-notif_hideTroopOnRack: function (notif) {
-    console.log('notif_hideTroopOnRack');
+notif_hideTroopOnRackPrivate: function (notif) {
+    console.log('notif_hideTroopOnRackPrivate');
     console.log(notif);
 
-    this.showArrays();
+//    this.showArrays();
+
+
+    const player_color = this.players[notif.args.player_id].color;
+    const other_player_color_name = player_color == this.RED_COLOR ? 'blue' : 'red';
+    const check_name = player_color == this.RED_COLOR ? 'check_red' : 'check_blue';
+
+    const troop = notif.args.infos_troop_before;
+    
+    const troopElement = document.getElementById(`troop_${troop.id}`);
+
+    const checkElement = document.createElement('div');
+    checkElement.id = `check_${troop.id}`;
+    checkElement.classList.add('checks', check_name);
+
+
+    troopElement.appendChild(checkElement);  
 
 
 
-
-
-
-
-
-    this.showArrays();
+//    this.showArrays();
 
 },
 
+notif_hideTroopOnRackPublic: function (notif) {
+    console.log('notif_hideTroopOnRackPublic');
+    console.log(notif);
 
+    //this.showArrays();
+
+    
+
+    if( notif.args.player_id != this.opponent_id || this.isSpectator) {
+        const player_color = this.players[notif.args.player_id].color;
+        const other_player_color_name = player_color == this.RED_COLOR ? 'blue' : 'red';
+        const check_name = player_color == this.RED_COLOR ? 'check_red' : 'check_blue';
+    
+        const troopElement = document.getElementById(`${other_player_color_name}_troop_${notif.args.card_blocked}`);
+
+        const checkElement = document.createElement('div');
+        checkElement.id = `check_${notif.args.card_blocked}`;
+        checkElement.classList.add('checks', check_name);
+        troopElement.appendChild(checkElement);  
+    }
+
+            
+
+    //this.showArrays();
+
+},
+
+notif_unhideTroopOnRack: function( notif )
+{
+    console.log('notif_unhideTroopOnRack');
+    console.log(notif);
+
+    const player_color = this.players[notif.args.player_id].color;
+    const check_name = player_color == this.RED_COLOR ? 'check_blue' : 'check_red';
+
+    const elements = document.querySelectorAll(`.${check_name}`);
+    elements.forEach(element => {
+        element.remove();
+    });
+},
 
 /*********************************
  * 
@@ -2612,15 +2670,25 @@ notif_gainMedal: function (notif) {
 },
 
 
-notif_score: function( notif )
-{
+notif_score: function( notif ){
+    console.log('notif_scorel');
+    console.log(notif);
     this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
 },
 
 notif_message_allplayers_without_player: function( notif )
 {
+    console.log('notif_message_allplayers_without_player');
+    
     // juste un message envoyé en php
 },
+
+
+
+
+
+
+
 
 
 });             

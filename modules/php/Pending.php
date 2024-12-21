@@ -38,6 +38,7 @@ class Pending extends APP_GameClass
 
             //DECLARATION DU NUMERO DE COULEUR
             $this->player_color_number = 1;
+            $this->opponent_color_number = 2;
 
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield')) {
@@ -65,6 +66,7 @@ class Pending extends APP_GameClass
 
             //DECLARATION DU NUMERO DE COULEUR
             $this->player_color_number = 2;
+            $this->opponent_color_number = 1;
 
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield')) {
