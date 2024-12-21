@@ -90,9 +90,9 @@ this.nb_decks = [gamedatas.nb_deck_blue, gamedatas.nb_deck_red];
 
 this.troops_blocked = [gamedatas.blue_blocked, gamedatas.red_blocked ];
     
-    this.setupPlayersBoard();
-    this.setupBoard();
-
+this.setupPlayersBoard();
+this.setupBoard();
+this.setupCounters();
 
 
 
@@ -137,7 +137,8 @@ onEnteringState: function( stateName, args )
                 this.setupConnections(this.args.selectable);
 
                 if(args.args.titleyou != null) {
-                    $('pagemaintitletext').innerHTML = this.format_string_recursive((args.args.titleyou).replace('${you}', this.divYou()).replace(/#opponent#/g,args.args.opponent).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);}   
+                    $('pagemaintitletext').innerHTML = this.format_string_recursive((args.args.titleyou).replace('${you}', this.divYou()).replace(/#opponent#/g,args.args.opponent).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);
+                }   
             }   
             else
             {
@@ -432,8 +433,6 @@ setupLandscapeMode: function() {
     globalContainer.className = '';
     globalContainer.innerHTML = '';
 
-    globalContainer.style.flexDirection = "row";
-
     /*  boardContainer definition 
         contains board and all troops
     */
@@ -453,6 +452,9 @@ setupLandscapeMode: function() {
     */
 
     const playmatContainer = this.createPlaymat();
+    if( this.isCurrentPlayerRed() ) {
+        playmatContainer.classList.add('board-inverted');
+    }
     globalContainer.appendChild(playmatContainer);
 
 
@@ -520,10 +522,6 @@ setupLandscapeMode: function() {
     const blueDeckCounterElement = this.createDeckCounter( 'blue');
     blueDeckElement.appendChild(blueDeckCounterElement);
 
-    this.blue_deck_counter = new ebg.counter();
-    this.blue_deck_counter.create('blue_deck_counter_id');
-    this.blue_deck_counter.toValue(this.nb_decks[0]);
-
     /* redDeckElement */
     const redDeckElement = this.createDeck( 'red' );
     redDeckElement.classList.add('board-inverted');
@@ -531,11 +529,6 @@ setupLandscapeMode: function() {
 
     const redDeckCounterElement = this.createDeckCounter( 'red');
     redDeckElement.appendChild(redDeckCounterElement);
-
-    this.red_deck_counter = new ebg.counter();
-    this.red_deck_counter.create('red_deck_counter_id');
-    this.red_deck_counter.toValue(this.nb_decks[1]);
-
 
     /*  blueDiscardContainer definition 
         contains possible Troops in opacity 70 and all discarded ones TODO
@@ -606,10 +599,9 @@ setupPortraitMode: function() {
     // Réinitialization
     globalContainer.className = '';
     globalContainer.innerHTML = '';
-    globalContainer.style.flexDirection = "column";
+
     if( this.isCurrentPlayerRed() ) {
         globalContainer.classList.add('board-inverted');
-        
     }
 
     /*  redLineContainer definition 
@@ -651,11 +643,6 @@ setupPortraitMode: function() {
 
         const redDeckCounterElement = this.createDeckCounter( 'red');
         redDeckElement.appendChild(redDeckCounterElement);
-        
-        this.red_deck_counter = new ebg.counter();
-        this.red_deck_counter.create('red_deck_counter_id');
-        this.red_deck_counter.toValue(this.nb_decks[1]);
-
 
     /*  PlaymatContainer definition 
         contains blueDiscard, Board and redDiscard
@@ -716,9 +703,6 @@ setupPortraitMode: function() {
     /* blueDeckCounterElement */
     const blueDeckCounterElement = this.createDeckCounter( 'blue');
     blueDeckElement.appendChild(blueDeckCounterElement);
-    this.blue_deck_counter = new ebg.counter();
-    this.blue_deck_counter.create('blue_deck_counter_id');
-    this.blue_deck_counter.toValue(this.nb_decks[0]);
 
     /* blueRackContainer */
     const blueRackContainer = this.createRack('blue');
@@ -750,14 +734,6 @@ createLine: function( color ) {
     const lineContainer = document.createElement('div');
     lineContainer.id = `${color}_line`;
     lineContainer.classList.add('line');
-    if(this.orientation == 'portrait') {
-        lineContainer.style.justifyContent = 'space-between';
-        lineContainer.style.gap = `10px`;
-    }
-    else {
-        lineContainer.style.justifyContent = 'center';
-        lineContainer.style.gap = `20%`;
-    }
 
     return lineContainer;
 },
@@ -788,15 +764,6 @@ createRack: function( color ) {
     rackContainer.id = `${color}_rack`;
     rackContainer.classList.add('rack', `rack_${color}`);
 
-    if(this.orientation == 'portrait') {
-        rackContainer.style.width = '600px';
-        rackContainer.style.gap = `10px`;
-    }
-    else {
-        rackContainer.style.width = '100%';
-        rackContainer.style.gap = `2px`;
-    }
-
     return rackContainer;
 },
 
@@ -825,18 +792,6 @@ createPlaymat: function() {
     playmatContainer.id = `playmat_id`;
     playmatContainer.classList.add('playmat');
 
-    if(this.orientation == 'portrait') {
-        playmatContainer.style.flexDirection = "row";
-    }
-    else {
-        playmatContainer.style.flexDirection = "column";
-        playmatContainer.style.height = `var(--board-height)`;
-        //TOCHECK191224
-        playmatContainer.style.width = `542px`;
-        if( this.isCurrentPlayerRed() ) {
-            playmatContainer.classList.add('board-inverted');
-        }
-    }
     return playmatContainer;
 },
 
@@ -845,22 +800,9 @@ createDiscard: function( color ) {
     const discardContainer = document.createElement('div');
     discardContainer.id = `${color}_discard`;
     discardContainer.classList.add('discard', `linear_${color}`);
-    //TOCHECK191224
-    if(this.orientation == 'portrait') {
-        discardContainer.style.width = `100px`;
-        discardContainer.style.height = `833px`;
-    }
-    else {
-        discardContainer.style.width = `100%`;
-        discardContainer.style.height = `200px`;
-    }
 
-    if( color == 'blue') {
-        discardContainer.style.justifyContent = `flex-end`;
-    }
-    else {
-        discardContainer.style.justifyContent = `flex-start`;
-    }
+    discardContainer.style.justifyContent = color === 'blue' ? 'flex-end' : 'flex-start';
+
     return discardContainer;
 },
 
@@ -890,25 +832,21 @@ createBases: function() {
         baseElement.id = `base_${this.board_name}_${baseId}`;
         baseElement.classList.add('base_all');
         //baseElement.classList.add('selected');
-        
-        baseElement.style.top = `${baseData.top}%`;
-        baseElement.style.left = `${baseData.left}%`;
+        baseElement.style.cssText = `top: ${baseData.top}%; left: ${baseData.left}%;`;
         boardContainer.appendChild(baseElement);
 
         // blue base element
         const baseBlueElement = document.createElement('div');
         baseBlueElement.id = `blue_base_${this.board_name}_${baseId}`;
         baseBlueElement.classList.add('base');
-        baseBlueElement.style.top = `${baseData.top}%`;
-        baseBlueElement.style.left = `${baseData.left}%`;
+        baseBlueElement.style.cssText = `top: ${baseData.top}%; left: ${baseData.left}%;`;
         boardContainer.appendChild(baseBlueElement);
 
         // red base element
         const baseRedElement = document.createElement('div');
         baseRedElement.id = `red_base_${this.board_name}_${baseId}`;
         baseRedElement.classList.add('base');
-        baseRedElement.style.top = `${baseData.top+2.5}%`;
-        baseRedElement.style.left = `${baseData.left}%`;
+        baseRedElement.style.cssText = `top: ${baseData.top + 2.5}%; left: ${baseData.left}%;`;
         boardContainer.appendChild(baseRedElement);
     }
 
@@ -926,11 +864,12 @@ createTroopsOnBoard:function() {
         const troop_color = Math.floor(troop.type / 10)-1;
         // defines position on board from TB_bases array
         const baseData = TB_bases[troop.location_arg];
-        troopElement.style.position = 'absolute';
-        // red troops are 2.5% down
-        troopElement.style.top = troop_color == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`;
-        troopElement.style.left = `${baseData.left}%`;
-        troopElement.style.zIndex = 10 * troop.ordre;
+        troopElement.style.cssText = `
+            position: absolute;
+            top: ${troop_color === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`};
+            left: ${baseData.left}%;
+            z-index: ${10 * troop.ordre};
+        `;
         if( troop_color == this.RED ) {
             troopElement.classList.add('board-inverted');
         }
@@ -947,10 +886,7 @@ createMedals:function() {
             const medalElement = document.createElement('div');
             medalElement.id = `medal_${id}`;
             medalElement.classList.add('medals', 'board_medal');
-            medalElement.style.position = 'absolute';
-            medalElement.style.top = `${medal.top}%`;
-            medalElement.style.left = `${medal.left}%`;
-            medalElement.style.zIndex = 10;
+            medalElement.style.cssText = `position: absolute; top: ${medal.top}%; left: ${medal.left}%; z-index: 10;`;
             boardContainer.appendChild(medalElement);
         }
     });
@@ -973,6 +909,16 @@ createBaseTooltip: function(base_id) {
     }
 },
 
+
+setupCounters: function() {
+    this.blue_deck_counter = new ebg.counter();
+    this.blue_deck_counter.create('blue_deck_counter_id');
+    this.blue_deck_counter.toValue(this.nb_decks[0]);
+
+    this.red_deck_counter = new ebg.counter();
+    this.red_deck_counter.create('red_deck_counter_id');
+    this.red_deck_counter.toValue(this.nb_decks[1]);
+},
 
 
 /*211224removeTroopFromBoardArray: function( troop_id ) {

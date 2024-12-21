@@ -450,3 +450,63 @@ body {
 .check_red {
     background-position: -100% 0%;
 }
+
+
+
+
+
+@media (orientation: portrait) {
+
+    #global_id {
+        flex-direction: column;
+    }
+
+    .line {
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .rack {
+        width: 600px;
+        gap: 10px;
+    }
+
+    .playmat {
+        flex-direction: row;
+    }
+
+    .discard {
+        width: 100px;
+        height: 833px;
+    }
+}
+
+/* Landscape orientation */
+@media (orientation: landscape) {
+
+    #global_id {
+        flex-direction: row;
+    }
+
+    .line {
+        justify-content: center;
+        gap: 20%;
+    }
+
+    .rack {
+        width: 100%;
+        gap: 2px;
+    }
+
+    .playmat {
+        flex-direction: column;
+        height: var(--board-height);
+        width: 542px;
+    }
+
+    .discard {
+        width: 100%;
+        height: 200px;
+    }
+
+}
