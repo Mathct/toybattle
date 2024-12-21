@@ -726,8 +726,8 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('END GAME');
-        $ret['titleyou'] = clienttranslate('END GAME');
+        $ret['title'] = clienttranslate('END OF GAME');
+        $ret['titleyou'] = clienttranslate('END OF GAME');
 
 
         return $ret;
@@ -839,8 +839,8 @@ class Pending extends APP_GameClass
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('END GAME');
-        $ret['titleyou'] = clienttranslate('END GAME');
+        $ret['title'] = clienttranslate('END OF GAME');
+        $ret['titleyou'] = clienttranslate('END OF GAME');
 
 
         $ret['buttons'][] = 'btn_pass';
