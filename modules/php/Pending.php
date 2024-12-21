@@ -25,6 +25,7 @@ class Pending extends APP_GameClass
         $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
         $this->player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$this->player_id}'");
+        $this->player_name_opponent = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id != '{$this->player_id}'");
 
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
@@ -736,13 +737,13 @@ class Pending extends APP_GameClass
     function FinGame1($parg1, $parg2, $varg1, $varg2)
     {
 
-        self::DbQuery("UPDATE pending set function = 'FinGame2' WHERE player_id = '{$this->player_id_opponent}'");
+        self::DbQuery("UPDATE pending set function = 'FinGame2' WHERE player_id = '{$this->player_id_opponent}'");  // A ENLEVER QUAND FIN DE GAME FAIT
 
         if ($parg1== "1") {
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} cannot draw or place a Troop'),
+                clienttranslate('${player_name} cannot draw or place a Troop'),  //NE PEUT PLUS JOUER
                 array(
                     'player_name' => $this->player_name,
                     
@@ -785,7 +786,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} won the necessary medals'),
+                clienttranslate('${player_name} won the necessary medals'), //A GAGNER LES MEDAILLES NECESSAIRES
                 array(
                     'player_name' => $this->player_name,
                     
@@ -811,7 +812,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} captured an opposing starting base'),
+                clienttranslate('${player_name} captured an opposing starting base'), //A PRIS LA BASE ADVERSE
                 array(
                     'player_name' => $this->player_name,
                     
@@ -830,6 +831,7 @@ class Pending extends APP_GameClass
             
         }
 
+        //game::$instance->gamestate->nextState( 'end' ); 
         game::$instance->addPending($this->player_id, "FinGame2");
     }
 

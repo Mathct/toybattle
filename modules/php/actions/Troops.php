@@ -831,7 +831,7 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->notifyAllPlayers(
                     'discardTroopFromHand',
-                    clienttranslate('${player_name} discards ${log1} from the rack'),
+                    clienttranslate('${player_name} discards ${log1} from the opponent\'rack'),
                     array(
 
                         'player_name' => $this->player_name,
@@ -912,7 +912,7 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->notifyAllPlayers(
                 'discardTroopFromHand',
-                clienttranslate('${player_name} discards an opposing Troop from the rack'),
+                clienttranslate('${player_name} discards ${log1} from the opponent\'rack'),
                 array(
 
                     'player_name' => $this->player_name,

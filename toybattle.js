@@ -1039,14 +1039,14 @@ showArrays: function() {
     console.log('my_hand',this.my_hand);
     console.log('your_hand',this.your_hand);
     
-    console.log('nb_decks',this.nb_decks);
+    //console.log('nb_decks',this.nb_decks);
 
-    console.log('my_discard',this.my_discard);
-    console.log('your_discard',this.your_discard);
+    //console.log('my_discard',this.my_discard);
+    //console.log('your_discard',this.your_discard);
 
-    console.log('board_troops',this.board_troops);
+    //console.log('board_troops',this.board_troops);
 
-    console.log('troops_on_bases',this.troops_on_bases);
+    //console.log('troops_on_bases',this.troops_on_bases);
 },
 
 
@@ -1538,17 +1538,39 @@ notif_moveTroop: function(notif)
     
     }
     else {
+
+
+        let troopElement = null; // Initialisation de troopElement
+
+        for (let i = notif.args.nb_troops_hand; i >= 1; i--) {
+            let moving_troop_id = `${player_color_name}_troop_${i}`;
+            let currentElement = document.getElementById(moving_troop_id);
+        
+            if (currentElement && !currentElement.hasChildNodes()) {
+                troopElement = currentElement; // Assigner le premier élément sans enfant
+                break; // Sortir de la boucle dès qu'on trouve un élément sans enfant
+            }
+        }
+        
         // remove troop from hand JS array
-        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+    /*    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
             this.your_hand.pop();
         }
         else {
             this.my_hand.pop();
-        }
-
-        // rename Troop id and unhide it
-        let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
-        const troopElement = document.getElementById(moving_troop_id);
+        }  */      
+        
+        if (this.isSpectator == false || player_color == this.RED_COLOR) {
+            // Supprime l'élément à l'indice i-1 de your_hand
+            this.your_hand.splice(i - 1, 1);
+        } else {
+            // Supprime l'élément à l'indice i-1 de my_hand
+            this.my_hand.splice(i - 1, 1);
+        }        
+        
+        
+        
+        
         troopElement.id = `troop_${troop.id}`;
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;
@@ -1760,32 +1782,57 @@ notif_drawTroopPublic: function (notif) {
             let troopElement = document.createElement('div');
             troopElement.classList.add('troop');
 
-            if (this.isCurrentPlayerRed()) {
-                troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-                troopElement.style.backgroundPosition = `-0% -0%`;
 
-            } else if (this.isCurrentPlayerBlue()) {
-                troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-                troopElement.style.backgroundPosition = `-0% -100%`;
-            } else if( this.isSpectator == true ){ // spectator
-                if (player_color == this.RED_COLOR) {
-                    troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-                    troopElement.style.backgroundPosition = `-0% -100%`;
-                } else {
-                    troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-                    troopElement.style.backgroundPosition = `-0% -0%`;
+            let troop_color = 'red';
+            if (this.isCurrentPlayerRed() || ( this.isSpectator == true &&  player_color == this.BLUE_COLOR) ) {
+                troop_color = 'blue';
+            }
+            let baseIndex = index + parseInt(notif.args.nb_troops_hand) + 1;
+            let troopId = null;
+            
+            let hand_index = 0;
+            for (let n = baseIndex; n >= 1; n--) {
+                let potentialId = `${troop_color}_troop_${n}`;
+                if (!document.getElementById(potentialId)) {
+                    hand_index = n-1;
+                    troopId = potentialId;
+                    break; // Stopper la boucle dès qu'un ID disponible est trouvé
                 }
             }
-            deckContainer.appendChild(troopElement);
+            
+            const newTroop = { type: player_color_index };
+            if (this.isSpectator == false || player_color == this.RED_COLOR) {
+                this.your_hand.splice(hand_index, 0, newTroop); // Insérer à l'indice n-1
+            } else {
+                this.my_hand.splice(hand_index, 0, newTroop); // Insérer à l'indice n-1
+            }
+
 
             /* add to hand JS array */
-            const newTroop = { type: player_color_index };
+        /*    const newTroop = { type: player_color_index };
             if( this.isSpectator == false || player_color == this.RED_COLOR ) {
                 this.your_hand.push(newTroop);
             }
             else {
                 this.my_hand.push(newTroop);
+            }*/
+                
+            troopElement.id = troopId;
+
+            if (this.isCurrentPlayerRed()) {
+                troopElement.style.backgroundPosition = `-0% -0%`;
+            } else if (this.isCurrentPlayerBlue()) {
+                troopElement.style.backgroundPosition = `-0% -100%`;
+            } else if( this.isSpectator == true ){ // spectator
+                if (player_color == this.RED_COLOR) {
+                    troopElement.style.backgroundPosition = `-0% -100%`;
+                } else {
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+                }
             }
+            deckContainer.appendChild(troopElement);
+
+
 
 
 
