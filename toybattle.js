@@ -864,12 +864,11 @@ createTroopsOnBoard:function() {
         const troop_color = Math.floor(troop.type / 10)-1;
         // defines position on board from TB_bases array
         const baseData = TB_bases[troop.location_arg];
-        troopElement.style.cssText = `
-            position: absolute;
-            top: ${troop_color === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`};
-            left: ${baseData.left}%;
-            z-index: ${10 * troop.ordre};
-        `;
+        troopElement.style.position = 'absolute';
+        troopElement.style.top = troop_color == this.BLUE ? `${baseData.top}%` : `${baseData.top+2.5}%`; // red troops are 2.5% down
+        troopElement.style.left = `${baseData.left}%`;
+        troopElement.style.zIndex = 10 * troop.ordre;
+
         if( troop_color == this.RED ) {
             troopElement.classList.add('board-inverted');
         }
