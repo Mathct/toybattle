@@ -20,17 +20,21 @@ trait BasesTrait  // ATTENTION
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
 
-        // mode + pool et station sans bases speciales 
+        // MODE AVEC BASES SPECIALES ET SANS POOL NI STATION 
         if ((game::$instance->gamestate->table_globals[100] == 1) && ($this->board_name != 'pool') && ($this->board_name != 'station') && ($this->board_name != 'carribean')) {
 
+            // On recupere les bases contrôlées dans l'ORDRE à vérifier
             $check = self::getObjectListFromDB("SELECT id id, troop_id troop_id, base base FROM checkbase ORDER BY id ASC LIMIT 1");
 
+            //Si y a plus de bases à contrôler.. fin tour
             if ($check == null) {
                 game::$instance->giveExtraTime($this->player_id);
                 game::$instance->deblock_troops($this->player_id);
                 game::$instance->addPendingFirst($this->player_id, "NormalTurn");
             } else {
+                //Sinon on recupere le pouvoir de la PREMIERE base à contrôler
                 $numero_power = game::$instance->_bases[$this->board_name][$check[0]['base']]['power'];
+                // si c'est une base spéciale on va sur la fonction
                 if ($numero_power != 0) {
                     self::DbQuery("DELETE FROM checkbase WHERE id = '{$check[0]['id']}'");
 
@@ -58,12 +62,14 @@ trait BasesTrait  // ATTENTION
                         game::$instance->addPending($this->player_id, "VerifBase");
                     }
                 } else {
+                    // sinon on supprime la ligne et on va recontrôler celles qui suivent
                     self::DbQuery("DELETE FROM checkbase WHERE id = '{$check[0]['id']}'");
                     game::$instance->addPending($this->player_id, "VerifBase");
                 }
             }
         }
 
+        // MODE SANS BASES SPECIALES OU AVEC POOL OU STATION 
         if ((game::$instance->gamestate->table_globals[100] == 2) || ($this->board_name == 'pool') || ($this->board_name == 'station')) {
 
             self::DbQuery("DELETE FROM `checkbase`;");
