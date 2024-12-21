@@ -783,15 +783,17 @@ trait TroopsTrait  // ATTENTION
         $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
         $count = count($troop_id_opponent_hand);
 
+        $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
+
         if ($count >= 1) {
-            $ret['titleyou'] = clienttranslate('#icon# can discard a Troop from the opponent\'s rack');
+            $ret['titleyou'] = clienttranslate('#icon# can discard a Troop from the #opponent#\'s rack');
 
             $ret['buttons'][] = 'btn_yes';
             $ret['buttons'][] = 'btn_no';
         }
 
         if ($count == 0) {
-            $ret['titleyou'] = clienttranslate('#icon# cannot discard a Troop from the opponent\'s rack');
+            $ret['titleyou'] = clienttranslate('#icon# cannot discard a Troop from the #opponent#\'s rack');
 
             $ret['buttons'][] = 'btn_continue';
         }
@@ -831,7 +833,7 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->notifyAllPlayers(
                     'discardTroopFromHand',
-                    clienttranslate('${player_name} discards ${log1} from the opponent\'rack'),
+                    clienttranslate('${player_name} discards ${log1} from the opponent\'s rack'),
                     array(
 
                         'player_name' => $this->player_name,

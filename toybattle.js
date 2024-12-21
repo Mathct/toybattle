@@ -137,7 +137,7 @@ onEnteringState: function( stateName, args )
                 this.setupConnections(this.args.selectable);
 
                 if(args.args.titleyou != null) {
-                    $('pagemaintitletext').innerHTML = 	this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);   
+                    $('pagemaintitletext').innerHTML = 	this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace(/#opponent#/g,args.args.opponent).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);   
                 }   
             }   
             else
@@ -1538,9 +1538,30 @@ notif_moveTroop: function(notif)
     
     }
     else {
+       
+        // remove troop from hand JS array
+        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+            this.your_hand.pop();
+        }
+        else {
+            this.my_hand.pop();
+        }        
+        
+        /*NEW if (this.isSpectator == false || player_color == this.RED_COLOR) {
+            // Supprime l'élément à l'indice i-1 de your_hand
+            this.your_hand.splice(i - 1, 1);
+        } else {
+            // Supprime l'élément à l'indice i-1 de my_hand
+            this.my_hand.splice(i - 1, 1);
+        }   */  
+
+            
 
 
-        let troopElement = null; // Initialisation de troopElement
+
+
+
+/*        let troopElement = null; // Initialisation de troopElement
 
         for (let i = notif.args.nb_troops_hand; i >= 1; i--) {
             let moving_troop_id = `${player_color_name}_troop_${i}`;
@@ -1550,24 +1571,13 @@ notif_moveTroop: function(notif)
                 troopElement = currentElement; // Assigner le premier élément sans enfant
                 break; // Sortir de la boucle dès qu'on trouve un élément sans enfant
             }
-        }
+        }*/            
+
         
-        // remove troop from hand JS array
-    /*    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
-            this.your_hand.pop();
-        }
-        else {
-            this.my_hand.pop();
-        }  */      
-        
-        if (this.isSpectator == false || player_color == this.RED_COLOR) {
-            // Supprime l'élément à l'indice i-1 de your_hand
-            this.your_hand.splice(i - 1, 1);
-        } else {
-            // Supprime l'élément à l'indice i-1 de my_hand
-            this.my_hand.splice(i - 1, 1);
-        }        
-        
+        // rename Troop id and unhide it
+        let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
+
+        const troopElement = document.getElementById(moving_troop_id);
         
         
         
@@ -1779,7 +1789,7 @@ notif_drawTroopPublic: function (notif) {
 
         const animateTroop = (index) => {
             /* troop is created and added to the deck */
-            let troopElement = document.createElement('div');
+/* NEW           let troopElement = document.createElement('div');
             troopElement.classList.add('troop');
 
 
@@ -1808,14 +1818,14 @@ notif_drawTroopPublic: function (notif) {
             }
 
 
-            /* add to hand JS array */
-        /*    const newTroop = { type: player_color_index };
+
+            const newTroop = { type: player_color_index };
             if( this.isSpectator == false || player_color == this.RED_COLOR ) {
                 this.your_hand.push(newTroop);
             }
             else {
                 this.my_hand.push(newTroop);
-            }*/
+            }
                 
             troopElement.id = troopId;
 
@@ -1830,11 +1840,37 @@ notif_drawTroopPublic: function (notif) {
                     troopElement.style.backgroundPosition = `-0% -0%`;
                 }
             }
+            deckContainer.appendChild(troopElement);*/
+
+            let troopElement = document.createElement('div');
+            troopElement.classList.add('troop');
+
+            if (this.isCurrentPlayerRed()) {
+                troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                troopElement.style.backgroundPosition = `-0% -0%`;
+
+            } else if (this.isCurrentPlayerBlue()) {
+                troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                troopElement.style.backgroundPosition = `-0% -100%`;
+            } else if( this.isSpectator == true ){ // spectator
+                if (player_color == this.RED_COLOR) {
+                    troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -100%`;
+                } else {
+                    troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+                }
+            }
             deckContainer.appendChild(troopElement);
 
-
-
-
+            /* add to hand JS array */
+            const newTroop = { type: player_color_index };
+            if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+                this.your_hand.push(newTroop);
+            }
+            else {
+                this.my_hand.push(newTroop);
+            }
 
             /* room is reserved in the flex */
             const placeholder = document.createElement('div');
@@ -2108,6 +2144,16 @@ notif_discardTroopFromHand: function (notif) {
     }
     else {
         // rename Troop id and unhide it
+
+            // A CONTROLER
+                // remove troop from hand JS array
+                if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+                    this.your_hand.pop();
+                }
+                else {
+                    this.my_hand.pop();
+                }
+        
 
         let selected_troop = notif.args.selected_troop;
         if( selected_troop == 0) {
@@ -2651,6 +2697,26 @@ notif_unhideTroopOnRack: function( notif )
     elements.forEach(element => {
         element.remove();
     });
+
+    const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
+
+    if( rack_name == 'red_rack' && this.isCurrentPlayerRed == 'false') {
+        const rackElement = document.getElementById('red_rack');
+        const children = Array.from(rackElement.children); // Récupérer tous les enfants
+        children.forEach((child, index) => {
+            child.id = `red_troop_${index + 1}`; // Renommer chaque enfant
+        });
+    }
+
+    if( rack_name == 'blue_rack' && this.isCurrentPlayerBlue == 'false') {
+        const rackElement = document.getElementById('blue_rack');
+        const children = Array.from(rackElement.children); // Récupérer tous les enfants
+        children.forEach((child, index) => {
+            child.id = `blue_troop_${index + 1}`; // Renommer chaque enfant
+        });
+    }
+
+
 },
 
 /*********************************

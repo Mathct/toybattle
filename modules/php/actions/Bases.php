@@ -83,7 +83,9 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} can recover a Troop on the Terrain (Be careful! This can trigger a region control for your opponent)');
+
+        $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
+        $ret['titleyou'] = clienttranslate('Special base: ${you} can recover a Troop on the Terrain (Be careful! This can trigger a region control for #opponent#)');
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg2;
 
@@ -408,8 +410,10 @@ trait BasesTrait  // ATTENTION
             }
         }
 
+        $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
+
         if ($test == 1) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can choose an enemy Troop adjacent to this base and move it on any base adjacent to your opponent\'s starting base');
+            $ret['titleyou'] = clienttranslate('Special base: ${you} can choose an enemy Troop adjacent to this base and move it on any base adjacent to #opponent#\'s starting base');
             $ret['buttons'][] = 'btn_yes';
             $ret['buttons'][] = 'btn_no';
         }
@@ -780,14 +784,16 @@ trait BasesTrait  // ATTENTION
 
         $counttroophandopponent_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true));
 
+        $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
+
         if ($counttroophandopponent_noblocked >= 1) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can point a Troop on your opponent\'s rack (without looking at it)... Your opponent will not be able to place on their next turn');
+            $ret['titleyou'] = clienttranslate('Special base: ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
             $ret['buttons'][] = 'btn_yes';
             $ret['buttons'][] = 'btn_no';
         }
 
         if ($counttroophandopponent_noblocked == 0) {
-            $ret['titleyou'] = clienttranslate('Special base: Your opponent has no Troops on rack');
+            $ret['titleyou'] = clienttranslate('Special base: #opponent# has no Troops on rack');
             $ret['buttons'][] = 'btn_continue';
         }
 

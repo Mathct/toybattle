@@ -26,6 +26,7 @@ class Pending extends APP_GameClass
 
         $this->player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$this->player_id}'");
         $this->player_name_opponent = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id != '{$this->player_id}'");
+        $this->player_color_opponent = self::getUniqueValueFromDB("SELECT player_color FROM player WHERE player_id != '{$this->player_id}'");
 
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
@@ -879,6 +880,6 @@ class Pending extends APP_GameClass
 
 
 
-    
+
 
 }
