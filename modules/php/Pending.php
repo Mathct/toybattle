@@ -737,7 +737,7 @@ class Pending extends APP_GameClass
     function FinGame1($parg1, $parg2, $varg1, $varg2)
     {
 
-        self::DbQuery("UPDATE pending set function = 'FinGame2' WHERE player_id = '{$this->player_id_opponent}'");  // A ENLEVER QUAND FIN DE GAME FAIT
+        //self::DbQuery("UPDATE pending set function = 'FinGame2' WHERE player_id = '{$this->player_id_opponent}'");  // A ENLEVER QUAND FIN DE GAME FAIT
 
         if ($parg1== "1") {
 
@@ -755,6 +755,8 @@ class Pending extends APP_GameClass
             
             if($star_player > $star_opponent)
             {
+                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+
                 game::$instance->notifyAllPlayers(
                     'score',
                     '',
@@ -768,6 +770,8 @@ class Pending extends APP_GameClass
 
             else
             {
+
+                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id_opponent}'");
 
                 game::$instance->notifyAllPlayers(
                     'score',
@@ -792,6 +796,8 @@ class Pending extends APP_GameClass
                     
                 )
             );
+
+            self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
 
             game::$instance->notifyAllPlayers(
                 'score',
@@ -819,6 +825,8 @@ class Pending extends APP_GameClass
                 )
             );
 
+            self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+
             game::$instance->notifyAllPlayers(
                 'score',
                 '',
@@ -831,11 +839,11 @@ class Pending extends APP_GameClass
             
         }
 
-        //game::$instance->gamestate->nextState( 'end' ); 
-        game::$instance->addPending($this->player_id, "FinGame2");
+        game::$instance->gamestate->nextState( 'end' ); 
+        //game::$instance->addPending($this->player_id, "FinGame2");
     }
 
-    function argFinGame2($parg1, $parg2)
+    /*function argFinGame2($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -859,6 +867,18 @@ class Pending extends APP_GameClass
             game::$instance->giveExtraTime($this->player_id);
             game::$instance->addPendingFirst($this->player_id, "FinGame2");
         }
-    }
+    }*/
+
+
+
+
+
+
+
+
+
+
+
+    
 
 }

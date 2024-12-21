@@ -83,7 +83,7 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} can choose a Troop on the Terrain (Be careful! This can trigger a region control for your opponent)');
+        $ret['titleyou'] = clienttranslate('Special base: ${you} can recover a Troop on the Terrain (Be careful! This can trigger a region control for your opponent)');
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg2;
 
