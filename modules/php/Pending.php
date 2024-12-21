@@ -130,7 +130,7 @@ class Pending extends APP_GameClass
         }
 
 
-        // TESTE SI TROUPE NON BLOQUEE DISPO MAIS AUSSI SI ELLES PEUVENT ETRE PLACEES
+        // TEST SI TROUPES NON BLOQUEES PEUVENT ETRE PLACEES
         if ($counttroophand_noblocked >= 1) {
             $place_ok = 0;
             $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
@@ -443,14 +443,6 @@ class Pending extends APP_GameClass
 
 
 
-
-
-
-
-
-
-
-
     //////////////////// ACTION WITH CONFIRM PREF /////////////////////////////
 
     function argConfirmPlace($parg1, $parg2)
@@ -514,12 +506,7 @@ class Pending extends APP_GameClass
                 )
             );
 
-            
-
-
-
-
-
+         
             $numero_base = $explode_base[2];
             $troop_id = $explode_troop[1];
 
@@ -704,22 +691,6 @@ class Pending extends APP_GameClass
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /// FONCTION FIN DE GAME ////
 
     function argFinGame1($parg1, $parg2)
@@ -738,7 +709,7 @@ class Pending extends APP_GameClass
     function FinGame1($parg1, $parg2, $varg1, $varg2)
     {
 
-        //self::DbQuery("UPDATE pending set function = 'FinGame2' WHERE player_id = '{$this->player_id_opponent}'");  // A ENLEVER QUAND FIN DE GAME FAIT
+        
 
         if ($parg1== "1") {
 
@@ -841,45 +812,10 @@ class Pending extends APP_GameClass
         }
 
         game::$instance->gamestate->nextState( 'end' ); 
-        //game::$instance->addPending($this->player_id, "FinGame2");
+        
     }
 
-    /*function argFinGame2($parg1, $parg2)
-    {
-        $ret = array();
-        $ret["selectable"] = array();
-        $ret["selected"] = array();
-        $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('END OF GAME');
-        $ret['titleyou'] = clienttranslate('END OF GAME');
-
-
-        $ret['buttons'][] = 'btn_pass';
-
-
-
-        return $ret;
-    }
-
-    function FinGame2($parg1, $parg2, $varg1, $varg2)
-    {
-        if ($varg1 == "btn_pass") {
-
-            game::$instance->giveExtraTime($this->player_id);
-            game::$instance->addPendingFirst($this->player_id, "FinGame2");
-        }
-    }*/
-
-
-
-
-
-
-
-
-
-
-
+   
 
 
 }

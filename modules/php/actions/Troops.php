@@ -244,6 +244,8 @@ trait TroopsTrait  // ATTENTION
             $ret['icon'] = '<span class="icon_bandeau icon_troop_2 icon_red"></span>';
         }
 
+        // TEST SI TROUPES NON BLOQUEES PEUVENT ETRE PLACEES
+
         $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
 
         if ($counttroophand_noblocked >= 1) {
