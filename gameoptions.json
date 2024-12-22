@@ -1,7 +1,7 @@
 {
 
     "100": {
-        "name": "Game_mode",
+        "name": "Game mode",
         "values": {
             "1": {
                 "name": "Normal", 
@@ -23,7 +23,7 @@
     },
 
     "101": {
-        "name": "Game_board",
+        "name": "Game board",
         "values": {
             "1": {
                 "name": "Castle Field (recommended for beginners)", 
