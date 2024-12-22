@@ -469,3 +469,5 @@ $this->_medals = [
 $this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81]];
 
 $this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8];
+
+$this->_board_names = ["", "castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];

@@ -63,10 +63,10 @@ setup: function( gamedatas )
     this.connections = [];
 
 this.bases = gamedatas.bases;
-this.regions = gamedatas.regions;
+this.regions = gamedatas.regions; //USELESS
 this.medals = gamedatas.medals;
 this.troop_types = gamedatas.troop_types;
-this.board_types = gamedatas.board_types;
+this.board_type = gamedatas.board_type;
 this.board_name = gamedatas.board_name;
 this.board_id = gamedatas.board_id;
 
@@ -424,6 +424,16 @@ setupBoard: function() {
 
     //this.setupLandscapeMode();
 
+},
+
+setLandscape: function () {
+    const background_x = (this.board_id - 1) % 4;
+    const background_y = Math.floor((this.board_id - 1) / 4);
+    const backgroundStyle = `background-position: -${background_x}00% -${background_y}00%;`;
+   const html = `
+        <div id="board_${this.board_id}" class="board" style="${backgroundStyle}">
+        </div>
+    `;
 },
 
 setupLandscapeMode: function() {
@@ -819,7 +829,7 @@ createBoard: function() {
 },
 
 createBases: function() {
-    const TB_bases = this.bases[this.board_name];
+    const TB_bases = this.bases;
     this.troops_on_bases = {};
 
     const boardContainer = document.getElementById(`board_${this.board_id}`);
@@ -855,7 +865,7 @@ createBases: function() {
 
 createTroopsOnBoard:function() {
     const boardContainer = document.getElementById(`board_${this.board_id}`);
-    const TB_bases = this.bases[this.board_name];
+    const TB_bases = this.bases;
     Object.values(this.gamedatas.board_troops).forEach(troop => {
 
         this.troops_on_bases[troop.location_arg].push(troop);
@@ -879,7 +889,7 @@ createTroopsOnBoard:function() {
 
 createMedals:function() {
     const boardContainer = document.getElementById(`board_${this.board_id}`);
-    const TB_medals = this.medals[this.board_name];
+    const TB_medals = this.medals;
     Object.entries(TB_medals).forEach(([id, medal]) => {
         if( this.gamedatas.full_regions.includes(medal.region.toString()) ) {
             const medalElement = document.createElement('div');
@@ -898,7 +908,7 @@ createBasesTooltips: function() {
 },
 
 createBaseTooltip: function(base_id) {
-    const TB_bases = this.bases[this.board_name];
+    const TB_bases = this.bases;
     const base_power = TB_bases[base_id].power;
     const troops = this.troops_on_bases[base_id];
     
@@ -1244,7 +1254,8 @@ getTooltipBaseContent: function(board_id, base_power, troops) {
     if( base_power > 0) {
         // Afficher les informations de la Base Spéciale  
         
-        const board_infos = this.board_types[board_id];
+        const board_infos = this.board_type;
+        console.log( 'board_infos', board_infos);
         html += '<div id="special_base_desc">';
         html += `<br><span class='tooltip_title'>${board_infos.name}</span>`;
         let effect_desc = board_infos.desc1;
@@ -1401,7 +1412,7 @@ notif_moveTroop: function(notif)
  
     const boardContainer = document.getElementById(`board_${this.board_id}`);
 
-    const TB_bases = this.bases[this.board_name];
+    const TB_bases = this.bases;
 
     const troop = notif.args.infos_troop;
 
@@ -2397,8 +2408,6 @@ notif_moveTroopBoardToBoard: function (notif) {
 
     this.showArrays();
 
-    const TB_bases = this.bases[this.board_name];
-
     const troop = notif.args.infos_troop;
     
     const player_color = this.players[troop.type_arg].color;
@@ -2571,7 +2580,7 @@ notif_gainMedal: function (notif) {
 
     let medals_already_won = this.players[notif.args.player_id].star; 
     let index = 1;
-    const TB_medals = this.medals[this.board_name];
+    const TB_medals = this.medals;
 
     this.players[notif.args.player_id].star += notif.args.nb_medal;
 

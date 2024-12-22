@@ -35,6 +35,7 @@ class Game extends \Table
     public $_powers;
     public $_medals_to_win;
     public $troop;
+    public $_board_names;
 
 
 
@@ -218,11 +219,21 @@ class Game extends \Table
 
 
             $mois = [
-                "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+                "Janvier",
+                "Février",
+                "Mars",
+                "Avril",
+                "Mai",
+                "Juin",
+                "Juillet",
+                "Août",
+                "Septembre",
+                "Octobre",
+                "Novembre",
+                "Décembre"
             ];
-        
-             // Extraire le mois et l'année de $mois_depart
+
+            // Extraire le mois et l'année de $mois_depart
             list($mois_nom, $annee_depart) = explode(" ", $mois_depart);
             $index_depart = array_search($mois_nom, $mois); // Trouve l'indice du mois dans la liste
 
@@ -235,8 +246,8 @@ class Game extends \Table
 
             // Obtenir l'indice circulaire dans le tableau
             $index_cible = ($diff_mois % count($valeurs) + count($valeurs)) % count($valeurs); // Toujours positif
-        
-                                   
+
+
             $this->setGameStateValue('board', $valeurs[$index_cible]);
         }
 
@@ -307,20 +318,23 @@ class Game extends \Table
         $result["blue_blocked"] = self::getObjectListFromDB("SELECT card_blocked blocked FROM troop WHERE card_blocked > 0 AND card_type_arg = '{$spectator_id}'", true);
         $result["red_blocked"] = self::getObjectListFromDB("SELECT card_blocked blocked FROM troop WHERE card_blocked > 0 AND card_type_arg = '{$no_spectator_id}'", true);
 
-        $result["bases"] = $this->_bases;
-        $result["regions"] = $this->_regions;
-        $result["medals"] = $this->_medals;
+        $board_name = $this->_board_names[$this->getGameStateValue('board')];
+        $board_id = $this->getGameStateValue('board');
+        $result["board_name"] = $board_name;
+        $result["board_id"] = $board_id;
+
+        $result["bases"] = $this->_bases[$board_name];
+        $result["regions"] = $this->_regions[$board_name];
+        $result["medals"] = $this->_medals[$board_name];
         $result["troop_types"] = $this->_troop_types;
-        $result["board_types"] = $this->_board_types;
+        $result["board_type"] = $this->_board_types[$board_id];
 
         $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckblue'");
         $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckred'");
 
         $result["full_regions"] = self::getObjectListFromDB("SELECT zone_id id FROM zone WHERE zone_star > 0", true);
 
-        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
-        $result["board_name"] = $board_name[$this->getGameStateValue('board') - 1];
-        $result["board_id"] = $this->getGameStateValue('board');
+
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
 
@@ -715,7 +729,7 @@ class Game extends \Table
 
     function deblock_troops(int $player_id)
     {
-        
+
         self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_type_arg = '{$player_id}' AND card_blocked > 0");
 
         game::$instance->notifyAllPlayers(
@@ -728,7 +742,6 @@ class Game extends \Table
 
             )
         );
-        
     }
 
     /// ICONES POUR LOG
