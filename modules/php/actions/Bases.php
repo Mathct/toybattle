@@ -198,6 +198,8 @@ trait BasesTrait  // ATTENTION
                 game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'hand', 0);
                 self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troopmax[0]['id']}'");
 
+                self::DbQuery("DELETE FROM checkbase WHERE troop_id = '{$infos_troopmax[0]['id']}'");
+
                 $type1 = $infos_troopmax[0]['type'];
 
                 game::$instance->notifyAllPlayers(
@@ -259,6 +261,8 @@ trait BasesTrait  // ATTENTION
 
             game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'hand', 0);
             self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troopmax[0]['id']}'");
+
+            self::DbQuery("DELETE FROM checkbase WHERE troop_id = '{$infos_troopmax[0]['id']}'");
 
             $type1 = $infos_troopmax[0]['type'];
 
