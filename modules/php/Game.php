@@ -650,6 +650,8 @@ class Game extends \Table
                     $idplayer = $list_id_player_sur_zone[0]; // La première valeur du tableau
                     $allEqual = true;
 
+                    
+
                     foreach ($list_id_player_sur_zone as $value) {
                         if ($value !== $idplayer) {
                             $allEqual = false;
@@ -657,8 +659,13 @@ class Game extends \Table
                         }
                     }
 
+                    
+
+
+                    
                     if (($allEqual) && ($idplayer != 0)) {
 
+                        
                         // GAIN REGION POUR JOUEUR $idplayer
 
                         // TEST SI MEDAILLES ENCORE PRESENTES (pas deja gagnées)
@@ -672,16 +679,22 @@ class Game extends \Table
                             $count_medals = $count_medals + $etoile;
 
                             $emptied_regions[] = $test['value'];
+
+                            $player_id_gain = $idplayer;
+
+
                         }
                     }
                 }
             }
 
+            
+
             if ($count_medals >= 1) {
 
 
 
-                $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$idplayer}'");
+                $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$player_id_gain}'");
 
                 if ($count_regions == 1 && $count_medals == 1) {
                     $txt = clienttranslate('${player_name} controls ${nb_region} region and takes ${nb_medal} Medal');
@@ -700,7 +713,7 @@ class Game extends \Table
                         'nb_region' => $count_regions,
                         'nb_medal' => $count_medals,
                         'emptied_regions' => $emptied_regions,
-                        'player_id' => $idplayer,
+                        'player_id' => $player_id_gain,
 
                     )
                 );
@@ -713,7 +726,7 @@ class Game extends \Table
                 // Test Fin de partie
 
                 $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
-                $total_player_medals = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$idplayer}'");
+                $total_player_medals = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$player_id_gain}'");
 
 
                 if ($total_player_medals >= $max_medals) {

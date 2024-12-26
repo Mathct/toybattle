@@ -25,7 +25,7 @@ define([
 function (dojo, declare, counter) {
   return declare("bgagame.toybattle",  ebg.core.gamegui, {
 
-    constructor: function(){ console.log('toybattle constructor'); },
+    constructor: function(){ console.info('toybattle constructor'); },
        
        
 /////////////////////////////////////////////////////////////////////////////////           
@@ -40,10 +40,10 @@ function (dojo, declare, counter) {
         
 setup: function( gamedatas )
 {
-    console.log( "Starting game setup" );
+    console.info( "Starting game setup" );
 
-    console.log('gamedatas');
-    console.log(gamedatas);
+    console.info('gamedatas');
+    console.info(gamedatas);
 
     this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean","station", "battlefield"];
     this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8];
@@ -99,7 +99,7 @@ this.setupCounters();
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
 
-    console.log( "Ending game setup" );
+    console.info( "Ending game setup" );
 },
 
 /////////////////////////////////////////////////////////////////////////////////   
@@ -120,7 +120,7 @@ onEnteringState: function( stateName, args )
 {
     
     if( stateName != 'pending') {
-        console.log('Entering state: '+stateName, args);
+        console.info('Entering state: '+stateName, args);
     }
     
     switch( stateName ) {
@@ -160,7 +160,7 @@ onEnteringState: function( stateName, args )
 onLeavingState: function( stateName )
 {
     if( stateName != 'pending') {
-        console.log('Leaving state: '+stateName);
+        console.info('Leaving state: '+stateName);
     }
     
     dojo.query(".selectable").removeClass("selectable");
@@ -182,7 +182,7 @@ onLeavingState: function( stateName )
 
 onUpdateActionButtons: function( stateName, args )
 {
-    console.log( 'onUpdateActionButtons: '+stateName, args );
+    console.info( 'onUpdateActionButtons: '+stateName, args );
             
     if( this.isCurrentPlayerActive() )  {            
         switch( stateName )
@@ -401,18 +401,18 @@ setupPlayersBoard: function() {
  **************************/
 
 setupBoard: function() {
-    console.log('setup Board');
+    console.info('setup Board');
 
     //const mediaQuery = window.matchMedia('(max-width: 1024px) and (orientation: landscape)');
     const mediaQuery = window.matchMedia('(orientation: landscape)');
 
     const handleTabletChange = (e) => {
         if (e.matches) {
-            console.log('Media Query Matched! Landscape Mode');
+            console.info('Media Query Matched! Landscape Mode');
             this.orientation = "landscape";
             this.setupLandscapeMode();
         } else {
-            console.log('Portrait Mode');
+            console.info('Portrait Mode');
             this.orientation = "portrait";
             this.setupPortraitMode();
         }
@@ -433,7 +433,131 @@ setLandscape: function () {
    const html = `
         <div id="board_${this.board_id}" class="board" style="${backgroundStyle}">
         </div>
+        <div id="playmat_id" class="playmat">
+            <div id="red_rack" class="rack rack_red"></div>
+            <div id="red_discard" class="discard linear_red" style="justify-content: flex-start;flex-direction:row;"></div>
+            <div id="white_line" class="line">
+                <div id="blue_deck" class="deck">
+                    <div id="blue_deck_counter_id" class="deck_counter blue_deck"></div>
+                </div>
+                <div id="red_deck" class="deck">
+                    <div id="red_deck_counter_id" class="deck_counter red_deck"></div>
+                </div>
+            </div>
+            <div id="blue_discard" class="discard linear_blue" style="justify-content: flex-end;flex-direction:row;"></div>
+            <div id="blue_rack" class="rack rack_blue"></div>
+        </div>
     `;
+
+
+
+
+
+
+
+
+    if( this.isCurrentPlayerRed() ) {
+        dojo.addClass( `board_${this.board_id}`,'board-inverted');
+        dojo.addClass( `playmat_id`,'board-inverted');
+        dojo.addClass( `blue_deck_counter_id`,'board-inverted');
+        dojo.addClass( `red_deck_counter_id`,'board-inverted');
+    }
+
+    this.createBases();
+    this.createMedals();
+    this.createTroopsOnBoard();
+
+
+
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.my_hand).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);
+            }
+            troopElement.classList.add('board-inverted');
+            redRackContainer.appendChild(troopElement);
+
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+            
+        });
+    }
+    else {
+        Object.values(this.your_hand).forEach((troop, index) => {
+            const troopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[1].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);                
+            }
+            troopElement.classList.add('board-inverted');
+            redRackContainer.appendChild(troopElement);
+
+        });
+    }
+
+    const red_discard_list = this.isCurrentPlayerRed() ? this.my_discard : this.your_discard;
+    Object.values(red_discard_list).forEach(troop => {
+        const troopElement = this.createTroopElement(troop);
+        troopElement.classList.add('board-inverted', 'opa_70');
+        redDiscardContainer.appendChild(troopElement);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+    });
+
+    const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
+    Object.values(blue_discard_list).forEach(troop => {
+        const troopElement = this.createTroopElement(troop);
+        troopElement.classList.add('opa_70');
+        blueDiscardContainer.appendChild(troopElement);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+    });
+
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.your_hand).forEach((troop, index) => {
+            const troopElement = this.createBackTroopElement(troop, index);
+
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);                
+            }
+            blueRackContainer.appendChild(troopElement);
+
+        });
+    }
+    else if( this.isSpectator) {
+        Object.values(this.my_hand).forEach((troop, index) => {
+            const troopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);                
+            }
+            blueRackContainer.appendChild(troopElement);
+        });
+    }
+    else {
+        Object.values(this.my_hand).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);
+            }
+            blueRackContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+
+
+
 },
 
 setupLandscapeMode: function() {
@@ -860,7 +984,7 @@ createBases: function() {
         boardContainer.appendChild(baseRedElement);
     }
 
-    console.log( 'TROOPS ON BASES', this.troops_on_bases);
+    console.info( 'TROOPS ON BASES', this.troops_on_bases);
 },
 
 createTroopsOnBoard:function() {
@@ -966,15 +1090,15 @@ removeTroopFromMyHandArray: function( troop_id) {
 showArrays: function() {
 
     
-    console.log('my_hand',this.my_hand);
-    console.log('your_hand',this.your_hand);
+    console.info('my_hand',this.my_hand);
+    console.info('your_hand',this.your_hand);
     
-    //console.log('nb_decks',this.nb_decks);
+    //console.info('nb_decks',this.nb_decks);
 
-    console.log('my_discard',this.my_discard);
-    console.log('your_discard',this.your_discard);
+    console.info('my_discard',this.my_discard);
+    console.info('your_discard',this.your_discard);
 
-    //console.log('troops_on_bases',this.troops_on_bases);
+    //console.info('troops_on_bases',this.troops_on_bases);
 },
 
 
@@ -1255,7 +1379,7 @@ getTooltipBaseContent: function(board_id, base_power, troops) {
         // Afficher les informations de la Base Spéciale  
         
         const board_infos = this.board_type;
-        console.log( 'board_infos', board_infos);
+        console.info( 'board_infos', board_infos);
         html += '<div id="special_base_desc">';
         html += `<br><span class='tooltip_title'>${board_infos.name}</span>`;
         let effect_desc = board_infos.desc1;
@@ -1332,7 +1456,7 @@ onOpButton: function(evt)
     
     // Preventing default browser reaction
     this.stopEvent( evt );
-    console.log('evt.currentTarget.id',evt.currentTarget.id);
+    console.info('evt.currentTarget.id',evt.currentTarget.id);
     this.bgaPerformAction('actButton', { arg1: evt.currentTarget.id });
 },
 
@@ -1353,7 +1477,7 @@ onOpButton: function(evt)
 
 setupNotifications: function()
 {
-    console.log( 'notifications subscriptions setup' );
+    console.info( 'notifications subscriptions setup' );
     
     const notifs = [
         ['displayNotif', 1],
@@ -1385,8 +1509,8 @@ setupNotifications: function()
 
 notif_displayNotif: function(notif)
 {
-    console.log('notif_displayNotif');
-    console.log(notif);
+    console.info('notif_displayNotif');
+    console.info(notif);
 },
 
 
@@ -1402,8 +1526,8 @@ notif_displayNotif: function(notif)
 
 notif_moveTroop: function(notif)
 {
-    console.log('notif_moveTroop');
-    console.log(notif);
+    console.info('notif_moveTroop');
+    console.info(notif);
 
     this.showArrays();
 
@@ -1526,8 +1650,8 @@ notif_moveTroop: function(notif)
         };
         troopElement.addEventListener("transitionend", onTransitionEnd);
         }
-        console.log(' base_id ',base_id );
-        console.log(' TOB ',this.troops_on_bases[base_id] );
+        console.info(' base_id ',base_id );
+        console.info(' TOB ',this.troops_on_bases[base_id] );
         this.troops_on_bases[base_id].push(troop);
         this.createBaseTooltip(base_id);
 
@@ -1556,8 +1680,8 @@ notif_moveTroop: function(notif)
  *  
  *********************************/
 notif_drawTroopPrivate: function (notif) {
-    console.log('notif_drawTroopPrivate');
-    console.log(notif);
+    console.info('notif_drawTroopPrivate');
+    console.info(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -1663,8 +1787,8 @@ notif_drawTroopPrivate: function (notif) {
  *********************************/
 
 notif_drawTroopPublic: function (notif) {
-    console.log('notif_drawTroopPublic');
-    console.log(notif);
+    console.info('notif_drawTroopPublic');
+    console.info(notif);
 
     this.showArrays();
 
@@ -1780,8 +1904,8 @@ notif_drawTroopPublic: function (notif) {
  ************************************/
 
 notif_discardTroopFromBoard: function (notif) {
-    console.log('notif_discardTroopFromBoard');
-    console.log(notif);
+    console.info('notif_discardTroopFromBoard');
+    console.info(notif);
 
     //TODO MAJ this.troopsOnBase et les deux Tooltips
 
@@ -1872,6 +1996,7 @@ notif_discardTroopFromBoard: function (notif) {
         troopElement.style.left = '';
         troopElement.style.position = '';
         troopElement.style.zIndex = 10; // ATTENTION POUR LES PROCHAINES ACTIONS
+        troopElement.classList.add('opa_70');
         discardContainer.replaceChild(troopElement, placeholder);
 
         troopElement.removeEventListener('transitionend', onTransitionEnd);
@@ -1891,10 +2016,10 @@ notif_discardTroopFromBoard: function (notif) {
  ************************************/
 
 notif_discardTroopFromHand: function (notif) {
-    console.log('notif_discardTroopFromHand');
-    console.log(notif);
+    console.info('notif_discardTroopFromHand');
+    console.info(notif);
 
-    this.showArrays();
+    //this.showArrays();
 
     const troop = notif.args.infos_troop;
     const player_color = this.players[troop.type_arg].color;
@@ -2057,10 +2182,28 @@ notif_discardTroopFromHand: function (notif) {
             troopElement.classList.add('opa_70');
             discardContainer.replaceChild(troopElement, placeholder);
 
-            for( let i=selected_troop+1; i<=notif.args.nb_cards_in_hand;i++) {
+            const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
+
+            console.info( 'rack_name ',rack_name);
+            console.info( 'current player red ',this.isCurrentPlayerRed());
+
+    
+
+            if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
+                const rackElement = document.getElementById('red_rack');
+                console.info('rackElement', rackElement );
+            }
+            console.info( 'selected_troop : ',selected_troop);
+            console.info( 'notif.args.nb_cards_in_hand : ',notif.args.nb_cards_in_hand);
+
+            for( let i=parseInt(selected_troop) + 1; i<=notif.args.nb_cards_in_hand;i++) {
+                console.info( 'i : ',i);
                 const troop_id = `${player_color_name}_troop_${i}`;
+
                 let troopElement = document.getElementById(troop_id);
+                console.info( 'troop_old', troopElement);
                 troopElement.id = `${player_color_name}_troop_${i-1}`;
+                console.info( 'troop_new', troopElement);
             }
 
             troopElement.removeEventListener("transitionend", onTransitionEnd);
@@ -2069,7 +2212,7 @@ notif_discardTroopFromHand: function (notif) {
         troopElement.addEventListener("transitionend", onTransitionEnd);
     }
 
-    this.showArrays();
+    //this.showArrays();
 },
 
 
@@ -2082,8 +2225,8 @@ notif_discardTroopFromHand: function (notif) {
  ************************************/
 
 notif_recoverTroopFromBoard: function (notif) {
-    console.log('notif_recoverTroopFromBoard');
-    console.log(notif);
+    console.info('notif_recoverTroopFromBoard');
+    console.info(notif);
 
     this.showArrays();
 
@@ -2246,8 +2389,8 @@ notif_recoverTroopFromBoard: function (notif) {
  ***********************************/
 
 notif_recoverTroopFromDiscard: function (notif) {
-    console.log('notif_recoverTroopFromDiscard');
-    console.log(notif);
+    console.info('notif_recoverTroopFromDiscard');
+    console.info(notif);
 
     this.showArrays();
 
@@ -2403,8 +2546,8 @@ notif_recoverTroopFromDiscard: function (notif) {
  ***********************************/
 
 notif_moveTroopBoardToBoard: function (notif) {
-    console.log('notif_moveTroopBoardToBoard');
-    console.log(notif);
+    console.info('notif_moveTroopBoardToBoard');
+    console.info(notif);
 
     this.showArrays();
 
@@ -2478,8 +2621,8 @@ notif_moveTroopBoardToBoard: function (notif) {
  ***********************************/
 
 notif_hideTroopOnRackPrivate: function (notif) {
-    console.log('notif_hideTroopOnRackPrivate');
-    console.log(notif);
+    console.info('notif_hideTroopOnRackPrivate');
+    console.info(notif);
 
 //    this.showArrays();
 
@@ -2506,8 +2649,8 @@ notif_hideTroopOnRackPrivate: function (notif) {
 },
 
 notif_hideTroopOnRackPublic: function (notif) {
-    console.log('notif_hideTroopOnRackPublic');
-    console.log(notif);
+    console.info('notif_hideTroopOnRackPublic');
+    console.info(notif);
 
     //this.showArrays();
 
@@ -2534,8 +2677,8 @@ notif_hideTroopOnRackPublic: function (notif) {
 
 notif_unhideTroopOnRack: function( notif )
 {
-    console.log('notif_unhideTroopOnRack');
-    console.log(notif);
+    console.info('notif_unhideTroopOnRack');
+    console.info(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const check_name = player_color == this.RED_COLOR ? 'check_blue' : 'check_red';
@@ -2547,7 +2690,7 @@ notif_unhideTroopOnRack: function( notif )
 
     const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
 
-    if( rack_name == 'red_rack' && this.isCurrentPlayerRed == 'false') {
+    if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
         const rackElement = document.getElementById('red_rack');
         const children = Array.from(rackElement.children); // Récupérer tous les enfants
         children.forEach((child, index) => {
@@ -2555,7 +2698,7 @@ notif_unhideTroopOnRack: function( notif )
         });
     }
 
-    if( rack_name == 'blue_rack' && this.isCurrentPlayerBlue == 'false') {
+    if( rack_name == 'blue_rack' && this.isCurrentPlayerBlue() == false) {
         const rackElement = document.getElementById('blue_rack');
         const children = Array.from(rackElement.children); // Récupérer tous les enfants
         children.forEach((child, index) => {
@@ -2573,8 +2716,8 @@ notif_unhideTroopOnRack: function( notif )
  ************************************/
 
 notif_gainMedal: function (notif) {
-    console.log('notif_gainMedal');
-    console.log(notif);
+    console.info('notif_gainMedal');
+    console.info(notif);
 
     //this.showArrays();
 
@@ -2631,14 +2774,14 @@ notif_gainMedal: function (notif) {
 
 
 notif_score: function( notif ){
-    console.log('notif_scorel');
-    console.log(notif);
+    console.info('notif_scorel');
+    console.info(notif);
     this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
 },
 
 notif_message_allplayers_without_player: function( notif )
 {
-    console.log('notif_message_allplayers_without_player');
+    console.info('notif_message_allplayers_without_player');
     
     // juste un message envoyé en php
 },
