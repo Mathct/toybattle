@@ -1603,10 +1603,7 @@ notif_moveTroop: function(notif)
         
         // rename Troop id and unhide it
         let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
-
         const troopElement = document.getElementById(moving_troop_id);
-        
-        
         
         troopElement.id = `troop_${troop.id}`;
         const x = troop.type.toString().slice(-1);
@@ -1626,7 +1623,7 @@ notif_moveTroop: function(notif)
             deltaY = -deltaY;
         }
 
-                // gets rotation, if defined
+        // gets rotation, if defined
         const existingTransform = window.getComputedStyle(troopElement).transform;
         // new transformation
         const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -1649,11 +1646,11 @@ notif_moveTroop: function(notif)
             troopElement.removeEventListener("transitionend", onTransitionEnd);
         };
         troopElement.addEventListener("transitionend", onTransitionEnd);
-        }
-        console.info(' base_id ',base_id );
-        console.info(' TOB ',this.troops_on_bases[base_id] );
-        this.troops_on_bases[base_id].push(troop);
-        this.createBaseTooltip(base_id);
+    }
+    console.info(' base_id ',base_id );
+    console.info(' TOB ',this.troops_on_bases[base_id] );
+    this.troops_on_bases[base_id].push(troop);
+    this.createBaseTooltip(base_id);
 
     this.showArrays();
 
@@ -2688,10 +2685,13 @@ notif_unhideTroopOnRack: function( notif )
         element.remove();
     });
 
+ // TODO utiliser nb_cards_in_hands au lieu du front.
+
     const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
 
     if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
         const rackElement = document.getElementById('red_rack');
+        console.info('redrackElement', rackElement);
         const children = Array.from(rackElement.children); // Récupérer tous les enfants
         children.forEach((child, index) => {
             child.id = `red_troop_${index + 1}`; // Renommer chaque enfant
@@ -2700,9 +2700,11 @@ notif_unhideTroopOnRack: function( notif )
 
     if( rack_name == 'blue_rack' && this.isCurrentPlayerBlue() == false) {
         const rackElement = document.getElementById('blue_rack');
+        console.info('blurackElement', rackElement);
         const children = Array.from(rackElement.children); // Récupérer tous les enfants
         children.forEach((child, index) => {
             child.id = `blue_troop_${index + 1}`; // Renommer chaque enfant
+            console.info('childblu', child);
         });
     }
 
@@ -2722,6 +2724,7 @@ notif_gainMedal: function (notif) {
     //this.showArrays();
 
     let medals_already_won = this.players[notif.args.player_id].star; 
+    console.info('medals_already_won', medals_already_won);
     let index = 1;
     const TB_medals = this.medals;
 
@@ -2729,11 +2732,13 @@ notif_gainMedal: function (notif) {
 
     const timeoutDelay = 200;
     Object.entries(TB_medals).forEach(([id, medal]) => {
+        console.info('emptied_regions', notif.args.emptied_regions);
+        console.info('medal_region', medal.region);
         if (notif.args.emptied_regions.includes(medal.region)) {    
             const medalId = `medal_${id}`;
             const medalElement = document.getElementById(medalId);
             const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
-            
+            console.info('medalDest',medalDestination);
             
             const animationDelay = index * 500; // 500ms per medal
             index++;

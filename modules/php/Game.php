@@ -742,19 +742,25 @@ class Game extends \Table
 
     function deblock_troops(int $player_id)
     {
+        $nb_bloque = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked > 0", true));
 
-        self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_type_arg = '{$player_id}' AND card_blocked > 0");
+        if($nb_bloque >= 1)
+        {
+            $nb_troops_hand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}'", true));
+            self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_type_arg = '{$player_id}' AND card_blocked > 0");
 
-        game::$instance->notifyAllPlayers(
-            'unhideTroopOnRack',
-            '',
-            array(
+            game::$instance->notifyAllPlayers(
+                'unhideTroopOnRack',
+                '',
+                array(
 
-                'player_id' => $player_id,
+                    'player_id' => $player_id,
+                    'nb_troops_hand' => $nb_troops_hand,
 
 
-            )
-        );
+                )
+            );
+        }
     }
 
     /// ICONES POUR LOG
