@@ -673,7 +673,7 @@ class Game extends \Table
 
                         if ($etoile >= 1) {
                             self::DbQuery("UPDATE zone set zone_star = 0 WHERE zone_id = '{$test['value']}'");
-                            self::DbQuery("UPDATE player set player_star = player_star + $etoile WHERE player_id = '{$idplayer}'");
+                            
 
                             $count_regions = $count_regions + 1;
                             $count_medals = $count_medals + $etoile;
@@ -692,7 +692,8 @@ class Game extends \Table
 
             if ($count_medals >= 1) {
 
-
+                $medals_already_won = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$player_id_gain}'");
+                self::DbQuery("UPDATE player set player_star = player_star + $count_medals WHERE player_id = '{$player_id_gain}'");
 
                 $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$player_id_gain}'");
 
@@ -714,6 +715,7 @@ class Game extends \Table
                         'nb_medal' => $count_medals,
                         'emptied_regions' => $emptied_regions,
                         'player_id' => $player_id_gain,
+                        'medals_already_won' => $medals_already_won,
 
                     )
                 );

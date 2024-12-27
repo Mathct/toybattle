@@ -2723,12 +2723,13 @@ notif_gainMedal: function (notif) {
 
     //this.showArrays();
 
-    let medals_already_won = this.players[notif.args.player_id].star; 
+    
+    let medals_already_won = parseInt(notif.args.medals_already_won);
     console.info('medals_already_won', medals_already_won);
     let index = 1;
     const TB_medals = this.medals;
 
-    this.players[notif.args.player_id].star += notif.args.nb_medal;
+    
 
     const timeoutDelay = 200;
     Object.entries(TB_medals).forEach(([id, medal]) => {
