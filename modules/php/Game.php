@@ -698,11 +698,11 @@ class Game extends \Table
                 $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$player_id_gain}'");
 
                 if ($count_regions == 1 && $count_medals == 1) {
-                    $txt = clienttranslate('${player_name} controls ${nb_region} region and takes ${nb_medal} Medal');
+                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b> Medal');
                 } else if ($count_regions == 1 && $count_medals > 1) {
-                    $txt = clienttranslate('${player_name} controls ${nb_region} region and takes ${nb_medal} Medals');
+                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b> Medals');
                 } else {
-                    $txt = clienttranslate('${player_name} controls ${nb_region} regions and takes ${nb_medal} Medals');
+                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> regions and takes <b>${nb_medal}</b> Medals');
                 }
 
                 game::$instance->notifyAllPlayers(

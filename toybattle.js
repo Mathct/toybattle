@@ -500,13 +500,22 @@ setLandscape: function () {
         });
     }
 
-    const red_discard_list = this.isCurrentPlayerRed() ? this.my_discard : this.your_discard;
-    Object.values(red_discard_list).forEach(troop => {
-        const troopElement = this.createTroopElement(troop);
-        troopElement.classList.add('board-inverted', 'opa_70');
-        redDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-    });
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.my_discard).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+    else {
+        Object.values(this.your_discard).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
 
     const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
     Object.values(blue_discard_list).forEach(troop => {
@@ -635,14 +644,27 @@ setupLandscapeMode: function() {
     redDiscardContainer.style.flexDirection = "row";
     playmatContainer.appendChild(redDiscardContainer);
 
-
-    const red_discard_list = this.isCurrentPlayerRed() ? this.my_discard : this.your_discard;
-    Object.values(red_discard_list).forEach(troop => {
-        const troopElement = this.createTroopElement(troop);
-        troopElement.classList.add('board-inverted', 'opa_70');
-        redDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-    });
+    if( this.isCurrentPlayerRed() ) {
+        const red_discard_list = this.my_discard;
+        Object.values(red_discard_list).reverse().forEach(troop => {
+            console.info('land discard red',troop);
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+    else {
+        const red_discard_list = this.your_discard;
+        Object.values(red_discard_list).reverse().forEach(troop => {
+            console.info('land discard red',troop);
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+    
    
 
     /* whiteLineContainer */
@@ -673,6 +695,7 @@ setupLandscapeMode: function() {
 
     const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
     Object.values(blue_discard_list).forEach(troop => {
+        console.info('land discard blue',troop);
         const troopElement = this.createTroopElement(troop);
         troopElement.classList.add('opa_70');
         blueDiscardContainer.appendChild(troopElement);
@@ -816,15 +839,24 @@ setupPortraitMode: function() {
     const redDiscardContainer = this.createDiscard( 'red' );
     redDiscardContainer.style.flexDirection = "column";
     playmatContainer.appendChild(redDiscardContainer);
-    
-    const red_discard_list = this.isCurrentPlayerRed() ? this.my_discard : this.your_discard;
-    Object.values(red_discard_list).forEach(troop => {
-        const troopElement = this.createTroopElement(troop);
-        troopElement.classList.add('board-inverted', 'opa_70');
-        redDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
-    });
-    
+    if( this.isCurrentPlayerRed() ) {
+        const red_discard_list = this.my_discard;
+        Object.values(red_discard_list).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
+    else {
+        const red_discard_list = this.your_discard;
+        Object.values(red_discard_list).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        });
+    }
     
     /* blueLineContainer */
     const blueLineContainer = this.createLine( 'blue');
@@ -1922,25 +1954,31 @@ notif_discardTroopFromBoard: function (notif) {
 
     /* check where to insert the troop */
     const newTroop = { id: troop.id, type: troop.type };
-    let insertIndex;   
-    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
-       
-        insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
-        if (insertIndex === -1) {
-            this.your_discard.push(newTroop); // end of array
-        } else {
-            this.your_discard.splice(insertIndex, 0, newTroop);
-        }
-    }
-    else {
+    let insertIndex;
+    
+    if( (player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue()))
+    || (player_color == this.RED_COLOR &&  this.isCurrentPlayerRed())) {    
+        console.info('my_discard before', this.my_discard);
         insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
+        console.info('insert_index', insertIndex);
         if (insertIndex === -1) {
             this.my_discard.push(newTroop); // end of array
         } else {
             this.my_discard.splice(insertIndex, 0, newTroop);
         }
-
+        console.info('my_discard after', this.my_discard);
     }
+    else {
+        console.info('your_discard before', this.your_discard);
+        insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+        console.info('insert_index', insertIndex);
+        if (insertIndex === -1) {
+            this.your_discard.push(newTroop); // end of array
+        } else {
+            this.your_discard.splice(insertIndex, 0, newTroop);
+        }
+        console.info('your_discard after', this.your_discard);
+    }  
     
 
     /* room is reserved in the flex */
@@ -2045,22 +2083,42 @@ notif_discardTroopFromHand: function (notif) {
     /* check where to insert the troop */
     const newTroop = { id: troop.id, type: troop.type }; 
     let insertIndex;  
-    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
-        insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
-        if (insertIndex === -1) {
-            this.your_discard.push(newTroop); // end of array
-        } else {
-            this.your_discard.splice(insertIndex, 0, newTroop);
-        }
-    }
-    else { // blue spectator
+
+
+
+    if( (player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue()))
+    || (player_color == this.RED_COLOR &&  this.isCurrentPlayerRed())) {    
+        console.info('my_discard before', this.my_discard);
         insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
+        console.info('insert_index', insertIndex);
         if (insertIndex === -1) {
             this.my_discard.push(newTroop); // end of array
         } else {
             this.my_discard.splice(insertIndex, 0, newTroop);
         }
+        console.info('my_discard after', this.my_discard);
     }
+    else {
+        console.info('your_discard before', this.your_discard);
+        insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
+        console.info('insert_index', insertIndex);
+        if (insertIndex === -1) {
+            this.your_discard.push(newTroop); // end of array
+        } else {
+            this.your_discard.splice(insertIndex, 0, newTroop);
+        }
+        console.info('your_discard after', this.your_discard);
+    }    
+
+    
+
+
+
+
+
+
+
+
 
      /* room is reserved in the flex */
     let placeholder = document.createElement('div');
@@ -2127,13 +2185,19 @@ notif_discardTroopFromHand: function (notif) {
         
 
         let selected_troop = notif.args.selected_troop;
+
+        console.info('selected_troop 0', selected_troop);
         if( selected_troop == 0) {
             selected_troop = notif.args.nb_cards_in_hand;
         } 
+        console.info('selected_troop 1', selected_troop);
 
         let moving_troop_id = `${player_color_name}_troop_${selected_troop}`;
+        console.info('moving_troop_id', moving_troop_id);
 
         const troopElement = document.getElementById(moving_troop_id);
+        console.info('troopElement', troopElement);
+        console.info('troop', troop);
         troopElement.id = `troop_${troop.id}`;
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;

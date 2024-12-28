@@ -762,7 +762,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} won the necessary medals'), //A GAGNER LES MEDAILLES NECESSAIRES
+                clienttranslate('${player_name} won the necessary medals'), //A GAGNE LES MEDAILLES NECESSAIRES
                 array(
                     'player_name' => $this->player_name,
                     

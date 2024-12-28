@@ -28,25 +28,25 @@ $this->_troop_types = [
     5 => [
         "name" => clienttranslate("XB-42"),
         "desc1" => clienttranslate("You may take, at random, 1 Troop from your opponent's rack and discard it faceup."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
 
     6 => [
         "name" => clienttranslate("Star"),
         "desc1" => clienttranslate("You may draw 1 Troop from your reserve and place it on your rack."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
 
     7 => [
         "name" => clienttranslate("Roxy"),
         "desc1" => clienttranslate("Roxy has no effect."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
 
     8 => [
         "name" => clienttranslate("Kwak"),
         "desc1" => clienttranslate("Kwak has no effect.<br> As a <span style=\"font-weight: bold;\">joker</span>, Kwak may be placed on top of any enemy Troop, but any enemy Troop may also cover it."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
 ];
 
@@ -55,17 +55,17 @@ $this->_board_types = [
     1 => [
         "name" => clienttranslate("Castle Field"),
         "desc1" => clienttranslate("You may choose 1 of your other Troops, no matter where it is on the Terrain, and place it back on your rack."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
     2 => [
         "name" => clienttranslate("Tropical Pool"),
         "desc1" => clienttranslate("Only Troops with the indicated value can be placed on these special bases and H.Q."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
     3 => [
         "name" => clienttranslate("City of Clouds"),
         "desc1" => clienttranslate("You may draw 1 Troop from your reserve and place it on your rack."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
     4 => [
         "name" => clienttranslate("Volcanic Jungle"),
@@ -75,17 +75,17 @@ $this->_board_types = [
     5 => [
         "name" => clienttranslate("Cursed Cemetery"),
         "desc1" => clienttranslate("You may choose 1 of your Troops in the discard and place it on your rack."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
     6 => [
         "name" => clienttranslate("Carribean Sea"),
         "desc1" => clienttranslate("This Terrain has no special bases, but it is asymmetric with 2 blue H.Q. and 1 red H.Q."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
     7 => [
         "name" => clienttranslate("Station Metal-X"),
         "desc1" => clienttranslate("Troops effects are not appied on these special bases."),
-        "desc2" => clienttranslate(""),
+        "desc2" => "",
     ],
     8 => [
         "name" => clienttranslate("Battlefield"),
