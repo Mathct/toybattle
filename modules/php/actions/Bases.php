@@ -347,8 +347,11 @@ trait BasesTrait  // ATTENTION
             game::$instance->notifyPlayer(
                 $this->player_id,
                 'drawTroopPrivate',
-                clienttranslate('You draw ${log1}'),
+                clienttranslate('${you} draw ${log1}'),
                 array(
+                    'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                     'player_id' => $this->player_id,
                     'origine' => "deck",
                     'new_troops' => $new_troops,

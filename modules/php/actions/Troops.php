@@ -123,8 +123,11 @@ trait TroopsTrait  // ATTENTION
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw ${log1} ${log2}'),
+                    clienttranslate('${you} draw ${log1} ${log2}'),
                     array(
+                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -176,8 +179,11 @@ trait TroopsTrait  // ATTENTION
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw ${log1}'),
+                    clienttranslate('${you} draw ${log1}'),
                     array(
+                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -835,8 +841,11 @@ trait TroopsTrait  // ATTENTION
 
                 game::$instance->notifyAllPlayers(
                     'discardTroopFromHand',
-                    clienttranslate('${player_name} discards ${log1} from the opponent\'s rack'),
+                    clienttranslate('${player_name} discards ${log1} from the ${opponent}\'s rack'),
                     array(
+                        'opponent' =>    [   'log' => '<b style="color: #${color};">${opponent_name}</b>',
+                                        'args'=> ['opponent_name' => $this->player_name_opponent, 'color'=>$this->player_color_opponent]
+                                    ],
 
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troop, // info_troop a discard avant discard
@@ -916,8 +925,11 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->notifyAllPlayers(
                 'discardTroopFromHand',
-                clienttranslate('${player_name} discards ${log1} from the opponent\'s rack'),
+                clienttranslate('${player_name} discards ${log1} from the ${opponent}\'s rack'),
                 array(
+                    'opponent' =>    [   'log' => '<b style="color: #${color};">${opponent_name}</b>',
+                                        'args'=> ['opponent_name' => $this->player_name_opponent, 'color'=>$this->player_color_opponent]
+                                    ],
 
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troop, // info_troop a discard avant discard
@@ -988,8 +1000,11 @@ trait TroopsTrait  // ATTENTION
             game::$instance->notifyPlayer(
                 $this->player_id,
                 'drawTroopPrivate',
-                clienttranslate('You draw ${log1}'),
+                clienttranslate('${you} draw ${log1}'),
                 array(
+                    'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                     'player_id' => $this->player_id,
                     'origine' => "deck",
                     'new_troops' => $new_troops,

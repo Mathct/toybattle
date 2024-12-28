@@ -173,8 +173,11 @@ class Pending extends APP_GameClass
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw ${log1} ${log2}'),
+                    clienttranslate('${you} draw ${log1} ${log2}'),
                     array(
+                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -226,8 +229,11 @@ class Pending extends APP_GameClass
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw ${log1}'),
+                    clienttranslate('${you} draw ${log1}'),
                     array(
+                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -583,8 +589,11 @@ class Pending extends APP_GameClass
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw ${log1} ${log2}'),
+                    clienttranslate('${you} draw ${log1} ${log2}'),
                     array(
+                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                         
                         'player_id' => $this->player_id,
                         'origine' => "deck",
@@ -637,8 +646,11 @@ class Pending extends APP_GameClass
                 game::$instance->notifyPlayer(
                     $this->player_id,
                     'drawTroopPrivate',
-                    clienttranslate('You draw ${log1}'),
+                    clienttranslate('${you} draw ${log1}'),
                     array(
+                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
+                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
+                                    ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -715,7 +727,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} cannot draw or place a Troop'),  //NE PEUT PLUS JOUER
+                clienttranslate('${player_name} can\'t play anymore'),  //NE PEUT PLUS JOUER
                 array(
                     'player_name' => $this->player_name,
                     
@@ -760,11 +772,14 @@ class Pending extends APP_GameClass
 
         if ($parg1== "2") {
 
+            $max_medals = game::$instance->_medals_to_win[game::$instance->getGameStateValue('board')];
+
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} won the necessary medals'), //A GAGNE LES MEDAILLES NECESSAIRES
+                clienttranslate('${player_name} won the <b>${max_medals}</b> necessary medals'), //A GAGNE LES MEDAILLES NECESSAIRES
                 array(
                     'player_name' => $this->player_name,
+                    'max_medals' => $max_medals,
                     
                 )
             );
@@ -790,8 +805,11 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} captured an opposing starting base'), //A PRIS LA BASE ADVERSE
+                clienttranslate('${player_name} captured ${opponent}\'s starting base'), //A PRIS LA BASE ADVERSE
                 array(
+                    'opponent' =>    [   'log' => '<b style="color: #${color};">${opponent_name}</b>',
+                                        'args'=> ['opponent_name' => $this->player_name_opponent, 'color'=>$this->player_color_opponent]
+                                    ],
                     'player_name' => $this->player_name,
                     
                 )

@@ -722,7 +722,7 @@ class Game extends \Table
 
                 // attendre que les animations de medailles soient terminées
 
-                $time = 620 * $count_medals;
+                $time = 650 * $count_medals;
                 self::notifyAllPlayers('simplePause', '', ['time' => $time]);
 
                 // Test Fin de partie
