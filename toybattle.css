@@ -220,22 +220,23 @@ body {
     display: flex;
     align-items: center;
     gap: 2px;
+    padding: 2px;
 }
 
 .linear_blue {
-    border: 5px solid;
+    border: 3px solid;
     border-image: linear-gradient(to top, #4f66a2, #a1b7d2) 1;
     border-radius: 15px;
 }
 
 .linear_red {
-   border: 5px solid;
+   border: 3px solid;
     border-image: linear-gradient(to bottom, #d1553e, #f3a7a1) 1;
     border-radius: 15px;
 }
 
 .linear_red_top {
-    border: 5px solid;
+    border: 3px solid;
     border-image: linear-gradient(to top, #d1553e, #f3a7a1) 1;
     border-radius: 15px;
 }

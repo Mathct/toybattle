@@ -88,13 +88,13 @@ trait TroopsTrait  // ATTENTION
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
             $ret['titleyou'] = clienttranslate('#icon# can draw 2 Troops');
             $ret['buttons'][] = 'btn_draw_2';
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
         if ((($counttroopdeck == 1) && ($counttroophand <= 7)) || (($counttroopdeck >= 1) && ($counttroophand == 7))) {
             $ret['titleyou'] = clienttranslate('#icon# can draw 1 Troop');
             $ret['buttons'][] = 'btn_draw_1';
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
 
@@ -268,7 +268,7 @@ trait TroopsTrait  // ATTENTION
             if ($place_ok == 1) {
                 $ret['titleyou'] = clienttranslate('#icon# can place another Troop');
                 $ret['buttons'][] = 'btn_place_troop';
-                $ret['buttons'][] = 'btn_no';
+                $ret['buttons'][] = 'btn_pass';
             }
         } else {
             $ret['titleyou'] = clienttranslate('#icon# cannot place another Troop');
@@ -632,7 +632,7 @@ trait TroopsTrait  // ATTENTION
             }
 
 
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
 
@@ -643,7 +643,7 @@ trait TroopsTrait  // ATTENTION
     public function Troop3_Step1($parg1, $parg2, $varg1, $varg2)
     {
 
-        if (($varg1 == 'btn_continue') || ($varg1 == 'btn_no')) {
+        if (($varg1 == 'btn_continue') || ($varg1 == 'btn_pass')) {
             game::$instance->addPending($this->player_id, "VerifBase");
         } else {
             if ($this->player_pref_confirm == 1) {
@@ -797,7 +797,7 @@ trait TroopsTrait  // ATTENTION
             $ret['titleyou'] = clienttranslate('#icon# can discard a Troop from the #opponent#\'s rack');
 
             $ret['buttons'][] = 'btn_yes';
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
         if ($count == 0) {
@@ -816,7 +816,7 @@ trait TroopsTrait  // ATTENTION
     public function Troop5_Step1($parg1, $parg2, $varg1, $varg2)
     {
 
-        if (($varg1 == 'btn_no') || ($varg1 == 'btn_continue')) {
+        if (($varg1 == 'btn_pass') || ($varg1 == 'btn_continue')) {
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
@@ -973,7 +973,7 @@ trait TroopsTrait  // ATTENTION
         if (($counttroopdeck >= 1) && ($counttroophand <= 7)) {
             $ret['titleyou'] = clienttranslate('#icon# can draw 1 Troop');
             $ret['buttons'][] = 'btn_draw_1';
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
 

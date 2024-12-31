@@ -91,34 +91,9 @@ trait BasesTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
-        $ret['titleyou'] = clienttranslate('Special base: ${you} can recover a Troop on the Terrain (Be careful! This can trigger a region control for #opponent#)');
+        
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg2;
-
-        $ret['buttons'][] = 'btn_yes';
-        $ret['buttons'][] = 'btn_no';
-
-        return $ret;
-    }
-
-    public function Base11_Step1($parg1, $parg2, $varg1, $varg2)
-    {
-        if ($varg1 == "btn_no") {
-            game::$instance->addPending($this->player_id, "VerifBase");
-        }
-
-        if ($varg1 == "btn_yes") {
-            game::$instance->addPending($this->player_id, "Base11_Step2", $parg1, $parg2);
-        }
-    }
-
-    public function argBase11_Step2($parg1, $parg2)
-    {
-        $ret = array();
-        $ret["selectable"] = array();
-        $ret["selected"] = array();
-        $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
         $test = 0;
         $all_bases = game::$instance->_bases[$this->board_name];
@@ -129,7 +104,7 @@ trait BasesTrait  // ATTENTION
 
         if ($counttroophand < 8) {
             foreach ($all_bases_a_checker as $allbase) {
-                if (($allbase >= 10) && ($allbase <= 40) && ($allbase != $parg2))  // ATTENTION !!!!! j'enleve aussi la base declanchée pour le moment
+                if (($allbase >= 10) && ($allbase <= 40) && ($allbase != $parg2))  // ATTENTION !!!!! j'enleve aussi la base déclenchée pour le moment
                 {
                     $all_bases_sans_QG[] = $allbase;
                 }
@@ -156,8 +131,8 @@ trait BasesTrait  // ATTENTION
 
 
         if ($test == 1) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} must choose a Troop to place back on your rack');
-            $ret['buttons'][] = 'btn_cancel';
+            $ret['titleyou'] = clienttranslate('Special base: ${you} can recover an other Troop on the Terrain (Be careful! This can trigger a region control for #opponent#)');
+            $ret['buttons'][] = 'btn_pass';
         }
 
         if ($test == 0) {
@@ -165,21 +140,17 @@ trait BasesTrait  // ATTENTION
             $ret['buttons'][] = 'btn_continue';
         }
 
-
-
-
-
+        
         return $ret;
     }
 
-    public function Base11_Step2($parg1, $parg2, $varg1, $varg2)
+    public function Base11_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        if ($varg1 == "btn_cancel") {
-            game::$instance->addPending($this->player_id, "Base11_Step1", $parg1, $parg2);
-        } elseif ($varg1 == "btn_continue") {
+        if (($varg1 == "btn_pass")||($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
-        } else {
+        }
 
+        else {
 
             if ($this->player_pref_confirm == 1) {
                 $duo_check = $parg1 . '_' . $parg2;
@@ -230,6 +201,7 @@ trait BasesTrait  // ATTENTION
         }
     }
 
+    
     function argBase11_Confirm($parg1, $parg2)
     {
         $ret = array();
@@ -249,8 +221,6 @@ trait BasesTrait  // ATTENTION
     function Base11_Confirm($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_yes") {
-
-
 
 
             $explode = explode("_", $parg1);
@@ -319,7 +289,7 @@ trait BasesTrait  // ATTENTION
         if (($counttroopdeck >= 1) && ($counttroophand <= 7)) {
             $ret['titleyou'] = clienttranslate('Special base: ${you} can draw 1 Troop');
             $ret['buttons'][] = 'btn_draw_1';
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
 
@@ -415,9 +385,10 @@ trait BasesTrait  // ATTENTION
         foreach ($bases_adjacentes as $base_adjacente) {
             $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}'", true));
             if ($nb_troop_on_base >= 1) {
-                $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
+                $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
                 if ($infos_troopmax[0]['type_arg'] != $this->player_id) // si elle appartient au joueur adverse 
                 {
+                    $ret["selectable"][] = 'base_' . $this->board_name . '_' . $infos_troopmax[0]['location_arg'];
                     $test = 1;
                 }
             }
@@ -427,8 +398,8 @@ trait BasesTrait  // ATTENTION
 
         if ($test == 1) {
             $ret['titleyou'] = clienttranslate('Special base: ${you} can choose an enemy Troop adjacent to this base and move it on any base adjacent to #opponent#\'s starting base');
-            $ret['buttons'][] = 'btn_yes';
-            $ret['buttons'][] = 'btn_no';
+            
+            $ret['buttons'][] = 'btn_pass';
         }
 
         if ($test == 0) {
@@ -446,53 +417,17 @@ trait BasesTrait  // ATTENTION
 
     public function Base41_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        if (($varg1 == "btn_no") || ($varg1 == "btn_continue")) {
+        if (($varg1 == "btn_pass") || ($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
-        if ($varg1 == "btn_yes") {
-            game::$instance->addPending($this->player_id, "Base41_Step2", $parg1);
+        else {
+            game::$instance->addPending($this->player_id, "Base41_Step2", $varg1, $parg1);
         }
     }
 
+    
     public function argBase41_Step2($parg1, $parg2)
-    {
-        $ret = array();
-        $ret["selectable"] = array();
-        $ret["selected"] = array();
-        $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} must choose a Troop to move');
-
-        $bases_adjacentes = game::$instance->_bases[$this->board_name][$parg1]['adjacents'];
-        foreach ($bases_adjacentes as $base_adjacente) {
-            $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}'", true));
-            if ($nb_troop_on_base >= 1) {
-                $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
-                if ($infos_troopmax[0]['type_arg'] != $this->player_id) // si elle appartient au joueur adverse 
-                {
-                    $ret["selectable"][] = 'base_' . $this->board_name . '_' . $infos_troopmax[0]['location_arg'];
-                }
-            }
-        }
-
-        $ret['buttons'][] = 'btn_cancel';
-
-
-        return $ret;
-    }
-
-    public function Base41_Step2($parg1, $parg2, $varg1, $varg2)
-    {
-        if ($varg1 == "btn_cancel") {
-            game::$instance->addPending($this->player_id, "Base41_Step1", $parg1);
-        } else {
-
-            game::$instance->addPending($this->player_id, "Base41_Step3", $varg1, $parg1);
-        }
-    }
-
-    public function argBase41_Step3($parg1, $parg2)
     {
         $ret = array();
         $ret["selectable"] = array();
@@ -516,10 +451,10 @@ trait BasesTrait  // ATTENTION
         return $ret;
     }
 
-    public function Base41_Step3($parg1, $parg2, $varg1, $varg2)
+    public function Base41_Step2($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_cancel") {
-            game::$instance->addPending($this->player_id, "Base41_Step2", $parg2);
+            game::$instance->addPending($this->player_id, "Base41_Step1", $parg2);
         } else {
             if ($this->player_pref_confirm == 1) {
 
@@ -650,8 +585,12 @@ trait BasesTrait  // ATTENTION
         if (($nb_troops_on_discard >= 1) && ($counttroophand <= 7)) {
             $ret['titleyou'] = clienttranslate('Special base: ${you} can place back on rack a discarded Troop');
 
-            $ret['buttons'][] = 'btn_yes';
-            $ret['buttons'][] = 'btn_no';
+            $troops_discard = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='discard' AND card_type_arg = '{$this->player_id}'", true);
+            foreach ($troops_discard as $troop_discard) {
+                $ret["selectable"][] = 'troop_' . $troop_discard;
+            }
+            
+            $ret['buttons'][] = 'btn_pass';
         } else {
             $ret['titleyou'] = clienttranslate('Special base: ${you} cannot place back a discarded Troop');
             $ret['buttons'][] = 'btn_continue';
@@ -664,42 +603,11 @@ trait BasesTrait  // ATTENTION
 
     public function Base51_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        if (($varg1 == "btn_no") || ($varg1 == "btn_continue")) {
+        if (($varg1 == "btn_pass") || ($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
-        if ($varg1 == "btn_yes") {
-            game::$instance->addPending($this->player_id, "Base51_Step2", $parg1);
-        }
-    }
-
-    public function argBase51_Step2($parg1, $parg2)
-    {
-        $ret = array();
-        $ret["selectable"] = array();
-        $ret["selected"] = array();
-        $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} activates a special base');
-
-        $ret['titleyou'] = clienttranslate('Special base: ${you} must choose a Troop');
-
-        $troops_discard = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='discard' AND card_type_arg = '{$this->player_id}'", true);
-        foreach ($troops_discard as $troop_discard) {
-            $ret["selectable"][] = 'troop_' . $troop_discard;
-        }
-
-        $ret['buttons'][] = 'btn_cancel';
-
-
-
-        return $ret;
-    }
-
-    public function Base51_Step2($parg1, $parg2, $varg1, $varg2)
-    {
-        if ($varg1 == "btn_cancel") {
-            game::$instance->addPending($this->player_id, "Base51_Step1", $parg1);
-        } else {
+        else {
             if ($this->player_pref_confirm == 1) {
 
                 game::$instance->addPending($this->player_id, "Base51_Confirm", $varg1, $parg1);
@@ -731,6 +639,7 @@ trait BasesTrait  // ATTENTION
         }
     }
 
+    
     public function argBase51_Confirm($parg1, $parg2)
     {
         $ret = array();
@@ -802,7 +711,7 @@ trait BasesTrait  // ATTENTION
         if ($counttroophandopponent_noblocked >= 1) {
             $ret['titleyou'] = clienttranslate('Special base: ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
             $ret['buttons'][] = 'btn_yes';
-            $ret['buttons'][] = 'btn_no';
+            $ret['buttons'][] = 'btn_pass';
         }
 
         if ($counttroophandopponent_noblocked == 0) {
@@ -818,7 +727,7 @@ trait BasesTrait  // ATTENTION
 
     public function Base81_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        if (($varg1 == "btn_no") || ($varg1 == "btn_continue")) {
+        if (($varg1 == "btn_pass") || ($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 

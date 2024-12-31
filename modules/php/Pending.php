@@ -727,7 +727,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} can\'t play anymore'),  //NE PEUT PLUS JOUER
+                clienttranslate('${player_name} can\'t play anymore'),  //NE PEUT PLUS JOUER (NI DRAW NI PLACE TROOP)
                 array(
                     'player_name' => $this->player_name,
                     
@@ -776,7 +776,7 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} won the <b>${max_medals}</b> necessary medals'), //A GAGNE LES MEDAILLES NECESSAIRES
+                clienttranslate('${player_name} won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
                 array(
                     'player_name' => $this->player_name,
                     'max_medals' => $max_medals,
