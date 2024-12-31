@@ -796,7 +796,7 @@ trait TroopsTrait  // ATTENTION
         if ($count >= 1) {
             $ret['titleyou'] = clienttranslate('#icon# can discard a Troop from the #opponent#\'s rack');
 
-            $ret['buttons'][] = 'btn_yes';
+            $ret['buttons'][] = 'btn_discard';
             $ret['buttons'][] = 'btn_pass';
         }
 
@@ -820,7 +820,7 @@ trait TroopsTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
-        if ($varg1 == 'btn_yes') {
+        if ($varg1 == 'btn_discard') {
             if ($this->player_pref_discard_block == 1) {
                 game::$instance->addPending($this->player_id, "Troop5_Step2", $parg1);
             }

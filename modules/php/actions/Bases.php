@@ -710,7 +710,7 @@ trait BasesTrait  // ATTENTION
 
         if ($counttroophandopponent_noblocked >= 1) {
             $ret['titleyou'] = clienttranslate('Special base: ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
-            $ret['buttons'][] = 'btn_yes';
+            $ret['buttons'][] = 'btn_point';
             $ret['buttons'][] = 'btn_pass';
         }
 
@@ -731,7 +731,7 @@ trait BasesTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
-        if ($varg1 == "btn_yes") {
+        if ($varg1 == "btn_point") {
             if ($this->player_pref_discard_block == 1) {
                 game::$instance->addPending($this->player_id, "Base81_Step2", $parg1);
             }

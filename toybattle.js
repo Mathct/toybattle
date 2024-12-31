@@ -220,6 +220,12 @@ onUpdateActionButtons: function( stateName, args )
                         case "btn_no":
                             this.addActionButton('btn_no', _("No"), 'onOpButton', null, null, 'red');
                             break;
+                        case "btn_discard":
+                            this.addActionButton('btn_discard', _("Discard Troop"), 'onOpButton', null, null, 'blue');
+                            break;
+                        case "btn_point":
+                            this.addActionButton('btn_point', _("Point Troop"), 'onOpButton', null, null, 'blue');
+                            break;
                     }
                 }
             break;
