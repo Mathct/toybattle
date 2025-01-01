@@ -1570,12 +1570,39 @@ notif_moveTroop: function(notif)
     }
     else {
         // remove troop from hand JS array
-        if( this.isSpectator == false || player_color == this.RED_COLOR ) {
+    /*    if( this.isSpectator == false || player_color == this.RED_COLOR ) {
             this.your_hand.pop();
         }
         else {
             this.my_hand.pop();
-        } 
+        } */
+
+        if (this.isSpectator == false || player_color == this.RED_COLOR) {
+            // Obtenir les indices ajustés pour le tableau
+            const indicesNonBloques = notif.args.numbers_no_blocked.map(index => index - 1); // Convertir en indices de tableau
+            console.log('indicesNonBloques',indicesNonBloques);
+
+            const indexMax = Math.max(...indicesNonBloques); // Trouver l'indice maximum (ajusté)
+            console.log('indexMax',indexMax);
+            // Vérifier si l'indice est valide avant de retirer l'élément
+            if (indexMax >= 0 && indexMax < this.your_hand.length) {
+                this.your_hand.splice(indexMax, 1); // Supprimer l'élément correspondant
+            }
+        } else {
+            // Même logique pour my_hand
+            const indicesNonBloques = notif.args.numbers_no_blocked.map(index => index - 1); // Convertir en indices de tableau
+            const indexMax = Math.max(...indicesNonBloques);
+        
+            if (indexMax >= 0 && indexMax < this.my_hand.length) {
+                this.my_hand.splice(indexMax, 1);
+            }
+        }
+
+
+
+
+
+
     }
 
     this.troops_on_bases[base_id].push(troop);
@@ -1645,7 +1672,9 @@ notif_moveTroop: function(notif)
     }
     else {
         //troop becomes visible
-        let moving_troop_id = `${player_color_name}_troop_${notif.args.nb_troops_hand}`;
+        const numbersNoBlocked = notif.args.numbers_no_blocked; // Par exemple [1, 2]
+        const maxValue = Math.max(...numbersNoBlocked);
+        let moving_troop_id = `${player_color_name}_troop_${maxValue}`;
 
         const troopElement = document.getElementById(moving_troop_id);
         troopElement.id = `troop_${troop.id}`;
@@ -2531,28 +2560,7 @@ notif_recoverTroopFromBoard: function (notif) {
         placeholder.classList.add('troop-placeholder');
         rackContainer.appendChild(placeholder);
 
-        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
-        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
-
-        let deltaX = targetRect.left - startRect.left;
-        let deltaY = targetRect.top - startRect.top;
-
-        if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
-            deltaX = -deltaX;
-            deltaY = -deltaY;
-        }
-
-
-        const existingTransform = window.getComputedStyle(troopElement).transform;
-        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
-        const newTransform = existingTransform !== "none"
-            ? `${existingTransform} ${translateTransform}`
-            : translateTransform;
-        troopElement.style.transform = newTransform;
-
-        troopElement.style.zIndex = 100;
-
-        const onTransitionEnd = () => {
+        if (this.instantaneousMode) {
             troopElement.style.transform = '';
             troopElement.style.top = '';
             troopElement.style.left = '';
@@ -2583,11 +2591,67 @@ notif_recoverTroopFromBoard: function (notif) {
             }
 
             rackContainer.replaceChild(troopElement, placeholder);
+        }
+        else {
 
-            troopElement.removeEventListener('transitionend', onTransitionEnd);
-        };
+            const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+            const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
-        troopElement.addEventListener('transitionend', onTransitionEnd);
+            let deltaX = targetRect.left - startRect.left;
+            let deltaY = targetRect.top - startRect.top;
+
+            if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
+                deltaX = -deltaX;
+                deltaY = -deltaY;
+            }
+
+
+            const existingTransform = window.getComputedStyle(troopElement).transform;
+            const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+            const newTransform = existingTransform !== "none"
+                ? `${existingTransform} ${translateTransform}`
+                : translateTransform;
+            troopElement.style.transform = newTransform;
+
+            troopElement.style.zIndex = 100;
+
+            const onTransitionEnd = () => {
+                troopElement.style.transform = '';
+                troopElement.style.top = '';
+                troopElement.style.left = '';
+                troopElement.style.position = '';
+                troopElement.style.zIndex = 10;
+                if (player_color == this.RED_COLOR) {
+                    troopElement.classList.add('board-inverted');
+                }
+
+
+                // troop in rack is renamed
+                const troop_index = parseInt(notif.args.nb_troops_hand) + 1;
+                if (this.isCurrentPlayerRed()) {
+                    troopElement.id = `blue_troop_${troop_index}`;
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+
+                } else if (this.isCurrentPlayerBlue()) {
+                    troopElement.id = `red_troop_${troop_index}`;
+                    troopElement.style.backgroundPosition = `-0% -100%`;
+                } else if( this.isSpectator == true ){ // spectator
+                    if (player_color == this.RED_COLOR) {
+                        troopElement.id = `red_troop_${troop_index}`;
+                        troopElement.style.backgroundPosition = `-0% -100%`;
+                    } else {
+                        troopElement.id = `blue_troop_${troop_index}`;
+                        troopElement.style.backgroundPosition = `-0% -0%`;
+                    }
+                }
+
+                rackContainer.replaceChild(troopElement, placeholder);
+
+                troopElement.removeEventListener('transitionend', onTransitionEnd);
+            };
+
+            troopElement.addEventListener('transitionend', onTransitionEnd);
+        }
     }
     this.showArrays();
 },
@@ -2650,22 +2714,7 @@ notif_recoverTroopFromDiscard: function (notif) {
             rackContainer.insertBefore(placeholder, rackContainer.children[insertIndex]);
         }
 
-        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
-        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
-
-        let deltaX = targetRect.left - startRect.left;
-        let deltaY = targetRect.top - startRect.top;
-
-
-        const existingTransform = window.getComputedStyle(troopElement).transform;
-        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
-        const newTransform = existingTransform !== "none"
-            ? `${existingTransform} ${translateTransform}`
-            : translateTransform;
-
-        troopElement.style.transform = newTransform;
-
-        const onTransitionEnd = () => {
+        if (this.instantaneousMode) {
             troopElement.style.transform = '';
             troopElement.style.top = '';
             troopElement.style.left = '';
@@ -2674,10 +2723,39 @@ notif_recoverTroopFromDiscard: function (notif) {
 
             rackContainer.replaceChild(troopElement, placeholder);
 
-            troopElement.removeEventListener('transitionend', onTransitionEnd);
-        };
 
-        troopElement.addEventListener('transitionend', onTransitionEnd);
+        }
+        else {
+
+            const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+            const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+            let deltaX = targetRect.left - startRect.left;
+            let deltaY = targetRect.top - startRect.top;
+
+
+            const existingTransform = window.getComputedStyle(troopElement).transform;
+            const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+            const newTransform = existingTransform !== "none"
+                ? `${existingTransform} ${translateTransform}`
+                : translateTransform;
+
+            troopElement.style.transform = newTransform;
+
+            const onTransitionEnd = () => {
+                troopElement.style.transform = '';
+                troopElement.style.top = '';
+                troopElement.style.left = '';
+                troopElement.style.position = '';
+                troopElement.style.zIndex = 10;
+
+                rackContainer.replaceChild(troopElement, placeholder);
+
+                troopElement.removeEventListener('transitionend', onTransitionEnd);
+            };
+
+            troopElement.addEventListener('transitionend', onTransitionEnd);
+        }
     }
 
     else {
@@ -2693,29 +2771,7 @@ notif_recoverTroopFromDiscard: function (notif) {
         placeholder.classList.add('troop-placeholder');
         rackContainer.appendChild(placeholder);
 
-        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
-        const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
-
-        let deltaX = targetRect.left - startRect.left;
-        let deltaY = targetRect.top - startRect.top;
-
-        if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
-            deltaX = -deltaX;
-            deltaY = -deltaY;
-        }
-
-
-        const existingTransform = window.getComputedStyle(troopElement).transform;
-        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
-        const newTransform = existingTransform !== "none"
-            ? `${existingTransform} ${translateTransform}`
-            : translateTransform;
-
-        troopElement.style.transform = newTransform;
-        troopElement.style.zIndex = 100;
-
-
-        const onTransitionEnd = () => {
+        if (this.instantaneousMode) {
             troopElement.style.transform = '';
             troopElement.style.top = '';
             troopElement.style.left = '';
@@ -2745,13 +2801,73 @@ notif_recoverTroopFromDiscard: function (notif) {
 
             rackContainer.replaceChild(troopElement, placeholder);
 
-            troopElement.removeEventListener('transitionend', onTransitionEnd);
-        };
 
-        troopElement.addEventListener('transitionend', onTransitionEnd);
+        }
+        else {
+
+            const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+            const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+            let deltaX = targetRect.left - startRect.left;
+            let deltaY = targetRect.top - startRect.top;
+
+            if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
+                deltaX = -deltaX;
+                deltaY = -deltaY;
+            }
+
+
+            const existingTransform = window.getComputedStyle(troopElement).transform;
+            const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+            const newTransform = existingTransform !== "none"
+                ? `${existingTransform} ${translateTransform}`
+                : translateTransform;
+
+            troopElement.style.transform = newTransform;
+            troopElement.style.zIndex = 100;
+
+
+            const onTransitionEnd = () => {
+                troopElement.style.transform = '';
+                troopElement.style.top = '';
+                troopElement.style.left = '';
+                troopElement.style.position = '';
+                troopElement.style.zIndex = 10;
+                if (player_color == this.RED_COLOR) {
+                    troopElement.classList.add('board-inverted');
+                }
+
+                const troop_index = parseInt(notif.args.nb_troops_hand) + 1;
+                if (this.isCurrentPlayerRed()) {
+                    troopElement.id = `blue_troop_${troop_index}`;
+                    troopElement.style.backgroundPosition = `-0% -0%`;
+
+                } else if (this.isCurrentPlayerBlue()) {
+                    troopElement.id = `red_troop_${troop_index}`;
+                    troopElement.style.backgroundPosition = `-0% -100%`;
+                } else if( this.isSpectator == true ){ // spectator
+                    if (player_color == this.RED_COLOR) {
+                        troopElement.id = `red_troop_${troop_index}`;
+                        troopElement.style.backgroundPosition = `-0% -100%`;
+                    } else {
+                        troopElement.id = `blue_troop_${troop_index}`;
+                        troopElement.style.backgroundPosition = `-0% -0%`;
+                    }
+                }
+
+                rackContainer.replaceChild(troopElement, placeholder);
+
+                troopElement.removeEventListener('transitionend', onTransitionEnd);
+            };
+
+            troopElement.addEventListener('transitionend', onTransitionEnd);
+        }
     }
     this.showArrays();
 },
+
+
+
 
 /*********************************
  * 
@@ -2789,44 +2905,56 @@ notif_moveTroopBoardToBoard: function (notif) {
     const destination_id = `${player_color_name}_base_${this.board_name}_${notif.args.base_id}`;
     const destinationContainer = document.getElementById(destination_id);
 
-    const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
-    const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
-
-    let deltaX = endRect.left - startRect.left;
-    let deltaY = endRect.top - startRect.top;
-
-    if (this.isCurrentPlayerRed() && player_color == this.BLUE_COLOR) {
-        deltaX = -deltaX;
-        deltaY = -deltaY;
-    }
-    else if (this.isCurrentPlayerBlue() && player_color == this.RED_COLOR) {
-        deltaX = -deltaX;
-        deltaY = -deltaY;
-    }
-    else if( this.isSpectator && player_color == this.RED_COLOR) {
-        deltaX = -deltaX;
-        deltaY = -deltaY;
-    }
-
-    const existingTransform = window.getComputedStyle(troopElement).transform;
-    const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
-    const newTransform = existingTransform !== "none"
-        ? `${existingTransform} ${translateTransform}`
-        : translateTransform;
-
-    troopElement.style.transform = newTransform;
-
-    const onTransitionEnd = () => {
-
+    if (this.instantaneousMode) {
         troopElement.style.top = destinationContainer.style.top;
         troopElement.style.left = destinationContainer.style.left;
         troopElement.style.transition = 'none';
-        troopElement.style.transform = existingTransform;      
-    
-        troopElement.removeEventListener("transitionend", onTransitionEnd);
-    };
+        troopElement.style.transform = existingTransform; 
+    }
+    else {
 
-    troopElement.addEventListener("transitionend", onTransitionEnd);
+    
+
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
+
+        let deltaX = endRect.left - startRect.left;
+        let deltaY = endRect.top - startRect.top;
+
+        if (this.isCurrentPlayerRed() && player_color == this.BLUE_COLOR) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
+        else if (this.isCurrentPlayerBlue() && player_color == this.RED_COLOR) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
+        else if( this.isSpectator && player_color == this.RED_COLOR) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+        }
+
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const newTransform = existingTransform !== "none"
+            ? `${existingTransform} ${translateTransform}`
+            : translateTransform;
+
+        troopElement.style.transform = newTransform;
+
+        const onTransitionEnd = () => {
+
+            troopElement.style.top = destinationContainer.style.top;
+            troopElement.style.left = destinationContainer.style.left;
+            troopElement.style.transition = 'none';
+            troopElement.style.transform = existingTransform;      
+        
+            troopElement.removeEventListener("transitionend", onTransitionEnd);
+        };
+
+        troopElement.addEventListener("transitionend", onTransitionEnd);
+    }
 
     this.showArrays();
 },
@@ -2952,51 +3080,73 @@ notif_gainMedal: function (notif) {
     let index = 1;
     const TB_medals = this.medals;
 
-    
+    if (this.instantaneousMode) {
 
-    const timeoutDelay = 200;
-    Object.entries(TB_medals).forEach(([id, medal]) => {
-        console.info('emptied_regions', notif.args.emptied_regions);
-        console.info('medal_region', medal.region);
-        if (notif.args.emptied_regions.includes(medal.region)) {    
-            const medalId = `medal_${id}`;
-            const medalElement = document.getElementById(medalId);
-            const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
-            console.info('medalDest',medalDestination);
-            
-            const animationDelay = index * 500; // 500ms per medal
-            index++;
-            setTimeout(() => {
-                medalElement.style.transform = 'scale(5)';
+        Object.entries(TB_medals).forEach(([id, medal]) => {
+            console.info('emptied_regions', notif.args.emptied_regions);
+            if (notif.args.emptied_regions.includes(medal.region)) {    
+                const medalId = `medal_${id}`;
+                const medalElement = document.getElementById(medalId);
+                const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
+
+                if (medalElement) {
+                    medalElement.remove();
+                }
+                
+                if (medalDestination) 
+                {
+                        medalDestination.classList.remove('null_medal');
+                        medalDestination.classList.add('full_medal');
+
+                }
+           }
+        });
+        
+    } else {
+
+        const timeoutDelay = 200;
+        Object.entries(TB_medals).forEach(([id, medal]) => {
+            console.info('emptied_regions', notif.args.emptied_regions);
+            console.info('medal_region', medal.region);
+            if (notif.args.emptied_regions.includes(medal.region)) {    
+                const medalId = `medal_${id}`;
+                const medalElement = document.getElementById(medalId);
+                const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
+                console.info('medalDest',medalDestination);
+                
+                const animationDelay = index * 500; // 500ms per medal
+                index++;
                 setTimeout(() => {
-                    // Réduire l'échelle pour la faire disparaître
-                    medalElement.style.transform = 'scale(0)';
-                    
-                    if (medalDestination) 
-                    {
-                        // Après disparition, traiter la médaille destination
-                        setTimeout(() => {
-                            // Étape 2 : Modifier la médaille destination
-                            medalDestination.classList.remove('null_medal');
-                            medalDestination.classList.add('full_medal');
-        
-                            // Augmenter la taille de la médaille destination
-                            medalDestination.style.transform = 'scale(2)';
-        
+                    medalElement.style.transform = 'scale(5)';
+                    setTimeout(() => {
+                        // Réduire l'échelle pour la faire disparaître
+                        medalElement.style.transform = 'scale(0)';
+                        
+                        if (medalDestination) 
+                        {
+                            // Après disparition, traiter la médaille destination
                             setTimeout(() => {
-                                // Réduire l'échelle de la médaille destination à sa taille normale
-                                medalDestination.style.transform = 'scale(1)';
-                                // Réinitialiser l'index pour la prochaine médaille
-                                
-                            }, timeoutDelay); // Durée pour redescendre à `scale(1)`
-                        }, timeoutDelay); // Durée après disparition de la médaille source
-                    }
-                }, timeoutDelay); // Durée pour agrandir et réduire la médaille source
-            }, animationDelay); // Décalage pour chaque médaille
-        }
-    });
+                                // Étape 2 : Modifier la médaille destination
+                                medalDestination.classList.remove('null_medal');
+                                medalDestination.classList.add('full_medal');
+            
+                                // Augmenter la taille de la médaille destination
+                                medalDestination.style.transform = 'scale(2)';
+            
+                                setTimeout(() => {
+                                    // Réduire l'échelle de la médaille destination à sa taille normale
+                                    medalDestination.style.transform = 'scale(1)';
+                                    // Réinitialiser l'index pour la prochaine médaille
+                                    
+                                }, timeoutDelay); // Durée pour redescendre à `scale(1)`
+                            }, timeoutDelay); // Durée après disparition de la médaille source
+                        }
+                    }, timeoutDelay); // Durée pour agrandir et réduire la médaille source
+                }, animationDelay); // Décalage pour chaque médaille
+            }
+        });
 
-    
+    }
 
     //this.showArrays();
 },

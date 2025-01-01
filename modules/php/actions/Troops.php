@@ -404,6 +404,20 @@ trait TroopsTrait  // ATTENTION
 
                 $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
 
+                $numbers_no_blocked = [];
+                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+                for ($i = 1; $i <= $nb_troops_hand; $i++) {
+                    if (!in_array($i, $troops_blocked)) {
+                        $numbers_no_blocked[] = $i;
+                    }
+                }
+
+                if(count($numbers_no_blocked)>=1)
+                {
+                    $valeur_max = max($numbers_no_blocked);
+                    self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
+
+                }
 
                 game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
                 self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
@@ -412,14 +426,7 @@ trait TroopsTrait  // ATTENTION
 
                 $type1 = $infos_troop['type'];
 
-                $numbers_no_blocked = [];
-                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
-                for ($i = 1; $i <= $nb_troops_hand; $i++) {
-                    if (!in_array($i, $troops_blocked)) {
-                        $numbers_no_blocked[]= $i;
-                    }
-                }
-
+                
                 
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
@@ -511,6 +518,21 @@ trait TroopsTrait  // ATTENTION
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
 
+            $numbers_no_blocked = [];
+            $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+            for ($i = 1; $i <= $nb_troops_hand; $i++) {
+                if (!in_array($i, $troops_blocked)) {
+                    $numbers_no_blocked[] = $i;
+                }
+            }
+
+            if(count($numbers_no_blocked)>=1)
+            {
+                $valeur_max = max($numbers_no_blocked);
+                self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
+
+            }
+            
             game::$instance->troop->moveCard($explode[1], 'board', $explode[4]);
             self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode[1]}'");
 
@@ -519,14 +541,7 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
-            $numbers_no_blocked = [];
-                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
-                for ($i = 1; $i <= $nb_troops_hand; $i++) {
-                    if (!in_array($i, $troops_blocked)) {
-                        $numbers_no_blocked[]= $i;
-                    }
-                }
-
+            
             game::$instance->notifyAllPlayers(
                 'moveTroop',
                 clienttranslate('${player_name} places ${log1}'),

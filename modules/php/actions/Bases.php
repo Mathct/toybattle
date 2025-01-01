@@ -751,9 +751,11 @@ trait BasesTrait  // ATTENTION
                         $possible[] = $i;
                     }
                 }
-                $cout_possible = count($possible);
-                $rand2 = bga_rand(1, $cout_possible);
-                $choix_auto = $possible[$rand2 - 1];
+                //$cout_possible = count($possible);
+                //$rand2 = bga_rand(1, $cout_possible);
+                //$choix_auto = $possible[$rand2 - 1];
+
+                $choix_auto = $possible[0];
 
 
 
