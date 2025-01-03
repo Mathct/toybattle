@@ -330,20 +330,54 @@ body {
     z-index: 10;
 }
 
-
 .selectable {
-    outline: 3px dashed yellow;
-    border-radius: 4px;
     cursor: pointer;
     pointer-events: auto !important;
+}
+
+.selected {
+    pointer-events: auto ;
+}
+
+
+
+.selectable.base_all {
+    outline: 3px dashed yellow;
+    border-radius: 4px;
+    
   }
   
-.selected {
+.selected.base_all {
     outline: 3px solid yellow; 
     border-radius: 4px;
-    pointer-events: auto ;
+    
   }
 
+  .selectable svg, .selected svg {
+    
+    width: 100%;
+    height: 100%;
+    overflow: visible;  /* IMPORATNT: permet au contour de dépasser la taille de l'image */
+    
+    
+}
+
+
+.path_selected {
+    fill: none;
+    stroke: yellow;
+    stroke-width: 40; /*epaisseur*/
+    
+     
+}
+
+.path_selectable {
+    fill: none;
+    stroke: yellow;
+    stroke-width: 40; /*epaisseur*/
+    stroke-dasharray: 100, 30; /* Pointillé  longeur trait et longueur espace */
+    
+}
 
 
 /* Tisaac Help Mode */

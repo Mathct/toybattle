@@ -128,10 +128,26 @@ onEnteringState: function( stateName, args )
             this.args = args.args;
             if(this.isCurrentPlayerActive()) {
                 this.args.selectable.forEach(sid => {
-                    dojo.addClass(sid,"selectable");
+                    const element = document.getElementById(sid); //on va recupere le div complet de l'element
+                    if (element.classList.contains('troop'))
+                    {
+                        this.addSVGs(element,"selectable");
+                    }
+                    else
+                    {
+                        dojo.addClass(sid,"selectable");
+                    }
                 });
                 this.args.selected.forEach(sid => {
-                    dojo.addClass(sid,"selected");    
+                    const element = document.getElementById(sid); //on va recupere le div complet de l'element
+                    if (element.classList.contains('troop'))
+                    {
+                        this.addSVGs(element,"selected");
+                    }
+                    else
+                    {
+                        dojo.addClass(sid,"selected");
+                    }    
                 });
 
                 this.setupConnections(this.args.selectable);
@@ -165,6 +181,7 @@ onLeavingState: function( stateName )
     
     dojo.query(".selectable").removeClass("selectable");
     dojo.query(".selected").removeClass("selected");
+    this.removeSVGs();
     
     switch( stateName )
     {
@@ -270,6 +287,58 @@ format_string_recursive : function(log, args) {
         console.error(log,args,"Exception thrown", e.stack);
     }
     return this.inherited(arguments);
+},
+
+addSVGs: function(image, type) {
+
+    // Créer un SVG avec le path pour le contour
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 709 945"); // Dimensions originales du PNG
+    
+    // Créer un path pour un contour 
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M 35.491522,942.07978 C 23.624815,939.29461 11.444392,929.03145 5.3325369,916.66798 L 1.5112321,908.93796 V 590.20163 271.46527 l 3.7536732,-7.59319 c 6.1213237,-12.38264 15.8105097,-20.78854 28.4713127,-24.70042 5.837234,-1.80357 9.380906,-1.95574 45.544214,-1.95574 h 39.214488 l 0.27046,-63.4997 0.27046,-63.4997 3.2299,-6.55818 c 2.29409,-4.658061 6.31563,-9.800429 13.88011,-17.748617 41.97018,-44.099052 98.80953,-71.214525 170.63059,-81.4000971 18.00898,-2.5540102 76.6838,-2.5363174 94.52981,0.028485 47.52846,6.8307941 84.84403,19.5580121 119.95702,40.9137591 27.51567,16.73507 57.48146,44.189214 64.7601,59.33216 l 3.11097,6.47224 0.2842,62.97981 0.2842,62.97983 h 39.33702 c 37.1769,0 39.67716,0.1136 45.53046,2.06891 15.46952,5.16763 27.01465,17.42438 31.19373,33.11654 1.14802,4.31077 1.36725,55.66089 1.35675,317.80027 -0.008,207.25117 -0.35233,314.13177 -1.02008,317.02817 -3.55255,15.40614 -16.55893,29.29712 -31.9014,34.07105 -5.89919,1.83559 -14.54136,1.88378 -320.45191,1.78646 -185.33552,-0.0588 -315.976376,-0.47253 -318.255788,-1.00753 z"); // code path
+    
+    if(type == "selectable")
+    {
+        // Ajouter la classe 'selectable' au div d'image 
+        image.classList.add('selectable');
+            
+        path.setAttribute("class", "path_selectable");
+    }
+
+    if(type == "selected")
+    {
+        // Ajouter la classe 'selected' au div d'image 
+        image.classList.add('selected');
+                
+        path.setAttribute("class", "path_selected");
+    }
+
+    // Ajouter le path au SVG
+    svg.appendChild(path);
+
+    // Ajouter le SVG en tant qu'élément enfant du div d'image
+    image.appendChild(svg);
+
+  },
+
+removeSVGs: function() {
+    // Sélectionner tous les éléments <svg> dans le document
+    const svgs = document.querySelectorAll('svg');
+    
+    // Parcourir chaque <svg>
+    svgs.forEach(svg => {
+        // Vérifier si le <svg> contient un <path> avec la classe 'path_selectable' ou 'path_selected'
+        const path1 = svg.querySelector('path.path_selectable');
+        const path2 = svg.querySelector('path.path_selected');
+        if (path1 || path2) {
+            // Supprimer le <svg> du DOM
+            svg.remove();
+        }
+
+        
+    });
 },
 
 
