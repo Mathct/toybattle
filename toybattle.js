@@ -360,13 +360,13 @@ setupConnections: function(selectables) {
         this.connections.push({ element, event: 'click', handler: resourceClickHandler });
     });
 
-    const zoomInputHandler = () => {
+/*    const zoomInputHandler = () => {
         window.localStorage.setItem("TB_zoom", $("zoom_value").value);
         this.onScreenWidthChange();
     };
     
     $("zoom_value").addEventListener("input", zoomInputHandler);
-    this.connections.push({element: $("zoom_value"), event: "input", handler: zoomInputHandler });
+    this.connections.push({element: $("zoom_value"), event: "input", handler: zoomInputHandler });*/
 },
 
 
@@ -443,7 +443,7 @@ setupPlayersBoard: function() {
         }
 
         /* slider */
-        if(player.id == this.opponent_id) {
+/*        if(player.id == this.opponent_id) {
             const a2BoardElement = document.getElementById('a2_board_' + player.id);
             const initialValue = window.localStorage?.getItem("TB_zoom") ?? 100;
             a2BoardElement.insertAdjacentHTML('beforeend', `
@@ -458,7 +458,7 @@ setupPlayersBoard: function() {
                 window.localStorage.setItem("TB_zoom", $("zoom_value").value);
                 this.onScreenWidthChange();
             });
-        }
+        }*/
         /* slider */
 
     });
@@ -1245,7 +1245,7 @@ onScreenWidthChange: function() {
         document.documentElement.style.setProperty('--board-height', `${baseHeight}px`);
     }
 
-    const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
+    //const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
     //this.scale = Math.min(horizontalScale, verticalScale)*BB_zoom/100;
     // TO DO 
 
