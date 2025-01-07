@@ -525,6 +525,17 @@ body {
 .icon_powerbase_5 {background-position-x: -300%;}
 .icon_powerbase_8 {background-position-x: -400%;}
 
+.icon_medal_log {
+    
+    width: 25px;
+    height: 25px;
+    background-image: url('img/TB_Medals.png');
+    background-size: 200% 100%;
+    background-position-x: 0%;
+    display: inline-block;
+    vertical-align: middle; 
+}
+
 
 
 .checks {

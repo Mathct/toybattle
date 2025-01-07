@@ -698,11 +698,11 @@ class Game extends \Table
                 $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$player_id_gain}'");
 
                 if ($count_regions == 1 && $count_medals == 1) {
-                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b> Medal');
+                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b>${log}');
                 } else if ($count_regions == 1 && $count_medals > 1) {
-                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b> Medals');
+                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b>${log}');
                 } else {
-                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> regions and takes <b>${nb_medal}</b> Medals');
+                    $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> regions and takes <b>${nb_medal}</b>${log}');
                 }
 
                 game::$instance->notifyAllPlayers(
@@ -716,6 +716,7 @@ class Game extends \Table
                         'emptied_regions' => $emptied_regions,
                         'player_id' => $player_id_gain,
                         'medals_already_won' => $medals_already_won,
+                        'log' => game::$instance->getLogsType("M"),
 
                     )
                 );
@@ -822,6 +823,9 @@ class Game extends \Table
         }
         if ($type == 28) {
             return "<div class='icon_log icon_red icon_troop_8' title=''></div>";
+        }
+        if ($type == "M") {
+            return "<div class='icon_medal_log' title=''></div>";
         }
     }
 
