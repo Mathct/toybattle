@@ -11,8 +11,8 @@ trait BasesTrait  // ATTENTION
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} passes');
-        $ret['titleyou'] = clienttranslate('${you} pass');
+        $ret['title'] = clienttranslate('${actplayer}');
+        $ret['titleyou'] = clienttranslate('${you}');
 
         return $ret;
     }
@@ -92,6 +92,7 @@ trait BasesTrait  // ATTENTION
 
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
         
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_1"></span>';
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg2;
 
@@ -131,12 +132,12 @@ trait BasesTrait  // ATTENTION
 
 
         if ($test == 1) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can recover an other Troop on the Terrain (Be careful! This can trigger a region control for #opponent#)');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} can recover an other Troop on the Terrain (Be careful! This can trigger a region control for #opponent#)');
             $ret['buttons'][] = 'btn_pass';
         }
 
         if ($test == 0) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} cannot place back a Troop on your rack');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} cannot place back a Troop on your rack');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -209,7 +210,10 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a Troop');
-        $ret['titleyou'] = clienttranslate('${you} must confirm');
+
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_1"></span>';
+
+        $ret['titleyou'] = clienttranslate('#icon# ${you} must confirm');
 
         $ret["selected"][] = $parg1;
         $ret['buttons'][] = 'btn_yes';
@@ -279,6 +283,7 @@ trait BasesTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_3"></span>';
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg1;
 
@@ -287,14 +292,14 @@ trait BasesTrait  // ATTENTION
 
 
         if (($counttroopdeck >= 1) && ($counttroophand <= 7)) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can draw 1 Troop');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} can draw 1 Troop');
             $ret['buttons'][] = 'btn_draw_1';
             $ret['buttons'][] = 'btn_pass';
         }
 
 
         if (($counttroopdeck == 0) || ($counttroophand == 8)) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} cannot draw Troops');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} cannot draw Troops');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -376,6 +381,7 @@ trait BasesTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_4"></span>';
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg1;
 
@@ -397,14 +403,14 @@ trait BasesTrait  // ATTENTION
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
 
         if ($test == 1) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can choose an enemy Troop adjacent to this base and move it on any base adjacent to #opponent#\'s starting base');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} can choose an enemy Troop adjacent to this base and move it on any base adjacent to #opponent#\'s starting base');
             
             $ret['buttons'][] = 'btn_pass';
         }
 
         if ($test == 0) {
 
-            $ret['titleyou'] = clienttranslate('Special base: There are no enemy Troops adjacent to this base');
+            $ret['titleyou'] = clienttranslate('#icon# There are no enemy Troops adjacent to this base');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -434,7 +440,10 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} must choose the destination base');
+
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_4"></span>';
+
+        $ret['titleyou'] = clienttranslate('#icon# ${you} must choose the destination base');
 
         $ret["selected"][] = $parg1;
 
@@ -507,7 +516,10 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} must confirm');
+
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_4"></span>';
+
+        $ret['titleyou'] = clienttranslate('#icon# ${you} must confirm');
 
         $explode = explode("_", $parg1);
 
@@ -577,13 +589,15 @@ trait BasesTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
 
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_5"></span>';
+
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg1;
 
         $nb_troops_on_discard = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='discard' AND card_type_arg = '{$this->player_id}'", true));
         $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
 
         if (($nb_troops_on_discard >= 1) && ($counttroophand <= 7)) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can place back on rack a discarded Troop');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} can place back on rack a discarded Troop');
 
             $troops_discard = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='discard' AND card_type_arg = '{$this->player_id}'", true);
             foreach ($troops_discard as $troop_discard) {
@@ -592,7 +606,7 @@ trait BasesTrait  // ATTENTION
             
             $ret['buttons'][] = 'btn_pass';
         } else {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} cannot place back a discarded Troop');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} cannot place back a discarded Troop');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -647,7 +661,10 @@ trait BasesTrait  // ATTENTION
         $ret["selected"] = array();
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
-        $ret['titleyou'] = clienttranslate('Special base: ${you} must confirm');
+
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_5"></span>';
+
+        $ret['titleyou'] = clienttranslate('#icon# ${you} must confirm');
 
         $ret["selected"][] = $parg1;
 
@@ -702,6 +719,8 @@ trait BasesTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_8"></span>';
+
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg1;
 
         $counttroophandopponent_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true));
@@ -709,13 +728,13 @@ trait BasesTrait  // ATTENTION
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
 
         if ($counttroophandopponent_noblocked >= 1) {
-            $ret['titleyou'] = clienttranslate('Special base: ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
             $ret['buttons'][] = 'btn_point';
             $ret['buttons'][] = 'btn_pass';
         }
 
         if ($counttroophandopponent_noblocked == 0) {
-            $ret['titleyou'] = clienttranslate('Special base: #opponent# has no Troops on rack');
+            $ret['titleyou'] = clienttranslate('#icon# #opponent# has no Troops on rack');
             $ret['buttons'][] = 'btn_continue';
         }
 
@@ -822,7 +841,9 @@ trait BasesTrait  // ATTENTION
         $ret['buttons'] = array();
         $ret['title'] = clienttranslate('${actplayer} places a Troop');
 
-        $ret['titleyou'] = clienttranslate('${you} must choose a Troop to lay down');
+        $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_8"></span>';
+
+        $ret['titleyou'] = clienttranslate('#icon# ${you} must choose a Troop to lay down');
 
         $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
         $count = count($troop_id_opponent_hand);
