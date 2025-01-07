@@ -29,20 +29,20 @@
 }
 
 body {
-    background-image: url('img/TB_texture.jpg');
+    background-image: url('img/TOY_BGA_Background.jpg');
     background-repeat: repeat;
-    background-size: 105px 108px;
-    background-color: rgba(255, 255, 255, 0.2); /* Couleur de fond semi-transparente */
-    background-blend-mode: multiply; /* Fusionne couleur et texture */
+    background-size: 20px 12px;
+/*    background-color: rgba(255, 255, 255, 0.2); /* Couleur de fond semi-transparente */
+/*    background-blend-mode: multiply; /* Fusionne couleur et texture */
   }
 
 
   .bgabutton_khakhi {
-    background-color: #7a9f34;
+    background-color: #719e1f;
   }
 
   .bgabutton_orange {
-    background-color: #e3a733;
+    background-color: #eea500;
   }
   
   .bgaimagebutton {
@@ -70,6 +70,21 @@ body {
     font-weight: normal;
     src: local('Calibri'), url(img/Calibri.ttf);
   }
+
+  @font-face {
+    font-family: 'GingerPro';
+    font-style: normal;
+    font-weight: normal;
+    src: local('GingerPro'), url(img/GingerPro.otf);
+  }
+
+  @font-face {
+    font-family: 'NotoSans';
+    font-style: normal;
+    font-weight: normal;
+    src: local('NotoSans'), url(img/NotoSans.ttf);
+  }
+
   
   /* tooltip Card */
   .tooltip_content {
@@ -81,7 +96,7 @@ body {
   
   .troop_container {
     flex: 1;
-   /* margin-right: 10px;*/
+    margin-right: 10px;
     display: flex;
     justify-content: center; /* Centre horizontalement */
     align-items: center; /* Centre verticalement */
@@ -95,19 +110,19 @@ body {
   }
   
   .tooltip_title {
-    font-family: Livingstone;
-    font-size: 2vw;
-    color:#7a9f34;
+    font-family: GingerPro;
+    font-size: 24px;
+    color:#719e1f;
   }
   
   .tooltip_desc {
-    font-family: Calibri;
-    font-size: 1vw;
+    font-family: NotoSans;
+    font-size: 16px;
   }
 
   .tooltip_info {
-    font-family: Calibri;
-    font-size: 1vw;
+    font-family: NotoSans;
+    font-size: 14px;
     color:#2a5d9c;
   }
   
@@ -183,7 +198,7 @@ body {
     position: absolute;
     z-index: 100;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 900;
     color: white;
     top: 17%;
     left: 50%;
@@ -209,11 +224,34 @@ body {
 }
 
 .rack_blue {
-    background: linear-gradient(to bottom, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);
+    /*background: linear-gradient(to bottom, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);*/
+    background-image: url('img/TB_Racks.png');
+    background-size: 100% 200%;
+    background-position: 0% 0%;
+    height: 60px;
+    width: 100%;
+    position: relative;
 }
 
 .rack_red {
-    background: linear-gradient(to top, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);
+    /*background: linear-gradient(to top, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);*/
+    background-image: url('img/TB_Racks.png');
+    background-size: 100% 200%;
+    background-position: 0% -100%;
+    height: 60px;
+    width: 100%;
+    position: relative;
+}
+
+.rack_blue > .troop {
+    position: relative;
+    top: -34px; /* Décalage vers le haut */
+}
+
+
+.rack_red > .troop {
+    position: relative;
+    top: 34px; /* Décalage vers le haut */
 }
 
 .discard {
@@ -273,6 +311,8 @@ body {
     background-size: 900% 200%;
     transition: transform 0.5s ease-in-out;
 }
+
+
 
 .troop:hover {
     opacity: 1;

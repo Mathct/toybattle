@@ -3186,7 +3186,7 @@ notif_gainMedal: function (notif) {
                 const animationDelay = index * 500; // 500ms per medal
                 index++;
                 setTimeout(() => {
-                    medalElement.style.transform = 'scale(5)';
+                    medalElement.style.transform = 'scale(8)';
                     setTimeout(() => {
                         // Réduire l'échelle pour la faire disparaître
                         medalElement.style.transform = 'scale(0)';
@@ -3200,7 +3200,7 @@ notif_gainMedal: function (notif) {
                                 medalDestination.classList.add('full_medal');
             
                                 // Augmenter la taille de la médaille destination
-                                medalDestination.style.transform = 'scale(2)';
+                                medalDestination.style.transform = 'scale(3)';
             
                                 setTimeout(() => {
                                     // Réduire l'échelle de la médaille destination à sa taille normale
