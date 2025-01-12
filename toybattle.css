@@ -57,20 +57,6 @@ body {
 
 /* Fonts and Tooltips */
 
-@font-face {
-    font-family: 'Livingstone';
-    font-style: normal;
-    font-weight: normal;
-    src: local('Livingstone'), url(img/Livingstone.ttf);
-}
-
-@font-face {
-    font-family: 'Calibri';
-    font-style: normal;
-    font-weight: normal;
-    src: local('Calibri'), url(img/Calibri.ttf);
-  }
-
   @font-face {
     font-family: 'GingerPro';
     font-style: normal;
@@ -174,17 +160,17 @@ body {
 }
 
 .line {
-    height: 90px;
-
     display: flex;
     flex-direction: row;
-    margin : 5px 0;
 }
 
-#white_line {
-    width: 100%;
-}
+.deck-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    /*justify-content: center;*/
 
+}
 
 .deck {
     width: var(--troop-width);
@@ -200,7 +186,7 @@ body {
     font-size: 16px;
     font-weight: 900;
     color: white;
-    top: 17%;
+    top: 34%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -210,49 +196,56 @@ body {
 }
 
 
-
-.rack {
-    height: 90px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-
-   /* background: linear-gradient(to bottom, #f3f3f3 0%, #696969 33%, #000 100%);
-    /*background: linear-gradient(to bottom, #f3f3f3 0%, #a1b7d2 100%) ;
-    /*background:#a1b7d2;*/
+.rack-wrapper {
+    position: relative;
+    /*pointer-events: none;*/
+    
 }
 
+
+.troops-container {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    /*height: 100%;*/
+    display: flex;    
+    flex-direction: row;
+    justify-content: space-around;
+    /*pointer-events: none; /* Désactive les interactions si nécessaire */
+    z-index:20;
+}
+
+#red_troops_container {
+    top: 18%;
+}
+
+#blue_troops_container {
+    top: 0%;
+}
+
+.pointeur-auto {
+    pointer-events: auto;
+}
+
+
+
 .rack_blue {
-    /*background: linear-gradient(to bottom, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);*/
     background-image: url('img/TB_Racks.png');
     background-size: 100% 200%;
     background-position: 0% 0%;
     height: 60px;
     width: 100%;
-    position: relative;
 }
 
 .rack_red {
-    /*background: linear-gradient(to top, rgba(210, 180, 140, 0) 30%, #d2b48c 50%, #8b4513 100%);*/
     background-image: url('img/TB_Racks.png');
     background-size: 100% 200%;
     background-position: 0% -100%;
     height: 60px;
     width: 100%;
-    position: relative;
-}
-
-.rack_blue > .troop {
-    position: relative;
-    top: -34px; /* Décalage vers le haut */
 }
 
 
-.rack_red > .troop {
-    position: relative;
-    top: 34px; /* Décalage vers le haut */
-}
 
 .discard {
     display: flex;
@@ -310,6 +303,7 @@ body {
     background-image: url('img/TB_Tiles.png');
     background-size: 900% 200%;
     transition: transform 0.5s ease-in-out;
+    z-index: 100;
 }
 
 
@@ -331,6 +325,93 @@ body {
     height: var(--troop-height);
     background: transparent; /* when moving a troop to a flex */
 }
+
+
+
+@media (orientation: portrait) {
+
+    #global_id {
+        flex-direction: column;
+    }
+
+    .line {
+        justify-content: space-between;
+        height: 110px;
+        gap: 10px;
+        width: 710px;
+    }
+
+    .rack-wrapper {
+        height: 100%; /* Ajustez selon vos besoins */
+        width: 640px;
+    }
+
+    .rack_blue {
+        position: absolute;
+        bottom: 0;
+    }
+
+
+    .playmat {
+        flex-direction: row;
+    }
+
+    .discard {
+        width: 100px;
+        height: 833px;
+    }
+}
+
+/* Landscape orientation */
+@media (orientation: landscape) {
+
+    #global_id {
+        flex-direction: row;
+    }
+
+    .line {
+        justify-content: center;
+        /*align-items:center;*/
+        width: 100%;
+        gap: 20%;
+        height: 110px;
+    }
+
+    .rack-wrapper {
+        height: 13%; /* Ajustez selon vos besoins */
+        width: 100%;
+    }
+
+    .rack_blue {
+        position: absolute;
+        bottom: 0;
+    }
+    .rack_red {
+        position: absolute;
+        top: 0;
+    }
+
+    
+
+    .playmat {
+        flex-direction: column;
+        height: var(--board-height);
+        width: 542px;
+    }
+
+    .discard {
+        width: 100%;
+        height: 200px;
+    }
+
+}
+
+
+
+
+
+
+
 
 .opa_50 {
     opacity:0.5;
@@ -558,58 +639,3 @@ body {
 
 
 
-@media (orientation: portrait) {
-
-    #global_id {
-        flex-direction: column;
-    }
-
-    .line {
-        justify-content: space-between;
-        gap: 10px;
-    }
-
-    .rack {
-        width: 600px;
-        gap: 10px;
-    }
-
-    .playmat {
-        flex-direction: row;
-    }
-
-    .discard {
-        width: 100px;
-        height: 833px;
-    }
-}
-
-/* Landscape orientation */
-@media (orientation: landscape) {
-
-    #global_id {
-        flex-direction: row;
-    }
-
-    .line {
-        justify-content: center;
-        gap: 20%;
-    }
-
-    .rack {
-        width: 100%;
-        gap: 2px;
-    }
-
-    .playmat {
-        flex-direction: column;
-        height: var(--board-height);
-        width: 542px;
-    }
-
-    .discard {
-        width: 100%;
-        height: 200px;
-    }
-
-}
