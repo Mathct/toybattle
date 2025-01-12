@@ -323,7 +323,8 @@ body {
 .troop-placeholder {
     width: var(--troop-width);
     height: var(--troop-height);
-    background: transparent; /* when moving a troop to a flex */
+    /*background: transparent; /* when moving a troop to a flex */
+    background: purple,
 }
 
 

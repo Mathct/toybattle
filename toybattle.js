@@ -1566,12 +1566,6 @@ notif_moveTroop: function(notif)
                 this.my_hand.splice(indexMax, 1);
             }
         }
-
-
-
-
-
-
     }
 
     this.troops_on_bases[base_id].push(troop);
