@@ -81,6 +81,89 @@ namespace Bga\GameFramework\Actions\Types {
     }
 }
 
+namespace Bga\GameFramework {
+    abstract class Notify {
+        /**
+         * Add a decorator function, to be applied on args when a notif function is called.
+         */
+        public function addDecorator(callable $fn) {
+           //
+        }
+
+        /**
+         * Send a notification to a single player of the game.
+         *
+         * @param int $playerId the player ID to send the notification to.
+         * @param string $notifName a comprehensive string code that explain what is the notification for.
+         * @param string $message some text that can be displayed on player's log window (should be surrounded by clienttranslate if not empty).
+         * @param array $args notification arguments.
+         */
+        public function player(int $playerId, string $notifName, ?string $message = '', array $args = []): void {
+            //
+        }
+
+        /**
+         * Send a notification to all players of the game and spectators (public).
+         *
+         * @param string $notifName a comprehensive string code that explain what is the notification for.
+         * @param string $message some text that can be displayed on player's log window (should be surrounded by clienttranslate if not empty).
+         * @param array $args notification arguments.
+         */
+        public function all(string $notifName, ?string $message = '', array $args = []): void {
+            //
+        }
+    }
+}
+
+namespace Bga\GameFramework\Db {
+    abstract class Globals
+    {
+        /**
+         * Delete global variables.
+         *
+         * @param string[] ...$names
+         */
+        public function delete(...$names): void
+        {
+            //
+        }
+
+        /**
+         * Returns the value of `$name` if it exists. Otherwise, fallback on `$defaultValue`.
+         */
+        public function get(string $name, mixed $defaultValue = null): mixed
+        {
+            return null;
+        }
+
+        /**
+         * Returns true if globals has a key `$name`.
+         */
+        public function has(string $name): bool
+        {
+            return false;
+        }
+
+        /**
+         * Increment the global `$name` by `$step`.
+         *
+         * @throws BgaSystemException if the global `$name` is not a numeric value.
+         */
+        public function inc(string $name, int $step): int
+        {
+            return 0;
+        }
+
+        /**
+         * Set `$name` with the value `$value`.
+         */
+        public function set(string $name, mixed $value): void
+        {
+            //
+        }
+    }
+}
+
 namespace {
     exit("This file should not be included, only analyzed by your IDE");
 
@@ -566,53 +649,6 @@ namespace {
         }
     }
 
-    abstract class Globals
-    {
-        /**
-         * Delete global variables.
-         *
-         * @param string[] ...$names
-         */
-        public function delete(...$names): void
-        {
-            //
-        }
-
-        /**
-         * Returns the value of `$name` if it exists. Otherwise, fallback on `$defaultValue`.
-         */
-        public function get(string $name, mixed $defaultValue = null): mixed
-        {
-            return null;
-        }
-
-        /**
-         * Returns true if globals has a key `$name`.
-         */
-        public function has(string $name): bool
-        {
-            return false;
-        }
-
-        /**
-         * Increment the global `$name` by `$step`.
-         *
-         * @throws BgaSystemException if the global `$name` is not a numeric value.
-         */
-        public function inc(string $name, int $step): int
-        {
-            return 0;
-        }
-
-        /**
-         * Set `$name` with the value `$value`.
-         */
-        public function set(string $name, mixed $value): void
-        {
-            //
-        }
-    }
-
     abstract class Table extends APP_Object
     {
         /**
@@ -623,7 +659,12 @@ namespace {
         /**
          * Access the underlying global values.
          */
-        readonly public Globals $globals;
+        readonly public \Bga\GameFramework\Db\Globals $globals;
+
+        /**
+         * Access the underlying Notify object.
+         */
+        readonly public \Bga\GameFramework\Notify $notify;
 
         /**
          * Default constructor.

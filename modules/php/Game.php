@@ -567,7 +567,7 @@ class Game extends \Table
                 // recuperation du pouvoir de la base (pour gérer le board Pool)
                 $base_power = game::$instance->_bases[$board_name][$testotherbase]['power'];
 
-                if ((($base_power != 21) && ($base_power != 26)) || (game::$instance->gamestate->table_globals[100] == 2)) {
+                if ((($base_power != 21) && ($base_power != 26) && ($base_power != 71)) || (game::$instance->gamestate->table_globals[100] == 2)) {
 
                     if ($nb_troop_on_base == 0) //si la base est vide
                     {
