@@ -57,6 +57,8 @@ setup: function( gamedatas )
     this.TROOP_HEIGHT = 88;        
     this.BOARD_WIDTH = 500;  
     this.BOARD_HEIGHT = 833.5;
+    this.GOODIE_WIDTH = 54;  
+    this.GOODIE_HEIGHT = 652;
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
 
@@ -474,7 +476,7 @@ setupPlayersBoard: function() {
  * and inverted for Red player
  * 
  **************************/
-
+/*
 setupBoard: function() {
     console.info('setup Board');
 
@@ -501,6 +503,33 @@ setupBoard: function() {
 
     //this.setupLandscapeMode();
 
+},*/
+
+setupBoard: function() {
+    console.info('Setting up the board');
+
+    // Détecter l'orientation initiale
+    this.orientation = (window.innerWidth > window.innerHeight) ? "landscape" : "portrait";
+
+    console.info(`Detected ${this.orientation} mode`);
+
+    if (this.orientation === "landscape") {
+        this.setupLandscapeMode();
+    } else {
+        this.setupPortraitMode();
+    }
+
+    // Configurer les compteurs ou d'autres éléments
+    this.setupCounters();
+
+    // Gérer les changements d'orientation avec rechargement forcé
+    window.addEventListener('resize', () => {
+        const newOrientation = (window.innerWidth > window.innerHeight) ? "landscape" : "portrait";
+        if (this.orientation !== newOrientation) {
+            console.info(`Orientation changed to ${newOrientation}. Reloading page...`);
+            location.reload(); // Recharge la page
+        }
+    });
 },
 
 
@@ -515,6 +544,12 @@ setupLandscapeMode: function() {
     /*  boardContainer definition 
         contains board and all troops
     */
+
+    const goodieContainer = this.createGoodie(); 
+    if( this.isCurrentPlayerRed() ) {
+        goodieContainer.classList.add('board-inverted');
+    }
+    globalContainer.appendChild(goodieContainer);   
     
     const boardContainer = this.createBoard();
     if( this.isCurrentPlayerRed() ) {
@@ -614,16 +649,10 @@ setupLandscapeMode: function() {
     const blueDeckElement = this.createDeck( 'blue' );
     whiteLineContainer.appendChild(blueDeckElement);
 
-    const blueDeckCounterElement = this.createDeckCounter( 'blue');
-    blueDeckElement.appendChild(blueDeckCounterElement);
-
     /* redDeckElement */
     const redDeckElement = this.createDeck( 'red' );
     redDeckElement.classList.add('board-inverted');
     whiteLineContainer.appendChild(redDeckElement);
-
-    const redDeckCounterElement = this.createDeckCounter( 'red');
-    redDeckElement.appendChild(redDeckCounterElement);
 
     /*  blueDiscardContainer definition 
         contains possible Troops in opacity 70 and all discarded ones TODO
@@ -714,8 +743,6 @@ setupPortraitMode: function() {
     /*  redRackContainer definition 
         contains Rack and all Troops in Hand
     */
-    /*const redRackContainer = this.createRack('red');
-    redLineContainer.appendChild(redRackContainer);*/
 
     const redRackContainer = this.createRackWithTroops('red');
     redLineContainer.appendChild(redRackContainer);
@@ -747,9 +774,6 @@ setupPortraitMode: function() {
         redDeckElement.classList.add('board-inverted');
         redLineContainer.appendChild(redDeckElement);
 
-        const redDeckCounterElement = this.createDeckCounter( 'red');
-        redDeckElement.appendChild(redDeckCounterElement);
-
     /*  PlaymatContainer definition 
         contains blueDiscard, Board and redDiscard
     */
@@ -759,6 +783,13 @@ setupPortraitMode: function() {
     /*  blueDiscardContainer definition 
         contains possible Troops in opacity 50 and all discarded ones TODO
     */
+
+    const goodieContainer = this.createGoodie(); 
+    if( this.isCurrentPlayerBlue() || this.isSpectator) {
+        playmatContainer.appendChild(goodieContainer);
+    }
+
+
     const blueDiscardContainer = this.createDiscard( 'blue' );
     blueDiscardContainer.style.flexDirection = "column";
     blueDiscardContainer.style.justifyContent = 'flex-end';
@@ -778,11 +809,15 @@ setupPortraitMode: function() {
         contains board and all troops
     */
 
+
+                
+
     const boardContainer = this.createBoard();
     playmatContainer.appendChild(boardContainer);
     this.createBases();
     this.createTroopsOnBoard();
     this.createMedals();
+
 
 
     /* redDiscard */
@@ -809,6 +844,10 @@ setupPortraitMode: function() {
         });
     }
     
+    if( this.isCurrentPlayerRed() ) { 
+        playmatContainer.appendChild(goodieContainer);
+    }
+
     /* blueLineContainer */
     const blueLineContainer = this.createLine( 'blue');
     globalContainer.appendChild(blueLineContainer);
@@ -817,19 +856,12 @@ setupPortraitMode: function() {
     const blueDeckElement = this.createDeck( 'blue' );
     blueLineContainer.appendChild(blueDeckElement);
 
-    /* blueDeckCounterElement */
-    const blueDeckCounterElement = this.createDeckCounter( 'blue');
-    blueDeckElement.appendChild(blueDeckCounterElement);
 
     /* blueRackContainer */
 
     const blueRackContainer = this.createRackWithTroops('blue');
     blueLineContainer.appendChild(blueRackContainer);
     const blueTroopsContainer = document.getElementById('blue_troops_container');
-
-
-    /*const blueRackContainer = this.createRack('blue');
-    blueLineContainer.appendChild(blueRackContainer);*/
 
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.your_hand).forEach((troop, index) => {
@@ -918,6 +950,10 @@ createDeck: function( color ) {
     deckElement.classList.add('deck');
     const sprite_line = color == 'blue' ? '0' : '1';
     deckElement.style.backgroundPosition = `0% -${sprite_line}00%`;
+
+    const deckCounterElement = this.createDeckCounter( color);
+    deckElement.appendChild(deckCounterElement);
+
     deckWrapper.appendChild(deckElement);
     return deckWrapper;
 },
@@ -951,6 +987,21 @@ createDiscard: function( color ) {
 
     return discardContainer;
 },
+
+
+createGoodie: function() {
+    const goodieContainer = document.createElement('div');
+    goodieContainer.id = `goodie_${this.board_id}`;
+    goodieContainer.classList.add('goodie');
+
+    const medals_needed = this.medals_to_win[this.board_id-1];
+    console.log('medals', medals_needed);
+    const background_x = medals_needed - 5;
+    console.log('background_x',background_x);
+    goodieContainer.style.backgroundPosition = `-${background_x}00% -00%`;
+    return goodieContainer;
+},
+
 
 
 createBoard: function() {
@@ -1139,10 +1190,15 @@ onScreenWidthChange: function() {
         const troopWidth = (this.TROOP_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
         const troopHeight = (this.TROOP_HEIGHT / this.TROOP_WIDTH) * troopWidth; // 88px basé sur la hauteur originale
 
+        const goodieWidth = (this.GOODIE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+        const goodieHeight = (this.GOODIE_HEIGHT / this.GOODIE_WIDTH) * goodieWidth; // 88px basé sur la hauteur originale
+
+
         // Mettre à jour les variables CSS
         document.documentElement.style.setProperty('--troop-width', `${troopWidth}px`);
         document.documentElement.style.setProperty('--troop-height', `${troopHeight}px`);
         document.documentElement.style.setProperty('--board-height', `${baseHeight}px`);
+        document.documentElement.style.setProperty('--goodie-height', `${goodieHeight}px`);
     }
 
     //const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
@@ -1939,15 +1995,19 @@ notif_drawTroopPublic: function (notif) {
                 }
 
                 troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                troopElement.style.zIndex = 100;
+                troopElement.style.position = 'fixed'; // Pour garantir qu'il se déplace au-dessus de tout
+                troopElement.style.zIndex = 1000; // Assurez-vous que la troupe est au-dessus
 
                 // Gestionnaire de transition
                 const onTransitionEnd = () => {
 
                     troopElement.style.transform = '';
+                    troopElement.style.position = '';
                     if (player_color == this.RED_COLOR) {
                         troopElement.classList.add('board-inverted');
                     }
+
+                    troopElement.style.zIndex = 100;
 
                     rackContainer.replaceChild(troopElement, placeholder);
 
@@ -2011,26 +2071,20 @@ notif_discardTroopFromBoard: function (notif) {
     
     if( (player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue()))
     || (player_color == this.RED_COLOR &&  this.isCurrentPlayerRed())) {    
-        console.info('my_discard before', this.my_discard);
         insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
-        console.info('insert_index', insertIndex);
         if (insertIndex === -1) {
             this.my_discard.push(newTroop); // end of array
         } else {
             this.my_discard.splice(insertIndex, 0, newTroop);
         }
-        console.info('my_discard after', this.my_discard);
     }
     else {
-        console.info('your_discard before', this.your_discard);
         insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
-        console.info('insert_index', insertIndex);
         if (insertIndex === -1) {
             this.your_discard.push(newTroop); // end of array
         } else {
             this.your_discard.splice(insertIndex, 0, newTroop);
         }
-        console.info('your_discard after', this.your_discard);
     } 
 
  
@@ -2104,7 +2158,7 @@ notif_discardTroopFromBoard: function (notif) {
         troopElement.addEventListener('transitionend', onTransitionEnd);
     }
     
-    this.showArrays();
+    //this.showArrays();
 },
 
 
@@ -2163,38 +2217,23 @@ notif_discardTroopFromHand: function (notif) {
 
     if( (player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue()))
     || (player_color == this.RED_COLOR &&  this.isCurrentPlayerRed())) {    
-        console.info('my_discard before', this.my_discard);
         insertIndex = this.my_discard.findIndex(t => t.type > newTroop.type);
-        console.info('insert_index', insertIndex);
         if (insertIndex === -1) {
             this.my_discard.push(newTroop); // end of array
         } else {
             this.my_discard.splice(insertIndex, 0, newTroop);
         }
-        console.info('my_discard after', this.my_discard);
     }
     else {
-        console.info('your_discard before', this.your_discard);
         insertIndex = this.your_discard.findIndex(t => t.type > newTroop.type);
-        console.info('insert_index', insertIndex);
         if (insertIndex === -1) {
             this.your_discard.push(newTroop); // end of array
         } else {
             this.your_discard.splice(insertIndex, 0, newTroop);
         }
-        console.info('your_discard after', this.your_discard);
     }    
 
-    
-
-
-
-
-
-
-
-
-
+ 
      /* room is reserved in the flex */
     let placeholder = document.createElement('div');
     placeholder.classList.add('troop-placeholder');
@@ -2429,7 +2468,10 @@ notif_recoverTroopFromBoard: function (notif) {
 
     const troopElement = document.getElementById(`troop_${troop.id}`);
 
-    const rackId = `${player_color_name}_rack`;
+    //const rackId = `${player_color_name}_rack`;
+    
+
+    const rackId = `${player_color_name}_troops_container`;
     const rackContainer = document.getElementById(rackId);
     
     const base_id = troop.location_arg;
@@ -2495,6 +2537,8 @@ notif_recoverTroopFromBoard: function (notif) {
                 ? `${existingTransform} ${translateTransform}`
                 : translateTransform;
             troopElement.style.transform = newTransform;
+            //troopElement.style.position = 'fixed'; // moves over other elements
+            //troopElement.style.zIndex = 200; // moves over other elements
     
             const onTransitionEnd = () => {
                 troopElement.style.transform = '';
@@ -2562,7 +2606,7 @@ notif_recoverTroopFromBoard: function (notif) {
             rackContainer.replaceChild(troopElement, placeholder);
         }
         else {
-
+            console.log('troopElement', troopElement);
             const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
             const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
@@ -2652,7 +2696,9 @@ notif_recoverTroopFromDiscard: function (notif) {
     const troopElement = document.getElementById(`troop_${troop.id}`);
     dojo.removeClass(`troop_${troop.id}`, 'opa_70');
 
-    const rackId = `${player_color_name}_rack`;
+   // const rackId = `${player_color_name}_rack`;
+    
+    const rackId = `${player_color_name}_troops_container`;
     const rackContainer = document.getElementById(rackId);
 
 
@@ -2710,6 +2756,7 @@ notif_recoverTroopFromDiscard: function (notif) {
                 : translateTransform;
 
             troopElement.style.transform = newTransform;
+            //troopElement.style.position = 'fixed'; // moves over other elements
 
             const onTransitionEnd = () => {
                 troopElement.style.transform = '';

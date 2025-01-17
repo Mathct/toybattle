@@ -26,6 +26,8 @@
     --troop-height: 88px;
     --board-width: 500px;
     --board-height: 833.5px;
+    --goodie-width: 54px;
+    --goodie-height: 652px;
 }
 
 body {
@@ -139,6 +141,17 @@ body {
 }
 
 
+.goodie {
+    width: var(--goodie-width);
+    height: var(--goodie-height);
+    position: relative;
+    margin: 0 5px;
+    border-radius: 5px;
+    background-image: url('img/TB_Goodies.png');
+    background-size: 400% 100%;    
+}
+
+
 .board-inverted {
     transform: rotate(180deg);
 }
@@ -186,7 +199,7 @@ body {
     font-size: 16px;
     font-weight: 900;
     color: white;
-    top: 34%;
+    top: 18%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -323,8 +336,8 @@ body {
 .troop-placeholder {
     width: var(--troop-width);
     height: var(--troop-height);
-    /*background: transparent; /* when moving a troop to a flex */
-    background: purple,
+    background: transparent; /* when moving a troop to a flex */
+    /*background: purple,*/
 }
 
 
@@ -434,20 +447,20 @@ body {
 }
 
 .full_medal {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     background-position: 0% 0%;
 }
 
 .null_medal {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     background-position: -100% 0%;
 }
 
 .board_medal {
-    width: 11px;
-    height: 11px;
+    width: 26px;
+    height: 26px;
     background-position: 0% 0%;
     z-index: 10;
 }
