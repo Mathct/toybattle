@@ -324,6 +324,7 @@ body {
 .troop:hover {
     opacity: 1;
     scale: 1.2;
+    z-index:150;
 }
 
 .troop_icon {
@@ -483,12 +484,37 @@ body {
     
   }
 
+  .selectable.base_all::before {
+    content: '';
+    position: absolute;
+    top: -4px; /* Ajuste selon la largeur de l'outline */
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 5px 5px black;
+    z-index: -1; /* Place l'ombre sous l'élément */
+}
+
 
 .selected.base_all {
     outline: 3px solid white; 
     border-radius: 4px;
-    
+    box-shadow: 0 0 3px black;
   }
+
+  .selected.base_all::before {
+    content: '';
+    position: absolute;
+    top: -4px; /* Ajuste selon la largeur de l'outline */
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 5px 5px black;
+    z-index: -1; /* Place l'ombre sous l'élément */
+}
+
 
   .selectable svg, .selected svg {
     
@@ -500,26 +526,45 @@ body {
 }
 
 
+
+
+/*.path_selectable {
+    fill: none;
+    stroke: white;
+    stroke-width: 40; 
+    stroke-dasharray: 100, 40; 
+    
+}
+    
 .path_selected {
     fill: none;
     stroke: white;
-    stroke-width: 40; /*epaisseur*/
+    stroke-width: 40; 
     
      
-}
+}*/
 
 .path_selectable {
     fill: none;
     stroke: white;
-    stroke-width: 40; /*epaisseur*/
-    stroke-dasharray: 100, 40; /* Pointillé  longeur trait et longueur espace */
+    stroke-width: 40; 
     
+     
 }
 
-.path_selected_black {
+.path_selected {
+    fill: none;
+    stroke: yellow;
+    stroke-width: 40; 
+    
+     
+}
+
+
+/*.path_selected_black {
     fill: none;
     stroke: black;
-    stroke-width: 55; /*epaisseur*/
+    stroke-width: 55; 
     
      
 }
@@ -527,10 +572,28 @@ body {
 .path_selectable_black {
     fill: none;
     stroke: black;
-    stroke-width: 55; /*epaisseur*/
-    stroke-dasharray: 101.5, 38.5; /* Pointillé  longeur trait et longueur espace */
+    stroke-width: 55; 
+    stroke-dasharray: 101.5, 38.5; 
     
+}*/
+
+.path_selectable_black {
+    fill: none;
+    stroke: black;
+    stroke-width: 55; 
+    
+     
 }
+    
+.path_selected_black {
+    fill: none;
+    stroke: black;
+    stroke-width: 55; 
+    
+     
+}
+
+
 
 
 /* Tisaac Help Mode */

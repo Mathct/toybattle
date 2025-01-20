@@ -403,7 +403,7 @@ trait BasesTrait  // ATTENTION
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
 
         if ($test == 1) {
-            $ret['titleyou'] = clienttranslate('#icon# ${you} can choose an enemy Troop adjacent to this base and move it on any base adjacent to #opponent#\'s starting base');
+            $ret['titleyou'] = clienttranslate('#icon# ${you} can choose an enemy troop adjacent to this base and move it one base');
             
             $ret['buttons'][] = 'btn_pass';
         }
@@ -447,9 +447,11 @@ trait BasesTrait  // ATTENTION
 
         $ret["selected"][] = $parg1;
 
-        $bases_adjacentes_opponent_start = game::$instance->_bases[$this->board_name][$this->opponent_start_base[0]]['adjacents'];
+        $explode = explode("_", $parg1);
 
-        foreach ($bases_adjacentes_opponent_start as $base) {
+        $bases_adjacentes_opponent = game::$instance->_bases[$this->board_name][$explode[2]]['adjacents'];
+
+        foreach ($bases_adjacentes_opponent as $base) {
             $ret["selectable"][] = 'base_' . $this->board_name . '_' . $base;
         }
 

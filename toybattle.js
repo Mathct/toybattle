@@ -131,7 +131,7 @@ onEnteringState: function( stateName, args )
             if(this.isCurrentPlayerActive()) {
                 this.args.selectable.forEach(sid => {
                     const element = document.getElementById(sid); //on va recupere le div complet de l'element
-                    if (element.classList.contains('troop'))
+                    if ((element.classList.contains('troop'))||(element.classList.contains('deck')))
                     {
                         this.addSVGs(element,"selectable");
                     }
@@ -142,7 +142,7 @@ onEnteringState: function( stateName, args )
                 });
                 this.args.selected.forEach(sid => {
                     const element = document.getElementById(sid); //on va recupere le div complet de l'element
-                    if (element.classList.contains('troop'))
+                    if ((element.classList.contains('troop'))||(element.classList.contains('deck')))
                     {
                         this.addSVGs(element,"selected");
                     }
@@ -293,6 +293,10 @@ format_string_recursive : function(log, args) {
 
 addSVGs: function(image, type) {
 
+    if(this.gamedatas.players[this.getActivePlayerId()].color == this.BLUE_COLOR)
+    {
+
+        
     // Créer un SVG avec le path pour le contour
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 709 945"); // Dimensions originales du PNG
@@ -306,6 +310,8 @@ addSVGs: function(image, type) {
     const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path2.setAttribute("d", "M 35.491522,942.07978 C 23.624815,939.29461 11.444392,929.03145 5.3325369,916.66798 L 1.5112321,908.93796 V 590.20163 271.46527 l 3.7536732,-7.59319 c 6.1213237,-12.38264 15.8105097,-20.78854 28.4713127,-24.70042 5.837234,-1.80357 9.380906,-1.95574 45.544214,-1.95574 h 39.214488 l 0.27046,-63.4997 0.27046,-63.4997 3.2299,-6.55818 c 2.29409,-4.658061 6.31563,-9.800429 13.88011,-17.748617 41.97018,-44.099052 98.80953,-71.214525 170.63059,-81.4000971 18.00898,-2.5540102 76.6838,-2.5363174 94.52981,0.028485 47.52846,6.8307941 84.84403,19.5580121 119.95702,40.9137591 27.51567,16.73507 57.48146,44.189214 64.7601,59.33216 l 3.11097,6.47224 0.2842,62.97981 0.2842,62.97983 h 39.33702 c 37.1769,0 39.67716,0.1136 45.53046,2.06891 15.46952,5.16763 27.01465,17.42438 31.19373,33.11654 1.14802,4.31077 1.36725,55.66089 1.35675,317.80027 -0.008,207.25117 -0.35233,314.13177 -1.02008,317.02817 -3.55255,15.40614 -16.55893,29.29712 -31.9014,34.07105 -5.89919,1.83559 -14.54136,1.88378 -320.45191,1.78646 -185.33552,-0.0588 -315.976376,-0.47253 -318.255788,-1.00753 z"); // code path
     
+    
+
 
     if(type == "selectable")
     {
@@ -331,6 +337,56 @@ addSVGs: function(image, type) {
 
     // Ajouter le SVG en tant qu'élément enfant du div d'image
     image.appendChild(svg);
+
+    }
+
+
+    if(this.gamedatas.players[this.getActivePlayerId()].color == this.RED_COLOR)
+        {
+    
+            
+        // Créer un SVG avec le path pour le contour
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 709 945"); // Dimensions originales du PNG
+        
+        // Créer un path pour un contour 
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "m 33.926433,941.19236 c -3.122354,-0.99971 -7.602391,-2.94788 -9.955638,-4.32924 C 17.331631,932.96585 8.5383965,923.07395 4.9524655,915.46854 L 1.7720181,908.72316 1.5169738,591.72589 C 1.2822128,299.93877 1.3920358,274.33006 2.8979073,269.71738 6.5493291,258.53259 13.50774,249.48519 23.296168,243.19535 c 10.294055,-6.61474 12.630356,-6.9017 56.190614,-6.9017 h 39.208168 l 0.27679,-64.55124 0.27679,-64.55124 2.30925,-4.8329 c 3.06463,-6.413798 9.48372,-13.246091 15.14308,-16.117842 2.52447,-1.281 50.03084,-20.867913 105.56972,-43.526481 l 100.97978,-41.1973878 10.9512,0.064554 10.9512,0.064554 83.62736,34.1651588 c 45.99505,18.790836 91.8015,37.471582 101.79215,41.512769 9.99062,4.041183 20.21431,8.550369 22.71933,10.020414 4.88515,2.866822 11.22713,10.498706 14.04473,16.901241 2.10251,4.77769 2.24399,9.75538 2.28568,80.40616 l 0.0301,51.54005 41.06699,0.30034 41.06703,0.30034 7.77382,3.71704 c 13.01663,6.22386 21.81107,16.59141 25.96429,30.60877 1.46071,4.92986 1.60332,33.45687 1.59255,318.51923 -0.0113,258.24412 -0.24533,313.97781 -1.34349,318.08906 -4.22614,15.81904 -15.78474,28.15579 -31.21797,33.31962 l -6.19087,2.07142 -314.38066,-0.0535 C 52.583971,943.01253 39.368765,942.93491 33.926162,941.19251 Z"); // code path
+        
+       
+        // Créer un path pour un contour 
+        const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path2.setAttribute("d", "m 33.926433,941.19236 c -3.122354,-0.99971 -7.602391,-2.94788 -9.955638,-4.32924 C 17.331631,932.96585 8.5383965,923.07395 4.9524655,915.46854 L 1.7720181,908.72316 1.5169738,591.72589 C 1.2822128,299.93877 1.3920358,274.33006 2.8979073,269.71738 6.5493291,258.53259 13.50774,249.48519 23.296168,243.19535 c 10.294055,-6.61474 12.630356,-6.9017 56.190614,-6.9017 h 39.208168 l 0.27679,-64.55124 0.27679,-64.55124 2.30925,-4.8329 c 3.06463,-6.413798 9.48372,-13.246091 15.14308,-16.117842 2.52447,-1.281 50.03084,-20.867913 105.56972,-43.526481 l 100.97978,-41.1973878 10.9512,0.064554 10.9512,0.064554 83.62736,34.1651588 c 45.99505,18.790836 91.8015,37.471582 101.79215,41.512769 9.99062,4.041183 20.21431,8.550369 22.71933,10.020414 4.88515,2.866822 11.22713,10.498706 14.04473,16.901241 2.10251,4.77769 2.24399,9.75538 2.28568,80.40616 l 0.0301,51.54005 41.06699,0.30034 41.06703,0.30034 7.77382,3.71704 c 13.01663,6.22386 21.81107,16.59141 25.96429,30.60877 1.46071,4.92986 1.60332,33.45687 1.59255,318.51923 -0.0113,258.24412 -0.24533,313.97781 -1.34349,318.08906 -4.22614,15.81904 -15.78474,28.15579 -31.21797,33.31962 l -6.19087,2.07142 -314.38066,-0.0535 C 52.583971,943.01253 39.368765,942.93491 33.926162,941.19251 Z"); // code path
+        
+        
+    
+    
+        if(type == "selectable")
+        {
+            // Ajouter la classe 'selectable' au div d'image 
+            image.classList.add('selectable');
+                
+            path.setAttribute("class", "path_selectable_black");
+            path2.setAttribute("class", "path_selectable");
+        }
+    
+        if(type == "selected")
+        {
+            // Ajouter la classe 'selected' au div d'image 
+            image.classList.add('selected');
+                    
+            path.setAttribute("class", "path_selected_black");
+            path2.setAttribute("class", "path_selected");
+        }
+    
+        // Ajouter le path au SVG
+        svg.appendChild(path);
+        svg.appendChild(path2);
+    
+        // Ajouter le SVG en tant qu'élément enfant du div d'image
+        image.appendChild(svg);
+    
+        }
     
 
   },
@@ -1423,18 +1479,31 @@ getTooltipBaseContent: function(board_id, base_power, troops) {
 
     if( base_power > 0) {
         // Afficher les informations de la Base Spéciale  
-        
+
+        console.log('board_id', board_id);
+        console.log('base_power', base_power);
+
         const board_infos = this.board_type;
         console.info( 'board_infos', board_infos);
         html += '<div id="special_base_desc">';
-        html += `<span class='tooltip_title'>${board_infos.name}</span>`;
+
+        // Ajout du titre avec ou sans l'icône
+        html += `<span class='tooltip_title'>${board_infos.name}`;
+        if ([1, 3, 4, 5, 8].includes(parseInt(board_id))) {
+            console.log('ICON OK');
+            const iconClass = `icon_power_bandeau icon_powerbase_${board_id}`;
+            html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+        }
+        html += `</span>`;
+        
+        // Ajout de la description
         let effect_desc = board_infos.desc1;
         html += `<br><span class='tooltip_desc'>${effect_desc}</span>`;
-
+        
+        // Ajout des informations supplémentaires
         let effect_info = board_infos.desc2;
-        // Remplacer les ressources par les icônes dans le texte d'informations
-
         html += `<br><span class='tooltip_info'>${effect_info}</span></div>`;
+
 
         if( troops.length > 0) {
             html += `<hr style="border: 1px solid #7a9f34; margin: 10px 0;">`
@@ -3131,44 +3200,42 @@ notif_gainMedal: function (notif) {
     } else {
 
         const timeoutDelay = 200;
+        let index = 0; // Initialisation de l'index
         Object.entries(TB_medals).forEach(([id, medal]) => {
             console.info('emptied_regions', notif.args.emptied_regions);
             console.info('medal_region', medal.region);
-            if (notif.args.emptied_regions.includes(medal.region)) {    
+
+            if (notif.args.emptied_regions.includes(medal.region)) {
                 const medalId = `medal_${id}`;
                 const medalElement = document.getElementById(medalId);
                 const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
-                console.info('medalDest',medalDestination);
-                
-                const animationDelay = index * 500; // 500ms per medal
-                index++;
+                console.info('medalDest', medalDestination);
+
+                const animationDelay = index * 500; // Décalage par médaille
+                index++; // Incrémentation après utilisation
+
                 setTimeout(() => {
-                    medalElement.style.transform = 'scale(8)';
+                    // Étape 1 : Agrandir la médaille source
+                    medalElement.style.transform = 'scale(2)'; // Échelle fixe pour toutes les médailles
                     setTimeout(() => {
-                        // Réduire l'échelle pour la faire disparaître
+                        // Étape 2 : Réduire pour faire disparaître
                         medalElement.style.transform = 'scale(0)';
-                        
-                        if (medalDestination) 
-                        {
-                            // Après disparition, traiter la médaille destination
+
+                        if (medalDestination) {
+                            // Étape 3 : Traiter la médaille destination
                             setTimeout(() => {
-                                // Étape 2 : Modifier la médaille destination
                                 medalDestination.classList.remove('null_medal');
                                 medalDestination.classList.add('full_medal');
-            
-                                // Augmenter la taille de la médaille destination
-                                medalDestination.style.transform = 'scale(3)';
-            
+
+                                // Étape 4 : Agrandir et réduire la médaille destination
+                                medalDestination.style.transform = 'scale(1.5)'; // Taille fixe
                                 setTimeout(() => {
-                                    // Réduire l'échelle de la médaille destination à sa taille normale
-                                    medalDestination.style.transform = 'scale(1)';
-                                    // Réinitialiser l'index pour la prochaine médaille
-                                    
-                                }, timeoutDelay); // Durée pour redescendre à `scale(1)`
-                            }, timeoutDelay); // Durée après disparition de la médaille source
+                                    medalDestination.style.transform = 'scale(1)'; // Retour à la taille normale
+                                }, timeoutDelay);
+                            }, timeoutDelay);
                         }
-                    }, timeoutDelay); // Durée pour agrandir et réduire la médaille source
-                }, animationDelay); // Décalage pour chaque médaille
+                    }, timeoutDelay);
+                }, animationDelay);
             }
         });
 
