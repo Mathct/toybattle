@@ -477,13 +477,15 @@ body {
 
 
 .selectable.base_all {
-    outline: 3px dashed yellow;
+    outline: 3px dashed white;
     border-radius: 4px;
     
+    
   }
-  
+
+
 .selected.base_all {
-    outline: 3px solid yellow; 
+    outline: 3px solid white; 
     border-radius: 4px;
     
   }
@@ -500,7 +502,7 @@ body {
 
 .path_selected {
     fill: none;
-    stroke: yellow;
+    stroke: white;
     stroke-width: 40; /*epaisseur*/
     
      
@@ -508,9 +510,25 @@ body {
 
 .path_selectable {
     fill: none;
-    stroke: yellow;
+    stroke: white;
     stroke-width: 40; /*epaisseur*/
-    stroke-dasharray: 100, 30; /* Pointillé  longeur trait et longueur espace */
+    stroke-dasharray: 100, 40; /* Pointillé  longeur trait et longueur espace */
+    
+}
+
+.path_selected_black {
+    fill: none;
+    stroke: black;
+    stroke-width: 55; /*epaisseur*/
+    
+     
+}
+
+.path_selectable_black {
+    fill: none;
+    stroke: black;
+    stroke-width: 55; /*epaisseur*/
+    stroke-dasharray: 101.5, 38.5; /* Pointillé  longeur trait et longueur espace */
     
 }
 

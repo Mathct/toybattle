@@ -180,7 +180,7 @@ $this->_bases = [
         17 => ["value" => 17, "adjacents" => [15, 20],             "power" => 0,  "top" => 43.5, "left" => 6.6],
         18 => ["value" => 18, "adjacents" => [15, 16, 20, 21],     "power" => 0,  "top" => 43.5, "left" => 43.3],
         19 => ["value" => 19, "adjacents" => [16, 21],             "power" => 0,  "top" => 43.5, "left" => 78.9],
-        20 => ["value" => 20, "adjacents" => [17, 18, 21, 22, 23], "power" => 0,  "top" => 30, "left" => 25.8],
+        20 => ["value" => 20, "adjacents" => [17, 18, 21, 22, 25], "power" => 0,  "top" => 30, "left" => 25.8],
         21 => ["value" => 21, "adjacents" => [18, 19, 20, 23, 24], "power" => 0,  "top" => 29.2, "left" => 61.5],
         22 => ["value" => 22, "adjacents" => [20, 25],             "power" => 51, "top" => 17.3, "left" => 8],
         23 => ["value" => 23, "adjacents" => [21, 24, 25, 41],     "power" => 0,  "top" => 17.2, "left" => 46.9],
