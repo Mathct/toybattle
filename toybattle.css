@@ -14,6 +14,7 @@
  */
 
 
+
 * {
     box-sizing: border-box; 
     margin: 0;
@@ -548,17 +549,27 @@ body {
     fill: none;
     stroke: white;
     stroke-width: 40; 
-    
+    stroke-dasharray: 100, 40; 
      
 }
 
-.path_selected {
+
+.path_selectable {
+    fill: none;
+    stroke: white;
+    stroke-width: 40; 
+    stroke-dasharray: 100, 40; 
+     
+}
+
+
+/*.path_selected {
     fill: none;
     stroke: yellow;
     stroke-width: 40; 
     
      
-}
+}*/
 
 
 /*.path_selected_black {
@@ -580,15 +591,20 @@ body {
 .path_selectable_black {
     fill: none;
     stroke: black;
-    stroke-width: 55; 
-    
-     
+    stroke-width: 70; 
+
+}
+
+.path_selected {
+    fill: none;
+    stroke: white;
+    stroke-width: 40; 
 }
     
 .path_selected_black {
     fill: none;
     stroke: black;
-    stroke-width: 55; 
+    stroke-width: 70; 
     
      
 }
