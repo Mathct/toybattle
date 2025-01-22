@@ -27,8 +27,12 @@
     --troop-height: 88px;
     --board-width: 500px;
     --board-height: 833.5px;
+    --rack-width: 600px;
+    --rack-height: 60px;
     --goodie-width: 54px;
     --goodie-height: 652px;
+    --medal-width: 26px;
+    --deck-counter-size: 16px;
 }
 
 body {
@@ -197,7 +201,7 @@ body {
 .deck_counter {
     position: absolute;
     z-index: 100;
-    font-size: 16px;
+    font-size: var(--deck-counter-size);
     font-weight: 900;
     color: white;
     top: 18%;
@@ -233,9 +237,7 @@ body {
     top: 18%;
 }
 
-#blue_troops_container {
-    top: 0%;
-}
+
 
 .pointeur-auto {
     pointer-events: auto;
@@ -247,7 +249,7 @@ body {
     background-image: url('img/TB_Racks.png');
     background-size: 100% 200%;
     background-position: 0% 0%;
-    height: 60px;
+    height: var(--rack-height);
     width: 100%;
 }
 
@@ -255,7 +257,7 @@ body {
     background-image: url('img/TB_Racks.png');
     background-size: 100% 200%;
     background-position: 0% -100%;
-    height: 60px;
+    height: var(--rack-height);
     width: 100%;
 }
 
@@ -263,27 +265,9 @@ body {
 
 .discard {
     display: flex;
-    align-items: center;
     gap: 2px;
     padding: 2px;
-}
-
-.linear_blue {
-    border: 3px solid;
-    border-image: linear-gradient(to top, #4f66a2, #a1b7d2) 1;
-    border-radius: 15px;
-}
-
-.linear_red {
-   border: 3px solid;
-    border-image: linear-gradient(to bottom, #d1553e, #f3a7a1) 1;
-    border-radius: 15px;
-}
-
-.linear_red_top {
-    border: 3px solid;
-    border-image: linear-gradient(to top, #d1553e, #f3a7a1) 1;
-    border-radius: 15px;
+    background:white;
 }
 
 .base_all {
@@ -359,12 +343,16 @@ body {
 
     .rack-wrapper {
         height: 100%; /* Ajustez selon vos besoins */
-        width: 640px;
+        width: var(--rack-width);
     }
 
     .rack_blue {
         position: absolute;
         bottom: 0;
+    }
+
+    #blue_troops_container {
+        top: 0%;
     }
 
 
@@ -373,8 +361,9 @@ body {
     }
 
     .discard {
-        width: 100px;
-        height: 833px;
+        width: 70px;
+        align-items: center;
+        height: var(--board-height);
     }
 }
 
@@ -389,13 +378,13 @@ body {
         justify-content: center;
         /*align-items:center;*/
         width: 100%;
-        gap: 20%;
+        gap: 10px;
         height: 110px;
     }
 
     .rack-wrapper {
-        height: 13%; /* Ajustez selon vos besoins */
-        width: 100%;
+        height: 110px;
+        width: var(--rack-width);
     }
 
     .rack_blue {
@@ -407,18 +396,29 @@ body {
         top: 0;
     }
 
+    #blue_troops_container {
+        bottom: 18%;
+    }
+
     
 
     .playmat {
         flex-direction: column;
         height: var(--board-height);
-        width: 542px;
+        width: 670px;
     }
 
     .discard {
         width: 100%;
-        height: 200px;
+        height: 25%;
+        flex-wrap: wrap-reverse;
     }
+
+    #red_discard {
+        align-items:flex-end; 
+    }
+
+
 
 }
 
@@ -449,21 +449,22 @@ body {
 }
 
 .full_medal {
-    width: 26px;
-    height: 26px;
+    width: var(--medal-width);
+    height: var(--medal-width);
     background-position: 0% 0%;
 }
 
 .null_medal {
-    width: 26px;
-    height: 26px;
+    width: var(--medal-width);
+    height: var(--medal-width);
     background-position: -100% 0%;
 }
 
 .board_medal {
-    width: 26px;
-    height: 26px;
+    width: var(--medal-width);
+    height: var(--medal-width);
     background-position: 0% 0%;
+    /*transform: translate(-50%, -50%);*/
     z-index: 10;
 }
 
@@ -528,83 +529,34 @@ body {
 
 
 
-
-/*.path_selectable {
-    fill: none;
-    stroke: white;
-    stroke-width: 40; 
-    stroke-dasharray: 100, 40; 
-    
-}
-    
-.path_selected {
-    fill: none;
-    stroke: white;
-    stroke-width: 40; 
-    
-     
-}*/
-
 .path_selectable {
     fill: none;
     stroke: white;
-    stroke-width: 40; 
+    stroke-width: 30; 
     stroke-dasharray: 100, 40; 
      
-}
-
-
-.path_selectable {
-    fill: none;
-    stroke: white;
-    stroke-width: 40; 
-    stroke-dasharray: 100, 40; 
-     
-}
-
-
-/*.path_selected {
-    fill: none;
-    stroke: yellow;
-    stroke-width: 40; 
-    
-     
-}*/
-
-
-/*.path_selected_black {
-    fill: none;
-    stroke: black;
-    stroke-width: 55; 
-    
-     
-}
-
-.path_selectable_black {
-    fill: none;
-    stroke: black;
-    stroke-width: 55; 
-    stroke-dasharray: 101.5, 38.5; 
-    
-}*/
-
-.path_selectable_black {
-    fill: none;
-    stroke: black;
-    stroke-width: 70; 
-
 }
 
 .path_selected {
     fill: none;
     stroke: white;
-    stroke-width: 40; 
+    stroke-width: 30; 
 }
+
+
+.path_selectable_black {
+    fill: none;
+    stroke: black;
+    stroke-width: 50; 
+
+}
+
+
     
 .path_selected_black {
     fill: none;
     stroke: black;
-    stroke-width: 70; 
+    stroke-width: 50; 
     
      
 }

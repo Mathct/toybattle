@@ -1,6 +1,14 @@
 {OVERALL_GAME_HEADER}
 
-<div id="global_id"></div>
+<div id="global_id">
+
+</div>
+
+
+
+
+
+
 
 <script type="text/javascript">
 

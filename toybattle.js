@@ -59,42 +59,46 @@ setup: function( gamedatas )
     this.BOARD_HEIGHT = 833.5;
     this.GOODIE_WIDTH = 54;  
     this.GOODIE_HEIGHT = 652;
+    this.MEDAL_WIDTH = 26;
+    this.RACK_WIDTH = 600;  
+    this.RACK_HEIGHT = 60;
+    this.DECK_COUNTER_SIZE = 16;
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
 
     this.connections = [];
 
-this.bases = gamedatas.bases;
-this.regions = gamedatas.regions; //USELESS
-this.medals = gamedatas.medals;
-this.troop_types = gamedatas.troop_types;
-this.board_type = gamedatas.board_type;
-this.board_name = gamedatas.board_name;
-this.board_id = gamedatas.board_id;
+    this.bases = gamedatas.bases;
+    this.regions = gamedatas.regions; //USELESS
+    this.medals = gamedatas.medals;
+    this.troop_types = gamedatas.troop_types;
+    this.board_type = gamedatas.board_type;
+    this.board_name = gamedatas.board_name;
+    this.board_id = gamedatas.board_id;
 
 
 
-//TODO check if spectator is always BLUE
-this.opponent_id = gamedatas.opponent_id;
-this.spectator_id = gamedatas.spectator_id;
-this.other_player_id = gamedatas.other_player_id;
+    //TODO check if spectator is always BLUE
+    this.opponent_id = gamedatas.opponent_id;
+    this.spectator_id = gamedatas.spectator_id;
+    this.other_player_id = gamedatas.other_player_id;
 
-//211224this.board_troops = gamedatas.board_troops;
+    //211224this.board_troops = gamedatas.board_troops;
 
-this.my_hand = gamedatas.my_hand;
-this.your_hand = gamedatas.your_hand;
-this.my_discard = gamedatas.my_discard;
-this.your_discard = gamedatas.your_discard;
+    this.my_hand = gamedatas.my_hand;
+    this.your_hand = gamedatas.your_hand;
+    this.my_discard = gamedatas.my_discard;
+    this.your_discard = gamedatas.your_discard;
 
-this.troops_on_bases = [];
+    this.troops_on_bases = [];
 
-this.nb_decks = [gamedatas.nb_deck_blue, gamedatas.nb_deck_red];
+    this.nb_decks = [gamedatas.nb_deck_blue, gamedatas.nb_deck_red];
 
-this.troops_blocked = [gamedatas.blue_blocked, gamedatas.red_blocked ];
-    
-this.setupPlayersBoard();
-this.setupBoard();
-this.setupCounters();
+    this.troops_blocked = [gamedatas.blue_blocked, gamedatas.red_blocked ];
+        
+    this.setupPlayersBoard();
+    this.setupBoard();
+    this.setupCounters();
 
 
 
@@ -131,23 +135,19 @@ onEnteringState: function( stateName, args )
             if(this.isCurrentPlayerActive()) {
                 this.args.selectable.forEach(sid => {
                     const element = document.getElementById(sid); //on va recupere le div complet de l'element
-                    if ((element.classList.contains('troop'))||(element.classList.contains('deck')))
-                    {
+                    if (element.classList.contains('troop') || element.classList.contains('deck')) {
                         this.addSVGs(element,"selectable");
                     }
-                    else
-                    {
+                    else {
                         dojo.addClass(sid,"selectable");
                     }
                 });
                 this.args.selected.forEach(sid => {
                     const element = document.getElementById(sid); //on va recupere le div complet de l'element
-                    if ((element.classList.contains('troop'))||(element.classList.contains('deck')))
-                    {
+                    if (element.classList.contains('troop') || element.classList.contains('deck')) {
                         this.addSVGs(element,"selected");
                     }
-                    else
-                    {
+                    else {
                         dojo.addClass(sid,"selected");
                     }    
                 });
@@ -342,7 +342,7 @@ addSVGs: function(image, type) {
 
 
     if(this.gamedatas.players[this.getActivePlayerId()].color == this.RED_COLOR)
-        {
+    {
     
             
         // Créer un SVG avec le path pour le contour
@@ -387,9 +387,9 @@ addSVGs: function(image, type) {
         image.appendChild(svg);
     
         }
-    
-
   },
+
+
 
 removeSVGs: function() {
     // Sélectionner tous les éléments <svg> dans le document
@@ -542,34 +542,7 @@ setupPlayersBoard: function() {
  * and inverted for Red player
  * 
  **************************/
-/*
-setupBoard: function() {
-    console.info('setup Board');
 
-    //const mediaQuery = window.matchMedia('(max-width: 1024px) and (orientation: landscape)');
-    const mediaQuery = window.matchMedia('(orientation: landscape)');
-
-    const handleTabletChange = (e) => {
-        if (e.matches) {
-            console.info('Media Query Matched! Landscape Mode');
-            this.orientation = "landscape";
-            this.setupLandscapeMode();
-            
-        } else {
-            console.info('Portrait Mode');
-            this.orientation = "portrait";
-            this.setupPortraitMode();
-        }
-        this.setupCounters();
-    };
-
-    mediaQuery.addEventListener('change', handleTabletChange);
-
-    handleTabletChange(mediaQuery);
-
-    //this.setupLandscapeMode();
-
-},*/
 
 setupBoard: function() {
     console.info('Setting up the board');
@@ -584,9 +557,6 @@ setupBoard: function() {
     } else {
         this.setupPortraitMode();
     }
-
-    // Configurer les compteurs ou d'autres éléments
-    this.setupCounters();
 
     // Gérer les changements d'orientation avec rechargement forcé
     window.addEventListener('resize', () => {
@@ -638,50 +608,51 @@ setupLandscapeMode: function() {
     globalContainer.appendChild(playmatContainer);
 
 
+    const redLineContainer = this.createLine('red');
+    playmatContainer.appendChild(redLineContainer);
+
+
     /*  redRackContainer definition 
-    contains Rack and all Troops in Hand
-*/
+        contains Rack and all Troops in Hand
+    */
+
     const redRackContainer = this.createRackWithTroops('red');
-    playmatContainer.appendChild(redRackContainer);
+    redLineContainer.appendChild(redRackContainer);
     const redTroopsContainer = document.getElementById('red_troops_container');
-    
+
+
+
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.my_hand).reverse().forEach(troop => {
             const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('pointer-auto');
-            if( troop.blocked > 0) {
-                const checkElement = document.createElement('div');
-                checkElement.id = `check_${troop.blocked}`;
-                checkElement.classList.add('checks', 'check_blue');
-                troopElement.appendChild(checkElement);
-            }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
-
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0); 
-            
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
         });
     }
     else {
         Object.values(this.your_hand).forEach((troop, index) => {
             const troopElement = this.createBackTroopElement(troop, index);
-            if( this.troops_blocked[1].includes(`${index + 1}`)) {
-                const checkElement = document.createElement('div');
-                checkElement.id = `check_${index + 1}`;
-                checkElement.classList.add('checks', 'check_blue');
-                troopElement.appendChild(checkElement);                
-            }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
-
         });
     }
+    
+    
+    /*  yourDeckContainer definition 
+        contains Deck and number of Troops TODO
+    */
+        const redDeckElement = this.createDeck( 'red' );
+        redDeckElement.classList.add('board-inverted');
+        redLineContainer.appendChild(redDeckElement);
 
 
     /* redDiscard */
     const redDiscardContainer = this.createDiscard( 'red' );
     redDiscardContainer.style.flexDirection = "row";
-    redDiscardContainer.style.justifyContent = 'flex-end';
+    if( this.isCurrentPlayerRed() ) {
+        redDiscardContainer.style.justifyContent = 'flex-end';
+    }
     playmatContainer.appendChild(redDiscardContainer);
 
     if( this.isCurrentPlayerRed() ) {
@@ -705,27 +676,16 @@ setupLandscapeMode: function() {
         });
     }
     
-   
 
-    /* whiteLineContainer */
-    const whiteLineContainer = this.createLine( 'white');
-    playmatContainer.appendChild(whiteLineContainer);
-
-    /* blueDeckElement */
-    const blueDeckElement = this.createDeck( 'blue' );
-    whiteLineContainer.appendChild(blueDeckElement);
-
-    /* redDeckElement */
-    const redDeckElement = this.createDeck( 'red' );
-    redDeckElement.classList.add('board-inverted');
-    whiteLineContainer.appendChild(redDeckElement);
 
     /*  blueDiscardContainer definition 
         contains possible Troops in opacity 70 and all discarded ones TODO
     */
     const blueDiscardContainer = this.createDiscard( 'blue' );
     blueDiscardContainer.style.flexDirection = "row";
-    blueDiscardContainer.style.justifyContent = 'flex-end';
+    if( this.isCurrentPlayerRed() ) {
+        blueDiscardContainer.style.justifyContent = 'flex-end';
+    }
     playmatContainer.appendChild(blueDiscardContainer);
 
     const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
@@ -738,48 +698,36 @@ setupLandscapeMode: function() {
     });
 
 
+    /* blueLineContainer */
+    const blueLineContainer = this.createLine( 'blue');
+    playmatContainer.appendChild(blueLineContainer);
+
+    /* blueDeckElement */
+    const blueDeckElement = this.createDeck( 'blue' );
+    blueLineContainer.appendChild(blueDeckElement);
+
+
     /* blueRackContainer */
+
     const blueRackContainer = this.createRackWithTroops('blue');
-    playmatContainer.appendChild(blueRackContainer);
+    blueLineContainer.appendChild(blueRackContainer);
     const blueTroopsContainer = document.getElementById('blue_troops_container');
 
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.your_hand).forEach((troop, index) => {
-            const troopElement = this.createBackTroopElement(troop, index);
-
-            if( this.troops_blocked[0].includes(`${index + 1}`)) {
-                const checkElement = document.createElement('div');
-                checkElement.id = `check_${index + 1}`;
-                checkElement.classList.add('checks', 'check_red');
-                troopElement.appendChild(checkElement);                
-            }
-            blueTroopsContainer.appendChild(troopElement);
-
+            const backTroopElement = this.createBackTroopElement(troop, index);
+            blueTroopsContainer.appendChild(backTroopElement);
         });
     }
     else if( this.isSpectator) {
         Object.values(this.my_hand).forEach((troop, index) => {
-            const troopElement = this.createBackTroopElement(troop, index);
-            if( this.troops_blocked[0].includes(`${index + 1}`)) {
-                const checkElement = document.createElement('div');
-                checkElement.id = `check_${index + 1}`;
-                checkElement.classList.add('checks', 'check_red');
-                troopElement.appendChild(checkElement);                
-            }
-            blueTroopsContainer.appendChild(troopElement);
+            const backTroopElement = this.createBackTroopElement(troop, index);
+            blueTroopsContainer.appendChild(backTroopElement);
         });
     }
     else {
         Object.values(this.my_hand).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
-            troopElement.classList.add('pointer-auto');
-            
-            if( troop.blocked > 0) {
-                const checkElement = document.createElement('div');
-                checkElement.id = `check_${troop.blocked}`;
-                checkElement.classList.add('checks', 'check_red');
-                troopElement.appendChild(checkElement);
-            }
             blueTroopsContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
         });
@@ -1047,7 +995,7 @@ createPlaymat: function() {
 createDiscard: function( color ) {
     const discardContainer = document.createElement('div');
     discardContainer.id = `${color}_discard`;
-    discardContainer.classList.add('discard', `linear_${color}`);
+    discardContainer.classList.add('discard');
 
     //discardContainer.style.justifyContent = color === 'blue' ? 'flex-end' : 'flex-start';
 
@@ -1255,16 +1203,32 @@ onScreenWidthChange: function() {
         // Calculer la taille des troops proportionnellement
         const troopWidth = (this.TROOP_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
         const troopHeight = (this.TROOP_HEIGHT / this.TROOP_WIDTH) * troopWidth; // 88px basé sur la hauteur originale
+        const deckCounterSize = (this.DECK_COUNTER_SIZE / this.BOARD_WIDTH) * baseWidth; 
 
         const goodieWidth = (this.GOODIE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
         const goodieHeight = (this.GOODIE_HEIGHT / this.GOODIE_WIDTH) * goodieWidth; // 88px basé sur la hauteur originale
 
+        const medalWidth = (this.MEDAL_WIDTH / this.BOARD_WIDTH) * baseWidth;
+
+        const rackWidth = (this.RACK_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+        const rackHeight = (this.RACK_HEIGHT / this.RACK_WIDTH) * rackWidth; // 88px basé sur la hauteur originale
+
+        console.log('rackWidth', rackWidth);
+        console.log('this.RACK_HEIGHT', this.RACK_HEIGHT);
+        console.log('this.RACK_WIDTH', this.RACK_WIDTH);
+        
+        console.log('rackHeight', rackHeight);
+        console.log('rackHeight', rackHeight);
 
         // Mettre à jour les variables CSS
+        document.documentElement.style.setProperty('--medal-width', `${medalWidth}px`);
         document.documentElement.style.setProperty('--troop-width', `${troopWidth}px`);
         document.documentElement.style.setProperty('--troop-height', `${troopHeight}px`);
         document.documentElement.style.setProperty('--board-height', `${baseHeight}px`);
         document.documentElement.style.setProperty('--goodie-height', `${goodieHeight}px`);
+        document.documentElement.style.setProperty('--rack-width', `${rackWidth}px`);
+        document.documentElement.style.setProperty('--rack-height', `${rackHeight}px`);
+        document.documentElement.style.setProperty('--deck-counter-size', `${deckCounterSize}px`);
     }
 
     //const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
@@ -1541,6 +1505,8 @@ getTooltipBaseContent: function(board_id, base_power, troops) {
 //                        |___/                                                
 /////////////////////////////////////////////////////////////////////////////////  
 
+
+
 stopEvent:function (evt) {
     if (evt) {
         evt.preventDefault();
@@ -1562,7 +1528,7 @@ onSelect: function(evt)
     
     if(this.isCurrentPlayerActive() && evt.currentTarget.classList.contains('selectable'))
     {
-            this.bgaPerformAction('actSelect', { arg1: evt.currentTarget.id });
+        this.bgaPerformAction('actSelect', { arg1: evt.currentTarget.id });
     }
 },
 
@@ -1571,7 +1537,7 @@ onOpButton: function(evt)
     
     // Preventing default browser reaction
     this.stopEvent( evt );
-    console.info('evt.currentTarget.id',evt.currentTarget.id);
+    
     this.bgaPerformAction('actButton', { arg1: evt.currentTarget.id });
 },
 
@@ -1643,8 +1609,6 @@ notif_moveTroop: function(notif)
 {
     console.info('notif_moveTroop');
     console.info(notif);
-
-    this.showArrays();
 
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -1831,9 +1795,6 @@ notif_moveTroop: function(notif)
         }
 
     }
-
-    this.showArrays();
-
 },
 
 
@@ -1865,9 +1826,6 @@ notif_drawTroopPrivate: function (notif) {
 
     const deckId = `${player_color_name}_deck`;
     const deckContainer = document.getElementById(deckId);
-
- /*   const rackId = `${player_color_name}_rack`;
-    const redTroopsContainer = document.getElementById('red_troops_container');*/
 
     const rackId = `${player_color_name}_troops_container`;
     const rackContainer = document.getElementById(rackId);
@@ -1986,8 +1944,6 @@ notif_drawTroopPublic: function (notif) {
     console.info('notif_drawTroopPublic');
     console.info(notif);
 
-    this.showArrays();
-
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
     const player_color_index = player_color == this.RED_COLOR ? '2' : '1';
@@ -1995,7 +1951,6 @@ notif_drawTroopPublic: function (notif) {
     const deckId = `${player_color_name}_deck`;
     const deckContainer = document.getElementById(deckId);
 
-    //const rackId = `${player_color_name}_rack`;
     const rackId = `${player_color_name}_troops_container`;
     const rackContainer = document.getElementById(rackId);
 
@@ -2106,8 +2061,6 @@ notif_drawTroopPublic: function (notif) {
             addTroopToRack(0);
         }
     }
-
-    this.showArrays();
 },
 
 
@@ -2125,8 +2078,6 @@ notif_discardTroopFromBoard: function (notif) {
     console.info(notif);
 
     //TODO MAJ this.troopsOnBase et les deux Tooltips
-
-    this.showArrays();
 
     const troop = notif.args.infos_troop;
 
@@ -2237,7 +2188,7 @@ notif_discardTroopFromBoard: function (notif) {
         troopElement.addEventListener('transitionend', onTransitionEnd);
     }
     
-    //this.showArrays();
+
 },
 
 
@@ -2253,7 +2204,6 @@ notif_discardTroopFromHand: function (notif) {
     console.info('notif_discardTroopFromHand');
     console.info(notif);
 
-    //this.showArrays();
 
     const troop = notif.args.infos_troop;
 
@@ -2520,8 +2470,6 @@ notif_discardTroopFromHand: function (notif) {
 
         }
     }
-
-    //this.showArrays();
 },
 
 
@@ -2536,8 +2484,6 @@ notif_discardTroopFromHand: function (notif) {
 notif_recoverTroopFromBoard: function (notif) {
     console.info('notif_recoverTroopFromBoard');
     console.info(notif);
-
-    this.showArrays();
 
     const troop = notif.args.infos_troop;
     
@@ -2745,7 +2691,6 @@ notif_recoverTroopFromBoard: function (notif) {
             troopElement.addEventListener('transitionend', onTransitionEnd);
         }
     }
-    this.showArrays();
 },
 
 
@@ -2762,9 +2707,6 @@ notif_recoverTroopFromBoard: function (notif) {
 notif_recoverTroopFromDiscard: function (notif) {
     console.info('notif_recoverTroopFromDiscard');
     console.info(notif);
-
-    this.showArrays();
-
 
     const troop = notif.args.infos_troop;
     
@@ -2958,7 +2900,6 @@ notif_recoverTroopFromDiscard: function (notif) {
             troopElement.addEventListener('transitionend', onTransitionEnd);
         }
     }
-    this.showArrays();
 },
 
 
@@ -2974,8 +2915,6 @@ notif_recoverTroopFromDiscard: function (notif) {
 notif_moveTroopBoardToBoard: function (notif) {
     console.info('notif_moveTroopBoardToBoard');
     console.info(notif);
-
-    this.showArrays();
 
     const troop = notif.args.infos_troop;
     
@@ -3050,8 +2989,6 @@ notif_moveTroopBoardToBoard: function (notif) {
 
         troopElement.addEventListener("transitionend", onTransitionEnd);
     }
-
-    this.showArrays();
 },
 
 
@@ -3066,9 +3003,6 @@ notif_moveTroopBoardToBoard: function (notif) {
 notif_hideTroopOnRackPrivate: function (notif) {
     console.info('notif_hideTroopOnRackPrivate');
     console.info(notif);
-
-//    this.showArrays();
-
 
     const player_color = this.players[notif.args.player_id].color;
     const other_player_color_name = player_color == this.RED_COLOR ? 'blue' : 'red';
@@ -3085,19 +3019,11 @@ notif_hideTroopOnRackPrivate: function (notif) {
 
     troopElement.appendChild(checkElement);  
 
-
-
-//    this.showArrays();
-
 },
 
 notif_hideTroopOnRackPublic: function (notif) {
     console.info('notif_hideTroopOnRackPublic');
     console.info(notif);
-
-    //this.showArrays();
-
-    
 
     if( notif.args.player_id != this.opponent_id || this.isSpectator) {
         const player_color = this.players[notif.args.player_id].color;
@@ -3111,10 +3037,6 @@ notif_hideTroopOnRackPublic: function (notif) {
         checkElement.classList.add('checks', check_name);
         troopElement.appendChild(checkElement);  
     }
-
-            
-
-    //this.showArrays();
 
 },
 
@@ -3137,7 +3059,7 @@ notif_unhideTroopOnRack: function( notif )
 
     if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
         const rackElement = document.getElementById('red_rack');
-        console.info('redrackElement', rackElement);
+
         const children = Array.from(rackElement.children); // Récupérer tous les enfants
         children.forEach((child, index) => {
             child.id = `red_troop_${index + 1}`; // Renommer chaque enfant
@@ -3146,11 +3068,11 @@ notif_unhideTroopOnRack: function( notif )
 
     if( rack_name == 'blue_rack' && this.isCurrentPlayerBlue() == false) {
         const rackElement = document.getElementById('blue_rack');
-        console.info('blurackElement', rackElement);
+
         const children = Array.from(rackElement.children); // Récupérer tous les enfants
         children.forEach((child, index) => {
             child.id = `blue_troop_${index + 1}`; // Renommer chaque enfant
-            console.info('childblu', child);
+
         });
     }
 
@@ -3166,8 +3088,6 @@ notif_unhideTroopOnRack: function( notif )
 notif_gainMedal: function (notif) {
     console.info('notif_gainMedal');
     console.info(notif);
-
-    //this.showArrays();
 
     
     let medals_already_won = parseInt(notif.args.medals_already_won);
@@ -3190,9 +3110,8 @@ notif_gainMedal: function (notif) {
                 
                 if (medalDestination) 
                 {
-                        medalDestination.classList.remove('null_medal');
-                        medalDestination.classList.add('full_medal');
-
+                    medalDestination.classList.remove('null_medal');
+                    medalDestination.classList.add('full_medal');
                 }
            }
         });
@@ -3200,16 +3119,13 @@ notif_gainMedal: function (notif) {
     } else {
 
         const timeoutDelay = 200;
-        let index = 0; // Initialisation de l'index
+
         Object.entries(TB_medals).forEach(([id, medal]) => {
-            console.info('emptied_regions', notif.args.emptied_regions);
-            console.info('medal_region', medal.region);
 
             if (notif.args.emptied_regions.includes(medal.region)) {
                 const medalId = `medal_${id}`;
                 const medalElement = document.getElementById(medalId);
                 const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
-                console.info('medalDest', medalDestination);
 
                 const animationDelay = index * 500; // Décalage par médaille
                 index++; // Incrémentation après utilisation
@@ -3240,10 +3156,7 @@ notif_gainMedal: function (notif) {
         });
 
     }
-
-    //this.showArrays();
 },
-
 
 notif_score: function( notif ){
     console.info('notif_scorel');
@@ -3257,11 +3170,6 @@ notif_message_allplayers_without_player: function( notif )
     
     // juste un message envoyé en php
 },
-
-
-
-
-
 
 
 

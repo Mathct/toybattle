@@ -143,13 +143,21 @@ class Pending extends APP_GameClass
                 $troop_id = 'troop_' . $troop;
                 $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
                 if (count($possible_base) >= 1) {
-                    $ret["selectable"][] = $troop_id;
                     $place_ok = 1;
                 }
             }
 
             if ($place_ok == 1) {
                 $ret['buttons'][] = 'btn_place_troop';
+
+                $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
+                foreach ($list_troop as $troop) {
+                    $troop_id = 'troop_' . $troop;
+                    $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
+                    if (count($possible_base) >= 1) {
+                        $ret["selectable"][] = $troop_id;
+                    }
+                    }
             }
         }
 
@@ -170,7 +178,9 @@ class Pending extends APP_GameClass
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
 
-            if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)))
+            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+
+            if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2)))
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
@@ -228,7 +238,7 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if (($varg1 == 'btn_draw_1') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand == 7)))
+            if (($varg1 == 'btn_draw_1') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1)))
             {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
@@ -604,6 +614,7 @@ class Pending extends APP_GameClass
         $ret['title'] = clienttranslate('${actplayer} draws Troops');
         $ret['titleyou'] = clienttranslate('${you} must confirm');
 
+        $ret["selected"][] = $this->player_deck_id;
 
         $ret['buttons'][] = 'btn_yes';
         $ret['buttons'][] = 'btn_no';
@@ -614,13 +625,15 @@ class Pending extends APP_GameClass
 
     function ConfirmDraw($parg1, $parg2, $varg1, $varg2)
     {
+        
         if ($varg1 == "btn_yes") {
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
+            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
 
-
-            if ($parg1 == 'btn_draw_2') {
+            if (($parg1 == 'btn_draw_2') || (($parg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2)))
+            {
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
@@ -684,7 +697,8 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if ($parg1 == 'btn_draw_1') {
+            if (($parg1 == 'btn_draw_1') || (($parg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($parg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1)))
+            {
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;

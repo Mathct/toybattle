@@ -293,6 +293,7 @@ trait BasesTrait  // ATTENTION
 
         if (($counttroopdeck >= 1) && ($counttroophand <= 7)) {
             $ret['titleyou'] = clienttranslate('#icon# ${you} can draw 1 Troop');
+            $ret["selectable"][] = $this->player_deck_id;
             $ret['buttons'][] = 'btn_draw_1';
             $ret['buttons'][] = 'btn_pass';
         }
@@ -310,7 +311,7 @@ trait BasesTrait  // ATTENTION
     public function Base31_Step1($parg1, $parg2, $varg1, $varg2)
     {
 
-        if ($varg1 == "btn_draw_1") {
+        if (($varg1 == "btn_draw_1") || ($varg1 == $this->player_deck_id)) {
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
@@ -731,7 +732,32 @@ trait BasesTrait  // ATTENTION
 
         if ($counttroophandopponent_noblocked >= 1) {
             $ret['titleyou'] = clienttranslate('#icon# ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
-            $ret['buttons'][] = 'btn_point';
+            if ($this->player_pref_discard_block == 2)
+            {
+                $ret['buttons'][] = 'btn_point';
+            }
+
+            if ($this->player_pref_discard_block == 1)
+            {
+                $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+                $count = count($troop_id_opponent_hand);
+
+                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked != 0", true);
+
+                for ($i = 1; $i <= $count; $i++) {
+                    if (!in_array($i, $troops_blocked)) {
+                        if ($this->player_color_title == 'blue') {
+                            $ret["selectable"][] = 'red_troop_' . $i;
+                        }
+
+                        if ($this->player_color_title == 'red') {
+                            $ret["selectable"][] = 'blue_troop_' . $i;
+                        }
+                    }
+                }
+            }
+
+
             $ret['buttons'][] = 'btn_pass';
         }
 
@@ -752,13 +778,70 @@ trait BasesTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
+        if ((strpos($varg1, 'red_troop') === 0)||(strpos($varg1, 'blue_troop') === 0)) 
+        {
+
+            $explode = explode("_", $varg1);
+
+            $troops_noblocked = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true);
+            $count = count($troops_noblocked);
+            $rand = bga_rand(1, $count);
+
+            $troopid_blocked = $troops_noblocked[$rand - 1];
+
+            $infos_troop_before = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troopid_blocked}'");
+
+            self::DbQuery("UPDATE troop set card_blocked = $explode[2] WHERE card_id = '{$troopid_blocked}'");
+
+            $infos_troop_after = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre, card_blocked blocked FROM troop WHERE card_id = '{$troopid_blocked}'");
+
+            $type1 = $infos_troop_before['type'];
+
+            game::$instance->notifyPlayer(
+                $this->player_id_opponent,
+                'hideTroopOnRackPrivate',
+                clienttranslate('${player_name} blocks ${log1}'),
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id,
+                    'infos_troop_before' => $infos_troop_before,
+                    'infos_troop_after' => $infos_troop_after,
+                    'log1' => game::$instance->getLogsType($type1),
+
+
+                )
+            );
+
+            game::$instance->notifyAllPlayers(
+                'hideTroopOnRackPublic',
+                '',
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id,
+                    'card_blocked' => $explode[2],
+                )
+            );
+
+            $type0 = $this->opponent_color_number . "0";
+
+            game::$instance->notifyAllPlayers(
+                'message_allplayers_without_player',
+                clienttranslate('${player_name} blocks ${log0}'),
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id_opponent,
+                    'log0' => game::$instance->getLogsType($type0),
+
+
+                )
+            );
+
+            game::$instance->addPending($this->player_id, "VerifBase");
+
+        }
+
         if ($varg1 == "btn_point") {
-            if ($this->player_pref_discard_block == 1) {
-                game::$instance->addPending($this->player_id, "Base81_Step2", $parg1);
-            }
-
-            if ($this->player_pref_discard_block == 2) {
-
+           
                 $troops_noblocked = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}' AND card_blocked = 0", true);
                 $count = count($troops_noblocked);
                 $rand = bga_rand(1, $count);
@@ -830,7 +913,7 @@ trait BasesTrait  // ATTENTION
 
 
                 game::$instance->addPending($this->player_id, "VerifBase");
-            }
+            
         }
     }
 
