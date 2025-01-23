@@ -19,10 +19,12 @@ trait BasesTrait  // ATTENTION
 
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
+        
 
         // MODE AVEC BASES SPECIALES ET SANS POOL NI STATION 
         if ((game::$instance->gamestate->table_globals[100] == 1) && ($this->board_name != 'pool') && ($this->board_name != 'station') && ($this->board_name != 'carribean')) {
 
+            
             // On recupere les bases contrôlées dans l'ORDRE à vérifier
             $check = self::getObjectListFromDB("SELECT id id, troop_id troop_id, base base FROM checkbase ORDER BY id ASC LIMIT 1");
 
@@ -70,7 +72,7 @@ trait BasesTrait  // ATTENTION
         }
 
         // MODE SANS BASES SPECIALES OU AVEC POOL OU STATION 
-        if ((game::$instance->gamestate->table_globals[100] == 2) || ($this->board_name == 'pool') || ($this->board_name == 'station')) {
+        if ((game::$instance->gamestate->table_globals[100] == 2) || ($this->board_name == 'pool') || ($this->board_name == 'station') || ($this->board_name == 'carribean')) {
 
             self::DbQuery("DELETE FROM `checkbase`;");
             game::$instance->giveExtraTime($this->player_id);
