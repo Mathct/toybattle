@@ -356,8 +356,12 @@ class Game extends \Table
     public function getGameProgression()
     {
 
+        $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
+        $players_star = self::getObjectListFromDB( "SELECT player_star star FROM player", true );
+        $max_player = max($players_star);
 
-        return 0;
+
+        return floor(($max_player*100)/$max_medals);
     }
 
 
