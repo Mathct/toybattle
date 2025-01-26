@@ -1926,9 +1926,10 @@ notif_drawTroopPrivate: function (notif) {
             const deltaY = rackRect.top - startRect.top;
 
             troopElement.style.zIndex = 1000;
-            troopElement.style.position = 'absolute'; // moves over other elements
+            troopElement.style.position = 'absolute';
             troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-            
+            troopElement.style.zIndex = 100;
+            //troopElement.style.position = 'fixed'; // moves over other elements
 
             const onTransitionEnd = () => {
                 troopElement.style.transform = '';
@@ -2070,9 +2071,10 @@ notif_drawTroopPublic: function (notif) {
                     deltaY = -deltaY;
                 }
 
+                troopElement.style.zIndex = 1000;
+                troopElement.style.position = 'absolute';
                 troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-                troopElement.style.position = 'fixed'; // Pour garantir qu'il se déplace au-dessus de tout
-                troopElement.style.zIndex = 1000; // Assurez-vous que la troupe est au-dessus
+                troopElement.style.zIndex = 100;
 
                 // Gestionnaire de transition
                 const onTransitionEnd = () => {
@@ -2082,8 +2084,6 @@ notif_drawTroopPublic: function (notif) {
                     if (player_color == this.RED_COLOR) {
                         troopElement.classList.add('board-inverted');
                     }
-
-                    troopElement.style.zIndex = 100;
 
                     rackContainer.replaceChild(troopElement, placeholder);
 
@@ -2685,6 +2685,7 @@ notif_recoverTroopFromBoard: function (notif) {
                 deltaY = -deltaY;
             }
 
+            troopElement.style.zIndex = 100;
 
             const existingTransform = window.getComputedStyle(troopElement).transform;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -2693,14 +2694,14 @@ notif_recoverTroopFromBoard: function (notif) {
                 : translateTransform;
             troopElement.style.transform = newTransform;
 
-            troopElement.style.zIndex = 100;
+            troopElement.style.zIndex = 10;
 
             const onTransitionEnd = () => {
                 troopElement.style.transform = '';
                 troopElement.style.top = '';
                 troopElement.style.left = '';
                 troopElement.style.position = '';
-                troopElement.style.zIndex = 10;
+                
                 if (player_color == this.RED_COLOR) {
                     troopElement.classList.add('board-inverted');
                 }
