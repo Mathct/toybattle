@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
- * toybattle implementation : © <Mathieu Chatrain> <mathieu.chatrain@gmail.com> && <Yannick Priol> <camertwo@hotmail.com>
+ * toybattle implementation : © <Mathieu Chatrain> <mathieu.chatrain@gmail.com> && <Yannick Briol> <camertwo@hotmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -39,8 +39,6 @@ body {
     background-image: url('img/TOY_BGA_Background.jpg');
     background-repeat: repeat;
     background-size: 20px 12px;
-/*    background-color: rgba(255, 255, 255, 0.2); /* Couleur de fond semi-transparente */
-/*    background-blend-mode: multiply; /* Fusionne couleur et texture */
   }
 
 

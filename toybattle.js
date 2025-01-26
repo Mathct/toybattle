@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
- * toybattle implementation : © <Mathieu Chatrain> <mathieu.chatrain@gmail.com> && <Yannick Priol> <camertwo@hotmail.com>
+ * toybattle implementation : © <Mathieu Chatrain> <mathieu.chatrain@gmail.com> && <Yannick Briol> <camertwo@hotmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -745,7 +745,7 @@ setupLandscapeMode: function() {
                 const checkElement = document.createElement('div');
                 checkElement.id = `check_${index + 1}`;
                 checkElement.classList.add('checks', 'check_red');
-                troopElement.appendChild(checkElement);                
+                backTroopElement.appendChild(checkElement);                
             }
 
             blueTroopsContainer.appendChild(backTroopElement);
@@ -1246,12 +1246,9 @@ onScreenWidthChange: function() {
         const rackWidth = (this.RACK_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
         const rackHeight = (this.RACK_HEIGHT / this.RACK_WIDTH) * rackWidth; // 88px basé sur la hauteur originale
 
-        console.log('rackWidth', rackWidth);
-        console.log('this.RACK_HEIGHT', this.RACK_HEIGHT);
-        console.log('this.RACK_WIDTH', this.RACK_WIDTH);
-        
-        console.log('rackHeight', rackHeight);
-        console.log('rackHeight', rackHeight);
+       
+        console.log('baseWidth', baseWidth);
+ 
 
         // Mettre à jour les variables CSS
         document.documentElement.style.setProperty('--medal-width', `${medalWidth}px`);
@@ -1916,15 +1913,22 @@ notif_drawTroopPrivate: function (notif) {
             }
         } else {
             // Animation
+            // Calcul des positions
             const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
+            const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
             const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
-            const deltaX = targetRect.left - startRect.left;
-            const deltaY = targetRect.top - startRect.top;
+            console.log('Start position:', startRect.left, startRect.top);
+            console.log('Rack position:', rackRect.left, rackRect.top);
+            console.log('Target position:', targetRect.left, targetRect.top);
 
+            const deltaX = targetRect.left - startRect.left;
+            const deltaY = rackRect.top - startRect.top;
+
+            troopElement.style.zIndex = 1000;
+            troopElement.style.position = 'absolute'; // moves over other elements
             troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-            troopElement.style.zIndex = 100;
-            troopElement.style.position = 'fixed'; // moves over other elements
+            
 
             const onTransitionEnd = () => {
                 troopElement.style.transform = '';
@@ -2051,10 +2055,15 @@ notif_drawTroopPublic: function (notif) {
             } else {
                 // Animation
                 const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
+                const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
                 const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
+                console.log('Start position:', startRect.left, startRect.top);
+                console.log('Rack position:', rackRect.left, rackRect.top);
+                console.log('Target position:', targetRect.left, targetRect.top);
+
                 let deltaX = targetRect.left - startRect.left;
-                let deltaY = targetRect.top - startRect.top;
+                let deltaY = rackRect.top - startRect.top;
 
                 if (this.isSpectator === false || player_color == this.RED_COLOR) {
                     deltaX = -deltaX;
