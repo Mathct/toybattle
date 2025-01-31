@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
- * toybattle implementation : © <Mathieu Chatrain> <mathieu.chatrain@gmail.com> && <Yannick Priol> <camertwo@hotmail.com>
+ * toybattle implementation : © <Mathieu Chatrain> <mathieu.chatrain@gmail.com> && <Yannick Briol> <camertwo@hotmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -23,26 +23,16 @@
 }
 
 :root {
-
-    --line-width: 670px;
-    --line-height: 110px;
-  
-    --goodie-width: 54px;
-    --goodie-height: 652px;
-  
-    --discard-width-portrait: 70px;
-    
-    --board-width: 500px;
-    --board-height: 833.5px;
-      
     --troop-width: 66px;
     --troop-height: 88px;
-  
-    --medal-width: 26px;
-    --deck-counter-size: 16px;
-  
+    --board-width: 500px;
+    --board-height: 833.5px;
     --rack-width: 600px;
     --rack-height: 60px;
+    --goodie-width: 54px;
+    --goodie-height: 652px;
+    --medal-width: 26px;
+    --deck-counter-size: 16px;
 }
 
 body {
@@ -224,8 +214,6 @@ body {
 
 .rack-wrapper {
     position: relative;
-    height: var(--line-height);
-    width: var(--rack-width);
     /*pointer-events: none;*/
     
 }
@@ -242,10 +230,10 @@ body {
     /*pointer-events: none; /* Désactive les interactions si nécessaire */
     z-index:20;
 }
-/*
+
 #red_troops_container {
     top: 18%;
-}*/
+}
 
 
 
@@ -253,12 +241,9 @@ body {
     pointer-events: auto;
 }
 
-.abs {
-    position: absolute;
-}
 
 
-.rack_bottom {
+.rack_blue {
     background-image: url('img/TB_Racks.png');
     background-size: 100% 200%;
     background-position: 0% 0%;
@@ -266,7 +251,7 @@ body {
     width: 100%;
 }
 
-.rack_top {
+.rack_red {
     background-image: url('img/TB_Racks.png');
     background-size: 100% 200%;
     background-position: 0% -100%;
@@ -349,9 +334,23 @@ body {
 
     .line {
         justify-content: space-between;
-        height: var(--line-height);
+        height: 110px;
         gap: 10px;
-        width: var(--line-width);
+        width: 710px;
+    }
+
+    .rack-wrapper {
+        height: 100%; /* Ajustez selon vos besoins */
+        width: var(--rack-width);
+    }
+
+    .rack_blue {
+        position: absolute;
+        bottom: 0;
+    }
+
+    #blue_troops_container {
+        top: 0%;
     }
 
 
@@ -360,7 +359,7 @@ body {
     }
 
     .discard {
-        width: var(--discard-width-portrait);
+        width: 70px;
         align-items: center;
         height: var(--board-height);
     }
@@ -378,20 +377,46 @@ body {
         /*align-items:center;*/
         width: 100%;
         gap: 10px;
-        height: var(--line-height);
+        height: 110px;
     }
+
+    .rack-wrapper {
+        height: 110px;
+        width: var(--rack-width);
+    }
+
+    .rack_blue {
+        position: absolute;
+        bottom: 0;
+    }
+    .rack_red {
+        position: absolute;
+        top: 0;
+    }
+
+    #blue_troops_container {
+        bottom: 18%;
+    }
+
+    
 
     .playmat {
         flex-direction: column;
         height: var(--board-height);
-        width:var(--line-width);
+        width: 670px;
     }
 
     .discard {
         width: 100%;
         height: 25%;
-        
+        flex-wrap: wrap-reverse;
     }
+
+    #red_discard {
+        align-items:flex-end; 
+    }
+
+
 
 }
 

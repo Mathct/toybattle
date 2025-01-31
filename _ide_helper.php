@@ -120,10 +120,8 @@ namespace Bga\GameFramework\Db {
     {
         /**
          * Delete global variables.
-         *
-         * @param string[] ...$names
          */
-        public function delete(...$names): void
+        public function delete(string ...$names): void
         {
             //
         }
@@ -134,6 +132,14 @@ namespace Bga\GameFramework\Db {
         public function get(string $name, mixed $defaultValue = null): mixed
         {
             return null;
+        }
+        
+        /**
+         * Retrieve all variables stored in DB (or a selected subset, if the function is called with parameters).
+         */
+        public function getAll(string ...$names): array
+        {
+            return [];
         }
 
         /**
