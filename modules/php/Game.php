@@ -30,6 +30,7 @@ class Game extends \Table
     public $_bases;
     public $_regions;
     public $_medals;
+    public $_goodies;
     public $_troop_types;
     public $_board_types;
     public $_powers;
@@ -326,6 +327,7 @@ class Game extends \Table
         $result["bases"] = $this->_bases[$board_name];
         $result["regions"] = $this->_regions[$board_name];
         $result["medals"] = $this->_medals[$board_name];
+        $result["goodies"] = $this->_goodies;
         $result["troop_types"] = $this->_troop_types;
         $result["board_type"] = $this->_board_types[$board_id];
 

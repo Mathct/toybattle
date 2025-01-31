@@ -71,6 +71,7 @@ setup: function( gamedatas )
     this.bases = gamedatas.bases;
     this.regions = gamedatas.regions; //USELESS
     this.medals = gamedatas.medals;
+    this.goodies = gamedatas.goodies;
     this.troop_types = gamedatas.troop_types;
     this.board_type = gamedatas.board_type;
     this.board_name = gamedatas.board_name;
@@ -1042,10 +1043,37 @@ createGoodie: function() {
     goodieContainer.classList.add('goodie');
 
     const medals_needed = this.medals_to_win[this.board_id-1];
-    console.log('medals', medals_needed);
+
     const background_x = medals_needed - 5;
-    console.log('background_x',background_x);
+
     goodieContainer.style.backgroundPosition = `-${background_x}00% -00%`;
+
+
+
+    Object.values(this.players).forEach(player => {
+
+        let player_indice = player.color == this.BLUE_COLOR ? 1 : 2;
+
+        const medals_won = player.star;
+        for (let i = 1; i <= medals_won; i++) {
+            if( i == medals_needed) {
+                player_indice = 3;
+            }
+            const goodie_id = `${player_indice}${i}`;
+            
+            const goodieElement = document.createElement('div');
+            goodieElement.id = `goodie_${goodie_id}`;
+            goodieElement.classList.add('medals', 'board_medal');
+            console.log('GOODIES', this.goodies[medals_needed][goodie_id]);
+
+            const goodie = this.goodies[medals_needed][goodie_id];
+            goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
+            goodieContainer.appendChild(goodieElement);
+
+        };
+    
+    });
+
     return goodieContainer;
 },
 
@@ -3138,24 +3166,40 @@ notif_gainMedal: function (notif) {
     let index = 1;
     const TB_medals = this.medals;
 
+    const medals_needed = this.medals_to_win[this.board_id-1];
+
+    const goodieContainer = document.getElementById('goodie_'+this.board_id);
+
+    const player_color = this.players[notif.args.player_id].color;
+
+    let player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
+
+
+
     if (this.instantaneousMode) {
 
         Object.entries(TB_medals).forEach(([id, medal]) => {
-            console.info('emptied_regions', notif.args.emptied_regions);
+            
             if (notif.args.emptied_regions.includes(medal.region)) {    
                 const medalId = `medal_${id}`;
                 const medalElement = document.getElementById(medalId);
-                const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
 
-                if (medalElement) {
-                    medalElement.remove();
+
+                const indice = parseInt(medals_already_won) + index;
+                if( indice == medals_needed ) {
+                    player_indice = 3;
                 }
-                
-                if (medalDestination) 
-                {
-                    medalDestination.classList.remove('null_medal');
-                    medalDestination.classList.add('full_medal');
-                }
+
+                const goodie_id = `${player_indice}${indice}`;
+                const goodieElement = document.createElement('div');
+                goodieElement.id = `goodie_${goodie_id}`;
+                goodieElement.classList.add('medals', 'board_medal');
+                const goodie = this.goodies[medals_needed][goodie_id];
+                goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
+                goodieContainer.appendChild(goodieElement);
+
+                medalElement.remove();
+
            }
         });
         
@@ -3168,28 +3212,39 @@ notif_gainMedal: function (notif) {
             if (notif.args.emptied_regions.includes(medal.region)) {
                 const medalId = `medal_${id}`;
                 const medalElement = document.getElementById(medalId);
-                const medalDestination = document.getElementById(`medal_${notif.args.player_id}_${parseInt(medals_already_won) + index}`);
+
+                const indice = parseInt(medals_already_won) + index;
+                if( indice == medals_needed ) {
+                    player_indice = 3;
+                }
+
+                const goodie_id = `${player_indice}${indice}`;
+                const goodieElement = document.createElement('div');
+                goodieElement.id = `goodie_${goodie_id}`;
+                goodieElement.classList.add('medals', 'board_medal');
+                const goodie = this.goodies[medals_needed][goodie_id];
+                goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
+                
 
                 const animationDelay = index * 500; // Décalage par médaille
                 index++; // Incrémentation après utilisation
 
                 setTimeout(() => {
                     // Étape 1 : Agrandir la médaille source
-                    medalElement.style.transform = 'scale(2)'; // Échelle fixe pour toutes les médailles
+                    medalElement.style.transform = 'scale(4)'; // Échelle fixe pour toutes les médailles
                     setTimeout(() => {
                         // Étape 2 : Réduire pour faire disparaître
                         medalElement.style.transform = 'scale(0)';
 
-                        if (medalDestination) {
+                        if (goodieElement) {
                             // Étape 3 : Traiter la médaille destination
                             setTimeout(() => {
-                                medalDestination.classList.remove('null_medal');
-                                medalDestination.classList.add('full_medal');
+                                goodieContainer.appendChild(goodieElement);
 
                                 // Étape 4 : Agrandir et réduire la médaille destination
-                                medalDestination.style.transform = 'scale(1.5)'; // Taille fixe
+                                goodieElement.style.transform = 'scale(3)'; // Taille fixe
                                 setTimeout(() => {
-                                    medalDestination.style.transform = 'scale(1)'; // Retour à la taille normale
+                                    goodieElement.style.transform = 'scale(1)'; // Retour à la taille normale
                                 }, timeoutDelay);
                             }, timeoutDelay);
                         }
