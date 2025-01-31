@@ -679,6 +679,20 @@ body {
 }
 
 
+.icon_triangle {
+    width: 56px;
+    height: 50px;
+    background-image: url('img/TB_Triangles.png');
+    background-size: 400% 100%;
+    display: inline-block;
+    vertical-align: middle; 
+
+}
+
+.icon_powerbase_212 {background-position-x: 0%;}
+.icon_powerbase_235 {background-position-x: -100%;}
+.icon_powerbase_267 {background-position-x: -200%;}
+.icon_powerbase_7   {background-position-x: -300%;}
 
 .checks {
     

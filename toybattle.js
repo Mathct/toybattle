@@ -461,27 +461,8 @@ setupPlayersBoard: function() {
     Object.values(this.players).forEach(player => {
         const playerBoardElement = document.getElementById('player_board_' + player.id);
         playerBoardElement.insertAdjacentHTML('beforeend', `
-            <div class="a_board" id="a1_board_${player.id}"></div>
             <div class="a_board" id="a2_board_${player.id}"></div>
         `);
-
-/*        const a1BoardElement = document.getElementById('a1_board_' + player.id);
-
-        const medals_needed = this.medals_to_win[this.board_id-1];
-        const medals_won = player.star;
-        for (let i = 1; i <= medals_needed; i++) {
-            const medalContainer = document.createElement('div');
-            medalContainer.id = `medal_${player.id}_${i}`;
-            
-            if (i <= medals_won) {
-                medalContainer.classList.add('medals', 'full_medal'); // Médailles gagnées
-            } else {
-                medalContainer.classList.add('medals', 'null_medal'); // Médailles manquantes
-            }
-            a1BoardElement.appendChild(medalContainer);
-        }*/
-
-
 
         if( player.id == this.player_id || (this.isSpectator && player.id == this.spectator_id) )
         {
@@ -1176,7 +1157,7 @@ createBaseTooltip: function(base_id) {
     
     if (troops.length > 0 || base_power > 0) {
         const base_css_id = `base_${this.board_name}_${base_id}`;
-        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops), 0);
+        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops, base_id), 0);
     }
 },
 
@@ -1492,7 +1473,7 @@ getTooltipTroopContent : function(type, id) {
     return html;          
 },
 
-getTooltipBaseContent: function(board_id, base_power, troops) {
+getTooltipBaseContent: function(board_id, base_power, troops, base_id) {
 
     // troops est trié selon l'ordre décroissant
     troops.sort((a, b) => b.ordre - a.ordre);
@@ -1512,9 +1493,28 @@ getTooltipBaseContent: function(board_id, base_power, troops) {
         // Ajout du titre avec ou sans l'icône
         html += `<span class='tooltip_title'>${board_infos.name}`;
         if ([1, 3, 4, 5, 8].includes(parseInt(board_id))) {
-            console.log('ICON OK');
             const iconClass = `icon_power_bandeau icon_powerbase_${board_id}`;
             html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+        }
+        else if( parseInt(board_id) == 7) {
+            const iconClass = `icon_triangle icon_powerbase_${board_id}`;
+            html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+        }
+        else {
+            // board 2
+            if( ([12, 22].includes(parseInt(base_id)))) {
+                const iconClass = `icon_triangle icon_powerbase_212`;
+                html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;  
+            }
+            else if( ([16, 18].includes(parseInt(base_id)))) {
+                const iconClass = `icon_triangle icon_powerbase_235`;
+                html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;   
+            }
+            else if( ([2, 17, 41].includes(parseInt(base_id)))) {
+                const iconClass = `icon_triangle icon_powerbase_267`;
+                html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`; 
+            }
+            
         }
         html += `</span>`;
         
