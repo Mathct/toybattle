@@ -465,7 +465,7 @@ setupPlayersBoard: function() {
             <div class="a_board" id="a2_board_${player.id}"></div>
         `);
 
-        const a1BoardElement = document.getElementById('a1_board_' + player.id);
+/*        const a1BoardElement = document.getElementById('a1_board_' + player.id);
 
         const medals_needed = this.medals_to_win[this.board_id-1];
         const medals_won = player.star;
@@ -479,7 +479,7 @@ setupPlayersBoard: function() {
                 medalContainer.classList.add('medals', 'null_medal'); // Médailles manquantes
             }
             a1BoardElement.appendChild(medalContainer);
-        }
+        }*/
 
 
 
