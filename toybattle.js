@@ -62,6 +62,8 @@ setup: function( gamedatas )
     this.MEDAL_WIDTH = 26;
     this.RACK_WIDTH = 600;  
     this.RACK_HEIGHT = 60;
+    this.LINE_WIDTH = 670;  
+    this.LINE_HEIGHT = 110;
     this.DECK_COUNTER_SIZE = 16;
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
@@ -77,7 +79,9 @@ setup: function( gamedatas )
     this.board_name = gamedatas.board_name;
     this.board_id = gamedatas.board_id;
 
-
+    // delays notification to let animations finish.
+    this.DELAY_JUNGLE = this.board_id == 4 ? 1000 : 1;
+    this.DELAY_BATTLEFIELD = this.board_id == 8 ? 1000 : 1;
 
     //TODO check if spectator is always BLUE
     this.opponent_id = gamedatas.opponent_id;
@@ -1045,7 +1049,6 @@ createGoodie: function() {
             const goodieElement = document.createElement('div');
             goodieElement.id = `goodie_${goodie_id}`;
             goodieElement.classList.add('medals', 'board_medal');
-            console.log('GOODIES', this.goodies[medals_needed][goodie_id]);
 
             const goodie = this.goodies[medals_needed][goodie_id];
             goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
@@ -1255,6 +1258,9 @@ onScreenWidthChange: function() {
         const rackWidth = (this.RACK_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
         const rackHeight = (this.RACK_HEIGHT / this.RACK_WIDTH) * rackWidth; // 88px basé sur la hauteur originale
 
+        const lineWidth = (this.LINE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+        const lineHeight = (this.LINE_HEIGHT / this.LINE_WIDTH) * lineWidth; // 88px basé sur la hauteur originale
+
        
         console.log('baseWidth', baseWidth);
  
@@ -1267,6 +1273,8 @@ onScreenWidthChange: function() {
         document.documentElement.style.setProperty('--goodie-height', `${goodieHeight}px`);
         document.documentElement.style.setProperty('--rack-width', `${rackWidth}px`);
         document.documentElement.style.setProperty('--rack-height', `${rackHeight}px`);
+        document.documentElement.style.setProperty('--line-width', `${lineWidth}px`);
+        document.documentElement.style.setProperty('--line-height', `${lineHeight}px`);
         document.documentElement.style.setProperty('--deck-counter-size', `${deckCounterSize}px`);
     }
 
@@ -1493,6 +1501,7 @@ getTooltipBaseContent: function(board_id, base_power, troops, base_id) {
         // Ajout du titre avec ou sans l'icône
         html += `<span class='tooltip_title'>${board_infos.name}`;
         if ([1, 3, 4, 5, 8].includes(parseInt(board_id))) {
+            console.log('ICON OK');
             const iconClass = `icon_power_bandeau icon_powerbase_${board_id}`;
             html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
         }
@@ -1623,8 +1632,8 @@ setupNotifications: function()
         ['moveTroop', 1],
         ['drawTroopPrivate', 1],
         ['drawTroopPublic', 1],
-        ['discardTroopFromBoard', 1],
-        ['discardTroopFromHand', 1],
+        ['discardTroopFromBoard', this.DELAY_JUNGLE],
+        ['discardTroopFromHand', this.DELAY_BATTLEFIELD],
         ['recoverTroopFromBoard', 1],
         ['recoverTroopFromDiscard', 1],
         ['moveTroopBoardToBoard', 1],
@@ -1801,7 +1810,7 @@ notif_moveTroop: function(notif)
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;
 
-        troopElement.style.zIndex = troop.ordre * 10;
+        
 
         if (this.instantaneousMode) {
             // Déplacement immédiat pour le mode instantané
@@ -1828,7 +1837,7 @@ notif_moveTroop: function(notif)
                 deltaX = -deltaX;
                 deltaY = -deltaY;
             }
-
+            troopElement.style.zIndex = 1000;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
 
             const existingTransform = window.getComputedStyle(troopElement).transform;
@@ -1839,6 +1848,7 @@ notif_moveTroop: function(notif)
 
             const onTransitionEnd = () => {
                 troopElement.style.transform = existingTransform;
+                troopElement.style.zIndex = troop.ordre * 10;
                 troopElement.style.position = 'absolute';
 
                 const baseData = TB_bases[troop.location_arg];
@@ -1896,6 +1906,8 @@ notif_drawTroopPrivate: function (notif) {
         const troop_type = troop.type % 10;
         const troop_color = Math.floor(troop.type / 10) - 1;
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
+        troopElement.style.top = '0px';
+        troopElement.style.left = '0px';
         deckContainer.appendChild(troopElement);
 
         this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);
@@ -2063,6 +2075,8 @@ notif_drawTroopPublic: function (notif) {
                     troopElement.style.backgroundPosition = `-0% -0%`;
                 }
             }
+            troopElement.style.top = '0px';
+            troopElement.style.left = '0px';
             deckContainer.appendChild(troopElement);
 
             /* Réserver une place dans le rack */
@@ -2189,25 +2203,36 @@ notif_discardTroopFromBoard: function (notif) {
 
  
     /* room is reserved in the flex */
+
     let placeholder = document.createElement('div');
     placeholder.classList.add('troop-placeholder');
-    if (player_color == this.RED_COLOR) {
-        if (insertIndex === -1) {
-            insertIndex = 0; // TODO vérifier
-        } else {
-            insertIndex = this.your_discard.length - insertIndex - 1; //TODO vérifier le bon index
-        }
-    }
 
     const troopElement = document.getElementById(`troop_${troop.id}`);
 
     const discardId = `${player_color_name}_discard`;
     const discardContainer = document.getElementById(discardId);
 
-    if (insertIndex === discardContainer.children.length) {
-        discardContainer.appendChild(placeholder);
-    } else {
-        discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+
+
+    if (player_color == this.RED_COLOR ){
+        if (insertIndex === 0) {
+            discardContainer.appendChild(placeholder);
+        }
+        else if (insertIndex === -1) {
+            insertIndex = 0;
+            discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+        } 
+        else {
+            discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+        }
+    }
+    else {
+        if (insertIndex === discardContainer.children.length) {
+            discardContainer.appendChild(placeholder);
+        }
+        else {
+            discardContainer.insertBefore(placeholder, discardContainer.children[insertIndex]);
+        }        
     }
 
     if (this.instantaneousMode) {
