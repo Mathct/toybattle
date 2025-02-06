@@ -640,6 +640,8 @@ trait BasesTrait  // ATTENTION
 
                 $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
 
+                $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+
                 game::$instance->troop->moveCard($explode_troop[1], 'hand');
                 self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$explode_troop[1]}'");
 
@@ -651,6 +653,7 @@ trait BasesTrait  // ATTENTION
                     array(
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troop,
+                        'nb_troops_hand' => $nb_troops_hand,
                         'log1' => game::$instance->getLogsType($type1),
                     )
                 );
@@ -697,6 +700,8 @@ trait BasesTrait  // ATTENTION
 
             $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
 
+            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+
             game::$instance->troop->moveCard($explode_troop[1], 'hand');
             self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$explode_troop[1]}'");
 
@@ -708,6 +713,7 @@ trait BasesTrait  // ATTENTION
                 array(
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troop,
+                    'nb_troops_hand' => $nb_troops_hand,
                     'log1' => game::$instance->getLogsType($type1),
                 )
             );
