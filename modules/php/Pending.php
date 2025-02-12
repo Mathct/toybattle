@@ -121,7 +121,6 @@ class Pending extends APP_GameClass
         $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
 
 
-
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
         {
             $ret["selectable"][] = $this->player_deck_id;
@@ -306,6 +305,7 @@ class Pending extends APP_GameClass
         }
 
         if ($varg1 == null) {
+            game::$instance->setGameStateValue("endgame", 1); // pour progression
             game::$instance->addPending($this->player_id, "FinGame1", 1);
         }
     }
@@ -475,6 +475,7 @@ class Pending extends APP_GameClass
                 {
                     if(in_array($numero_base, $this->opponent_start_base))
                     {
+                        game::$instance->setGameStateValue("endgame", 1); // pour progression
                         game::$instance->addPending($this->player_id, "FinGame1", 3);
                     }
                     else
@@ -486,6 +487,7 @@ class Pending extends APP_GameClass
 
                 if($win == 1)
                 {
+                    game::$instance->setGameStateValue("endgame", 1); // pour progression
                     game::$instance->addPending($this->player_id, "FinGame1", 2);
                 }
 
@@ -581,6 +583,7 @@ class Pending extends APP_GameClass
            {
             if(in_array($numero_base, $this->opponent_start_base))
             {
+                game::$instance->setGameStateValue("endgame", 1); // pour progression
                 game::$instance->addPending($this->player_id, "FinGame1", 3);
             }
             else
@@ -592,6 +595,7 @@ class Pending extends APP_GameClass
 
            if($win == 1)
            {
+            game::$instance->setGameStateValue("endgame", 1); // pour progression
             game::$instance->addPending($this->player_id, "FinGame1", 2);
            }
 

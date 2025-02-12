@@ -63,6 +63,7 @@ class Game extends \Table
             "game_mode" => 100,
             "game_board" => 101,
             "board" => 10,
+            "endgame" => 11,
 
 
 
@@ -130,6 +131,8 @@ class Game extends \Table
         // $this->setGameStateInitialValue("my_first_global_variable", 0);
         // $this->initStat("table", "table_teststat1", 0);
         // $this->initStat("player", "player_teststat1", 0);
+
+        $this->setGameStateInitialValue("endgame", 0);
 
         foreach ($players as $player_id => $player) {
 
@@ -357,13 +360,24 @@ class Game extends \Table
 
     public function getGameProgression()
     {
+        if (game::$instance->getGameStateValue('endgame') == 1)
+        {
+            return 100;
+        }
 
-        $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
-        $players_star = self::getObjectListFromDB( "SELECT player_star star FROM player", true );
-        $max_player = max($players_star);
+        else
+        {
+
+            $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
+            $players_star = self::getObjectListFromDB( "SELECT player_star star FROM player", true );
+            $max_player = max($players_star);
+
+            return floor(($max_player*100)/$max_medals);
 
 
-        return floor(($max_player*100)/$max_medals);
+        }
+
+        
     }
 
 

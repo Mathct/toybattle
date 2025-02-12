@@ -198,6 +198,7 @@ trait BasesTrait  // ATTENTION
                 }
 
                 if ($win == 1) {
+                    game::$instance->setGameStateValue("endgame", 1); // pour progression
                     game::$instance->addPending($this->player_id, "FinGame1", 2);
                 }
             }
@@ -263,6 +264,7 @@ trait BasesTrait  // ATTENTION
             }
 
             if ($win == 1) {
+                game::$instance->setGameStateValue("endgame", 1); // pour progression
                 game::$instance->addPending($this->player_id, "FinGame1", 2);
             }
         }
@@ -509,6 +511,7 @@ trait BasesTrait  // ATTENTION
                 }
 
                 if (($win == 1)||($win2 == 1)) {
+                    game::$instance->setGameStateValue("endgame", 1); // pour progression
                     game::$instance->addPending($this->player_id, "FinGame1", 2);
                 }
             }
@@ -580,6 +583,7 @@ trait BasesTrait  // ATTENTION
             }
 
             if (($win == 1)||($win2 == 1)) {
+                game::$instance->setGameStateValue("endgame", 1); // pour progression
                 game::$instance->addPending($this->player_id, "FinGame1", 2);
             }
         }
