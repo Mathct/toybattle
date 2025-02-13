@@ -106,6 +106,7 @@ setup: function( gamedatas )
     this.setupPlayersBoard();
     this.setupBoard();
     this.setupCounters();
+    this.setupTooltips();
 
 
 
@@ -227,18 +228,18 @@ onUpdateActionButtons: function( stateName, args )
                             break;
                         case "btn_draw_2":
                             this.addActionButton('btn_draw_2', _("Draw 2 Troops"), 'onOpButton', null, null, 'blue');
-                            dojo.removeClass('btn_draw_2', 'bgabutton_blue');
-                            dojo.addClass('btn_draw_2', 'bgabutton_orange');
+                            //dojo.removeClass('btn_draw_2', 'bgabutton_blue');
+                            //dojo.addClass('btn_draw_2', 'bgabutton_orange');
                             break;
                         case "btn_draw_1":
                             this.addActionButton('btn_draw_1', _("Draw 1 Troop"), 'onOpButton', null, null, 'blue');
-                            dojo.removeClass('btn_draw_1', 'bgabutton_blue');
-                            dojo.addClass('btn_draw_1', 'bgabutton_orange');
+                            //dojo.removeClass('btn_draw_1', 'bgabutton_blue');
+                            //dojo.addClass('btn_draw_1', 'bgabutton_orange');
                             break;
                         case "btn_place_troop":
                             this.addActionButton('btn_place_troop', _("Place 1 Troop"), 'onOpButton', null, null, 'blue');
-                            dojo.removeClass('btn_place_troop', 'bgabutton_blue');
-                            dojo.addClass('btn_place_troop', 'bgabutton_khakhi');
+                            //dojo.removeClass('btn_place_troop', 'bgabutton_blue');
+                            //dojo.addClass('btn_place_troop', 'bgabutton_khakhi');
                             break;
                         case "btn_yes":
                             this.addActionButton('btn_yes', _("Yes"), 'onOpButton', null, null, 'blue');
@@ -554,6 +555,8 @@ setupBoard: function() {
             location.reload(); // Recharge la page
         }
     });
+
+
 },
 
 
@@ -599,6 +602,14 @@ setupLandscapeMode: function() {
     const redLineContainer = this.createLine('red');
     playmatContainer.appendChild(redLineContainer);
 
+    if( this.isCurrentPlayerRed() ) {
+    /*  yourDeckContainer definition 
+        contains Deck and number of Troops TODO
+    */
+        const redDeckElement = this.createDeck( 'red' );
+        redDeckElement.classList.add('board-inverted');
+        redLineContainer.appendChild(redDeckElement);
+    }
 
     /*  redRackContainer definition 
         contains Rack and all Troops in Hand
@@ -639,13 +650,15 @@ setupLandscapeMode: function() {
         });
     }
     
-    
+    if( this.isSpectator || this.isCurrentPlayerBlue() ) {
     /*  yourDeckContainer definition 
         contains Deck and number of Troops TODO
     */
         const redDeckElement = this.createDeck( 'red' );
         redDeckElement.classList.add('board-inverted');
         redLineContainer.appendChild(redDeckElement);
+    }
+
 
 
     /* redDiscard */
@@ -703,9 +716,13 @@ setupLandscapeMode: function() {
     const blueLineContainer = this.createLine( 'blue');
     playmatContainer.appendChild(blueLineContainer);
 
-    /* blueDeckElement */
+    if( this.isCurrentPlayerRed() ) {
+
+        /* blueDeckElement */
     const blueDeckElement = this.createDeck( 'blue' );
     blueLineContainer.appendChild(blueDeckElement);
+
+    }
 
 
     /* blueRackContainer */
@@ -754,6 +771,14 @@ setupLandscapeMode: function() {
         });
     }
 
+    if( this.isSpectator || this.isCurrentPlayerBlue() ) {
+
+        /* blueDeckElement */
+    const blueDeckElement = this.createDeck( 'blue' );
+    blueLineContainer.appendChild(blueDeckElement);
+
+    }
+
 },
 
 setupPortraitMode: function() {
@@ -773,6 +798,17 @@ setupPortraitMode: function() {
     */
     const redLineContainer = this.createLine('red');
     globalContainer.appendChild(redLineContainer);
+
+
+    if( this.isCurrentPlayerRed() ) {
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+            const redDeckElement = this.createDeck( 'red' );
+            redDeckElement.classList.add('board-inverted');
+            redLineContainer.appendChild(redDeckElement);
+    }
+
 
 
     /*  redRackContainer definition 
@@ -801,13 +837,14 @@ setupPortraitMode: function() {
         });
     }
     
-    
-    /*  yourDeckContainer definition 
-        contains Deck and number of Troops TODO
-    */
-        const redDeckElement = this.createDeck( 'red' );
-        redDeckElement.classList.add('board-inverted');
-        redLineContainer.appendChild(redDeckElement);
+    if( this.isSpectator || this.isCurrentPlayerBlue() ) {
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+            const redDeckElement = this.createDeck( 'red' );
+            redDeckElement.classList.add('board-inverted');
+            redLineContainer.appendChild(redDeckElement);
+    }
 
     /*  PlaymatContainer definition 
         contains blueDiscard, Board and redDiscard
@@ -887,9 +924,14 @@ setupPortraitMode: function() {
     const blueLineContainer = this.createLine( 'blue');
     globalContainer.appendChild(blueLineContainer);
 
-    /* blueDeckElement */
-    const blueDeckElement = this.createDeck( 'blue' );
-    blueLineContainer.appendChild(blueDeckElement);
+    if( this.isCurrentPlayerRed() ) {
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+        const blueDeckElement = this.createDeck( 'blue' );
+        //blueDeckElement.classList.add('board-inverted');
+        blueLineContainer.appendChild(blueDeckElement);
+    }
 
 
     /* blueRackContainer */
@@ -916,6 +958,12 @@ setupPortraitMode: function() {
             blueTroopsContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
         });
+    }
+
+    if( this.isSpectator || this.isCurrentPlayerBlue() ) {
+        /* blueDeckElement */
+        const blueDeckElement = this.createDeck( 'blue' );
+        blueLineContainer.appendChild(blueDeckElement);
     }
 },
 
@@ -1203,7 +1251,21 @@ setupCounters: function() {
     this.red_deck_counter.toValue(this.nb_decks[1]);
 },
 
+setupTooltips:function () {
 
+
+    // Goodie
+    html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Medals won')+"</span></div>";
+    this.addCustomTooltip( `goodie_${this.board_id}`, html);
+
+    // Red Deck
+    html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Red deck')+"</span></div>";
+    this.addCustomTooltip( `red_deck_counter_id`, html);
+
+    // Blue Deck
+        html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Blue deck')+"</span></div>";
+    this.addCustomTooltip( `blue_deck_counter_id`, html);
+},
 
 
 showArrays: function() {

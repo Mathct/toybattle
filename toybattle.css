@@ -36,9 +36,9 @@
 }
 
 body {
-    background-image: url('img/TOY_BGA_Background.jpg') !important;
-    background-repeat: repeat !important;
-    background-size: 20px 12px !important;
+    background-image: url('img/TOY_BGA_Background.jpg');
+    background-repeat: repeat;
+    background-size: 20px 12px;
 }
 
 
