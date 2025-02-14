@@ -1320,6 +1320,16 @@ getBoundingClientRectIgnoreZoom: function (element) {
 },
 
 onScreenWidthChange: function() {
+
+// Obtenir la taille disponible dans la fenêtre du jeu
+    const gamePlayArea = document.getElementById("game_play_area");
+    const gamePlayAreaWidth = gamePlayArea.clientWidth;
+    const gamePlayAreaHeight = window.innerHeight;
+
+    console.log('gamePlayArea', gamePlayArea);
+    console.log('gamePlayAreaHeight', gamePlayAreaHeight);
+
+
     const board = document.getElementById(`board_${this.board_id}`);       // Élément board
     const playmat = document.getElementById('playmat_id');   // Élément playmat
 
@@ -1330,6 +1340,14 @@ onScreenWidthChange: function() {
         // Récupérer les dimensions recalculées
         const boardRect = this.getBoundingClientRectIgnoreZoom(board);
         const playmatRect = this.getBoundingClientRectIgnoreZoom(playmat);
+
+        console.log( 'boardRect', boardRect);
+
+        const horizontalScale =
+        Math.min(1750, gamePlayAreaWidth) / this.BOARD_WIDTH;
+        const verticalScale = gamePlayAreaHeight / this.BOARD_HEIGHT;
+        console.log('horizontalScale', horizontalScale);
+        console.log('verticalScale', verticalScale);
 
         // Choisir la base de référence (largeur ou hauteur)
         const baseWidth = boardRect.width;
