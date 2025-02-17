@@ -496,7 +496,8 @@ trait TroopsTrait  // ATTENTION
                     if(in_array($numero_base, $this->opponent_start_base))
                     {
                         game::$instance->setGameStateValue("endgame", 1); // pour progression
-                        game::$instance->addPending($this->player_id, "FinGame1", 3);
+                        $numtroop = intval($type1) % 10;
+                        game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
                     }
                     else
                     {
@@ -612,7 +613,8 @@ trait TroopsTrait  // ATTENTION
                 if(in_array($numero_base, $this->opponent_start_base))
                     {
                         game::$instance->setGameStateValue("endgame", 1); // pour progression
-                        game::$instance->addPending($this->player_id, "FinGame1", 3);
+                        $numtroop = intval($type1) % 10;
+                        game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
                     }
                     else
                     {

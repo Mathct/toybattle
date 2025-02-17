@@ -29,19 +29,22 @@
     --board-height: 833.5px;
     --rack-width: 600px;
     --rack-height: 60px;
-    --line-width: 670px;
-    --line-height: 110px;
     --goodie-width: 54px;
     --goodie-height: 652px;
     --medal-width: 26px;
     --deck-counter-size: 16px;
+    --victory-width: 953px;
+    --victory-height: 400px;
+    --sideleft-width: 47px;
+    --sideright-width: 235px;
+    --global-width: 1250px;
 }
 
 body {
     background-image: url('img/TOY_BGA_Background.jpg');
     background-repeat: repeat;
     background-size: 20px 12px;
-  }
+}
 
 
   .bgabutton_khakhi {
@@ -120,6 +123,10 @@ body {
   }
   
 
+.hidden {
+    display: none;
+}
+
 
 
 /* Players Panel */
@@ -134,9 +141,21 @@ body {
     height: 32px;
 }
 
-/* Play Area */   
-#global_id {
+/* Play Area */  
+
+#global_big_id {
     width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    position: relative;
+}
+
+
+#global_id {
+    width: var(--global-width);
     height: 100%;
     display: flex;
     justify-content: center;
@@ -145,6 +164,25 @@ body {
     position: relative;
 }
 
+.sideleft {
+    width: var(--sideleft-width);
+    height: var(--board-height);
+    position: relative;
+    margin: 0;
+    border-radius: 5px;
+    background-image: url('img/TB_Sideleft.png');
+    background-size: cover;
+ }
+
+.sideright {
+    width: var(--sideright-width);
+    height: var(--board-height);
+    position: relative;
+    margin: 0;
+    border-radius: 5px;
+    background-image: url('img/TB_Sideright.png');
+    background-size: cover;
+ }
 
 .goodie {
     width: var(--goodie-width);
@@ -154,6 +192,16 @@ body {
     border-radius: 5px;
     background-image: url('img/TB_Goodies.png');
     background-size: 400% 100%;    
+}
+
+.victory {
+    width: var(--victory-width);
+    height: var(--victory-height);
+    position: relative;
+    margin: 0;
+    border-radius: 5px;
+    background-image: url('img/TB_Victories.jpg');
+    background-size: 400% 500%;    
 }
 
 
@@ -180,9 +228,6 @@ body {
 .line {
     display: flex;
     flex-direction: row;
-    height: var(--line-height);
-    gap: 10px;
-    width: var(--line-width);
 }
 
 .deck-wrapper {
@@ -220,8 +265,6 @@ body {
 .rack-wrapper {
     position: relative;
     /*pointer-events: none;*/
-    height: var(--line-height);
-    width: var(--rack-width);
     
 }
 
@@ -239,11 +282,9 @@ body {
 }
 
 #red_troops_container {
-    bottom: 0%;
+    top: 18%;
 }
-#blue_troops_container {
-    top: 0%;
-}
+
 
 
 .pointeur-auto {
@@ -266,16 +307,6 @@ body {
     background-position: 0% -100%;
     height: var(--rack-height);
     width: 100%;
-}
-
-.rack_blue {
-    position: absolute;
-    bottom: 0;
-}
-
-.rack_red {
-    position: absolute;
-    top: 0;
 }
 
 
@@ -353,7 +384,23 @@ body {
 
     .line {
         justify-content: space-between;
+        height: 110px;
+        gap: 10px;
+        width: 710px;
+    }
 
+    .rack-wrapper {
+        height: 100%; /* Ajustez selon vos besoins */
+        width: var(--rack-width);
+    }
+
+    .rack_blue {
+        position: absolute;
+        bottom: 0;
+    }
+
+    #blue_troops_container {
+        top: 0%;
     }
 
 
@@ -377,10 +424,31 @@ body {
 
     .line {
         justify-content: center;
-
+        /*align-items:center;*/
+        width: 100%;
+        gap: 10px;
+        height: 110px;
     }
 
-  
+    .rack-wrapper {
+        height: 110px;
+        width: var(--rack-width);
+    }
+
+    .rack_blue {
+        position: absolute;
+        bottom: 0;
+    }
+    .rack_red {
+        position: absolute;
+        top: 0;
+    }
+
+    #blue_troops_container {
+        bottom: 18%;
+    }
+
+    
 
     .playmat {
         flex-direction: column;

@@ -471,9 +471,12 @@ setupPlayersBoard: function() {
             <div class="a_board" id="a2_board_${player.id}"></div>
         `);
 
-        if( player.id == this.player_id || (this.isSpectator && player.id == this.spectator_id) )
+        if( player.id == this.player_id 
+        || (this.isSpectator && player.id == this.spectator_id) )
         {
             const a2BoardElement = document.getElementById('a2_board_' + player.id);
+
+                /* help mode Tisaac */
                     a2BoardElement.insertAdjacentHTML('beforeend', `
                         <div id="help-mode-switch">
                             <input type="checkbox" class="checkbox" id="help-mode-chk" />
@@ -539,7 +542,7 @@ setupBoard: function() {
     // Détecter l'orientation initiale
     this.orientation = (window.innerWidth > window.innerHeight) ? "landscape" : "portrait";
 
-    console.info(`Detected ${this.orientation} mode`);
+    console.log(`Detected ${this.orientation} mode`);
 
     if (this.orientation === "landscape") {
         this.setupLandscapeMode();
@@ -551,7 +554,7 @@ setupBoard: function() {
     window.addEventListener('resize', () => {
         const newOrientation = (window.innerWidth > window.innerHeight) ? "landscape" : "portrait";
         if (this.orientation !== newOrientation) {
-            console.info(`Orientation changed to ${newOrientation}. Reloading page...`);
+            console.log(`Orientation changed to ${newOrientation}. Reloading page...`);
             location.reload(); // Recharge la page
         }
     });
@@ -562,6 +565,8 @@ setupBoard: function() {
 
 
 setupLandscapeMode: function() {
+
+    const globalBigContainer = document.getElementById('global_big_id');
     const globalContainer = document.getElementById('global_id');
 
     // Reinitialization
@@ -571,6 +576,9 @@ setupLandscapeMode: function() {
     /*  boardContainer definition 
         contains board and all troops
     */
+
+   const sideleftContainer = this.createSideLeft(); 
+   globalBigContainer.insertBefore(sideleftContainer, globalContainer);    
 
     const goodieContainer = this.createGoodie(); 
     if( this.isCurrentPlayerRed() ) {
@@ -778,6 +786,9 @@ setupLandscapeMode: function() {
     blueLineContainer.appendChild(blueDeckElement);
 
     }
+
+    const siderightContainer = this.createSideRight(); 
+    globalBigContainer.appendChild(siderightContainer);
 
 },
 
@@ -994,6 +1005,7 @@ createBackTroopElement: function( troop, index ) {
     backTroopElement.id = `${back_color}_troop_${index + 1}`;
     backTroopElement.classList.add('troop');
     backTroopElement.style.backgroundPosition = `-0% -${sprite_line}00%`;
+
     return backTroopElement;
 },
 
@@ -1036,8 +1048,8 @@ createDeck: function( color ) {
 
     const deckCounterElement = this.createDeckCounter( color);
     deckElement.appendChild(deckCounterElement);
-
     deckWrapper.appendChild(deckElement);
+
     return deckWrapper;
 },
 
@@ -1052,7 +1064,6 @@ createDeckCounter : function( color) {
 },
 
 createPlaymat: function() {
-
     const playmatContainer = document.createElement('div');
     playmatContainer.id = `playmat_id`;
     playmatContainer.classList.add('playmat');
@@ -1066,8 +1077,6 @@ createDiscard: function( color ) {
     discardContainer.id = `${color}_discard`;
     discardContainer.classList.add('discard');
 
-    //discardContainer.style.justifyContent = color === 'blue' ? 'flex-end' : 'flex-start';
-
     return discardContainer;
 },
 
@@ -1080,15 +1089,10 @@ createGoodie: function() {
     const medals_needed = this.medals_to_win[this.board_id-1];
 
     const background_x = medals_needed - 5;
-
     goodieContainer.style.backgroundPosition = `-${background_x}00% -00%`;
 
-
-
     Object.values(this.players).forEach(player => {
-
         let player_indice = player.color == this.BLUE_COLOR ? 1 : 2;
-
         const medals_won = player.star;
         for (let i = 1; i <= medals_won; i++) {
             if( i == medals_needed) {
@@ -1103,15 +1107,25 @@ createGoodie: function() {
             const goodie = this.goodies[medals_needed][goodie_id];
             goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
             goodieContainer.appendChild(goodieElement);
-
         };
-    
     });
 
     return goodieContainer;
 },
 
+createSideLeft: function() {
+    const sideleftContainer = document.createElement('div');
+    sideleftContainer.id = `sideleft`;
+    sideleftContainer.classList.add('sideleft');
+    return sideleftContainer;
+},
 
+createSideRight: function() {
+    const siderightContainer = document.createElement('div');
+    siderightContainer.id = `sideright`;
+    siderightContainer.classList.add('sideright');
+    return siderightContainer;
+},
 
 createBoard: function() {
     const boardContainer = document.createElement('div');
@@ -1123,6 +1137,7 @@ createBoard: function() {
     boardContainer.style.backgroundPosition = `-${background_x}00% -${background_y}00%`;
     return boardContainer;
 },
+
 
 createBases: function() {
     const TB_bases = this.bases;
@@ -1155,9 +1170,8 @@ createBases: function() {
         baseRedElement.style.cssText = `top: ${baseData.top + 2.5}%; left: ${baseData.left}%;`;
         boardContainer.appendChild(baseRedElement);
     }
-
-    console.info( 'TROOPS ON BASES', this.troops_on_bases);
 },
+
 
 createTroopsOnBoard:function() {
     const boardContainer = document.getElementById(`board_${this.board_id}`);
@@ -1207,21 +1221,16 @@ createBaseTooltip: function(base_id) {
     const TB_bases = this.bases;
     const base_power = TB_bases[base_id].power;
     const troops = this.troops_on_bases[base_id];
-
-    console.log( 'TROOPS',troops);
-    console.log(troops.length);
-    console.log(base_power);
     
     if (troops.length > 0 || base_power > 0) {
         const base_css_id = `base_${this.board_name}_${base_id}`;
         this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops, base_id), 0);
-    console.log( 'new tooltip');
     }
 },
 
 destroyBaseTooltip: function(base_id) {
     //TODO virer le tooltip
-    console.log(`base_${this.board_name}_${base_id}`);
+
     const base_css =`base_${this.board_name}_${base_id}`;
     this.tooltips[base_css].destroy();
     delete this.tooltips[base_css];
@@ -1237,7 +1246,6 @@ destroyBaseTooltip: function(base_id) {
     baseElement.classList.add('base_all');
     baseElement.style.cssText = `top: ${baseData.top}%; left: ${baseData.left}%;`;
     boardContainer.appendChild(baseElement);
-
 },
 
 
@@ -1252,8 +1260,6 @@ setupCounters: function() {
 },
 
 setupTooltips:function () {
-
-
     // Goodie
     html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Medals won')+"</span></div>";
     this.addCustomTooltip( `goodie_${this.board_id}`, html);
@@ -1265,21 +1271,6 @@ setupTooltips:function () {
     // Blue Deck
         html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Blue deck')+"</span></div>";
     this.addCustomTooltip( `blue_deck_counter_id`, html);
-},
-
-
-showArrays: function() {
-
-    
-    console.info('my_hand',this.my_hand);
-    console.info('your_hand',this.your_hand);
-    
-    //console.info('nb_decks',this.nb_decks);
-
-    console.info('my_discard',this.my_discard);
-    console.info('your_discard',this.your_discard);
-
-    //console.info('troops_on_bases',this.troops_on_bases);
 },
 
 
@@ -1321,13 +1312,32 @@ getBoundingClientRectIgnoreZoom: function (element) {
 
 onScreenWidthChange: function() {
 
-// Obtenir la taille disponible dans la fenêtre du jeu
     const gamePlayArea = document.getElementById("game_play_area");
     const gamePlayAreaWidth = gamePlayArea.clientWidth;
     const gamePlayAreaHeight = window.innerHeight;
 
     console.log('gamePlayArea', gamePlayArea);
+    console.log('gamePlayAreaWidth', gamePlayAreaWidth);
     console.log('gamePlayAreaHeight', gamePlayAreaHeight);
+
+
+    if (gamePlayAreaWidth < 1532) {
+    console.log('trop petit');
+    
+    if (sideleft) 
+        sideleft.classList.add("hidden");
+    if (sideright) 
+        sideright.classList.add("hidden");
+
+} else {
+    console.log('assez grand');
+    
+    if (sideleft && dojo.hasClass( sideleft, "hidden")) 
+        sideleft.classList.remove("hidden");
+    if (sideright && dojo.hasClass( sideright, "hidden")) 
+        sideright.classList.remove("hidden");
+}
+
 
 
     const board = document.getElementById(`board_${this.board_id}`);       // Élément board
@@ -1340,14 +1350,6 @@ onScreenWidthChange: function() {
         // Récupérer les dimensions recalculées
         const boardRect = this.getBoundingClientRectIgnoreZoom(board);
         const playmatRect = this.getBoundingClientRectIgnoreZoom(playmat);
-
-        console.log( 'boardRect', boardRect);
-
-        const horizontalScale =
-        Math.min(1750, gamePlayAreaWidth) / this.BOARD_WIDTH;
-        const verticalScale = gamePlayAreaHeight / this.BOARD_HEIGHT;
-        console.log('horizontalScale', horizontalScale);
-        console.log('verticalScale', verticalScale);
 
         // Choisir la base de référence (largeur ou hauteur)
         const baseWidth = boardRect.width;
@@ -1400,8 +1402,10 @@ onScreenWidthChange: function() {
  * Toggle help mode
  */
 toggleHelpMode(b) {
-    if (b) this.activateHelpMode();
-    else this.desactivateHelpMode();
+    if (b) 
+        this.activateHelpMode();
+    else 
+        this.desactivateHelpMode();
 },
 
 activateHelpMode() {
@@ -1419,9 +1423,10 @@ desactivateHelpMode() {
 },
 
 closeCurrentTooltip() {
-    if (!this._helpMode) return;
-
-    if (this._displayedTooltip == null) return;
+    if (!this._helpMode) 
+        return;
+    if (this._displayedTooltip == null) 
+        return;
     else {
         this._displayedTooltip.close();
         this._displayedTooltip = null;
@@ -1439,8 +1444,10 @@ connect(node, action, callback) {
 onClick(node, callback, temporary = true) {
     let safeCallback = (evt) => {
         evt.stopPropagation();
-        if (this.isInterfaceLocked()) return false;
-        if (this._helpMode) return false;
+        if (this.isInterfaceLocked()) 
+            return false;
+        if (this._helpMode) 
+            return false;
         callback(evt);
     };
 
@@ -1466,7 +1473,7 @@ registerCustomTooltip(html, id = null) {
 attachRegisteredTooltips() {
     Object.keys(this._registeredCustomTooltips).forEach((id) => {
         if ($(id)) {
-        this.addCustomTooltip(id, this._registeredCustomTooltips[id], { forceRecreate: true });
+            this.addCustomTooltip(id, this._registeredCustomTooltips[id], { forceRecreate: true });
         }
     });
     this._registeredCustomTooltips = {};
@@ -1475,9 +1482,9 @@ attachRegisteredTooltips() {
 addCustomTooltip(id, html, config = {}) {
     config = Object.assign(
         {
-        delay: 400,
-        midSize: true,
-        forceRecreate: false,
+            delay: 400,
+            midSize: true,
+            forceRecreate: false,
         },
         config,
     );
@@ -1507,17 +1514,17 @@ addCustomTooltip(id, html, config = {}) {
 
     dojo.connect($(id), 'click', (evt) => {
         if (!this._helpMode) {
-        tooltip.close();
+            tooltip.close();
         } else {
-        evt.stopPropagation();
+            evt.stopPropagation();
 
-        if (tooltip.state == 'SHOWING') {
-            this.closeCurrentTooltip();
-        } else {
-            this.closeCurrentTooltip();
-            tooltip.open($(id));
-            this._displayedTooltip = tooltip;
-        }
+            if (tooltip.state == 'SHOWING') {
+                this.closeCurrentTooltip();
+            } else {
+                this.closeCurrentTooltip();
+                tooltip.open($(id));
+                this._displayedTooltip = tooltip;
+            }
         }
     });
 
@@ -1525,19 +1532,22 @@ addCustomTooltip(id, html, config = {}) {
     dojo.connect($(id), 'mouseenter', (evt) => {
         evt.stopPropagation();
         if (!this._helpMode && !this._dragndropMode) {
-        if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+            if (tooltip.showTimeout != null) 
+                clearTimeout(tooltip.showTimeout);
 
-        tooltip.showTimeout = setTimeout(() => {
-            if ($(id)) tooltip.open($(id));
-        }, config.delay);
+            tooltip.showTimeout = setTimeout(() => {
+                if ($(id)) 
+                    tooltip.open($(id));
+            }, config.delay);
         }
     });
 
     dojo.connect($(id), 'mouseleave', (evt) => {
         evt.stopPropagation();
         if (!this._helpMode && !this._dragndropMode) {
-        tooltip.close();
-        if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+            tooltip.close();
+        if (tooltip.showTimeout != null) 
+            clearTimeout(tooltip.showTimeout);
         }
     });
     },
@@ -1578,7 +1588,7 @@ getTooltipTroopContent : function(type, id) {
     const troop_infos = this.troop_types[type % 10];
    
     // Afficher les informations des Troops    
-        html += `<span class='tooltip_title'>${troop_infos.name}</span>`;
+    html += `<span class='tooltip_title'>${troop_infos.name}</span>`;
     let effect_desc = troop_infos.desc1;
     html += `<br><span class='tooltip_desc'>${effect_desc}</span>`;
 
@@ -1599,17 +1609,14 @@ getTooltipBaseContent: function(board_id, base_power, troops, base_id) {
     if( base_power > 0) {
         // Afficher les informations de la Base Spéciale  
 
-        console.log('board_id', board_id);
-        console.log('base_power', base_power);
-
         const board_infos = this.board_type;
-        console.info( 'board_infos', board_infos);
+
         html += '<div id="special_base_desc">';
 
         // Ajout du titre avec ou sans l'icône
         html += `<span class='tooltip_title'>${board_infos.name}`;
         if ([1, 3, 4, 5, 8].includes(parseInt(board_id))) {
-            console.log('ICON OK');
+
             const iconClass = `icon_power_bandeau icon_powerbase_${board_id}`;
             html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
         }
@@ -1654,7 +1661,6 @@ getTooltipBaseContent: function(board_id, base_power, troops, base_id) {
         html+= '<div class="tooltip_content">';
 
         Object.values(troops).forEach(troop => {
-            
             const x = '-' + troop.type % 10 + '00%';
             const y = '-' + Math.floor(troop.type / 10)-1 + '00%';
             html += `<div class="troop_container">
@@ -1709,7 +1715,6 @@ onSelect: function(evt)
 
 onOpButton: function(evt)
 {
-    
     // Preventing default browser reaction
     this.stopEvent( evt );
     
@@ -1817,10 +1822,10 @@ notif_moveTroop: function(notif)
         if (this.isSpectator == false || player_color == this.RED_COLOR) {
             // Obtenir les indices ajustés pour le tableau
             const indicesNonBloques = notif.args.numbers_no_blocked.map(index => index - 1); // Convertir en indices de tableau
-            console.log('indicesNonBloques',indicesNonBloques);
+
 
             const indexMax = Math.max(...indicesNonBloques); // Trouver l'indice maximum (ajusté)
-            console.log('indexMax',indexMax);
+
             // Vérifier si l'indice est valide avant de retirer l'élément
             if (indexMax >= 0 && indexMax < this.your_hand.length) {
                 this.your_hand.splice(indexMax, 1); // Supprimer l'élément correspondant
@@ -1963,10 +1968,7 @@ notif_moveTroop: function(notif)
             };
             troopElement.addEventListener("transitionend", onTransitionEnd);
         }
-
     }
-
-    console.log('this_tooltips',this.tooltips);
 },
 
 
@@ -2062,10 +2064,6 @@ notif_drawTroopPrivate: function (notif) {
             const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
             const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
-    /*        console.log('Start position:', startRect.left, startRect.top);
-            console.log('Rack position:', rackRect.left, rackRect.top);
-            console.log('Target position:', targetRect.left, targetRect.top);*/
-
             const deltaX = targetRect.left - startRect.left;
             const deltaY = rackRect.top - startRect.top;
 
@@ -2100,8 +2098,6 @@ notif_drawTroopPrivate: function (notif) {
     if (notif.args.new_troops.length > 0) {
         addTroopToRack(notif.args.new_troops[0], 0);
     }
-
-    console.log('this_tooltips',this.tooltips);
 },
 
 
@@ -2149,7 +2145,6 @@ notif_drawTroopPublic: function (notif) {
 
 
         const addTroopToRack = (index) => {
-
 
             /* JS troop addition */
             const newTroop = { type: player_color_index };
@@ -2205,10 +2200,6 @@ notif_drawTroopPublic: function (notif) {
                 const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
                 const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
                 const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
-
-                console.log('Start position:', startRect.left, startRect.top);
-                console.log('Rack position:', rackRect.left, rackRect.top);
-                console.log('Target position:', targetRect.left, targetRect.top);
 
                 let deltaX = targetRect.left - startRect.left;
                 let deltaY = rackRect.top - startRect.top;
@@ -2266,8 +2257,6 @@ notif_discardTroopFromBoard: function (notif) {
     console.info('notif_discardTroopFromBoard');
     console.info(notif);
 
-    //TODO MAJ this.troopsOnBase et les deux Tooltips
-
     const troop = notif.args.infos_troop;
 
     const player_color = this.players[troop.type_arg].color;
@@ -2278,8 +2267,7 @@ notif_discardTroopFromBoard: function (notif) {
 
     let base_troops = this.troops_on_bases[base_id];
     const index = base_troops.findIndex(t => t.id === troop.id);
-    console.log('troops_on_bases avant',this.troops_on_bases[base_id]);
-    console.log( 'troop_index',index);
+
     if (index !== -1) {
         this.troops_on_bases[base_id].splice(index, 1);
         if( base_troops.length > 0) {
@@ -2289,7 +2277,6 @@ notif_discardTroopFromBoard: function (notif) {
             this.destroyBaseTooltip(base_id);
         }
     }
-    console.log('troops_on_bases après',this.troops_on_bases[base_id]);
     this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
     
     /* check where to insert the troop */
@@ -2324,8 +2311,6 @@ notif_discardTroopFromBoard: function (notif) {
 
     const discardId = `${player_color_name}_discard`;
     const discardContainer = document.getElementById(discardId);
-
-
 
     if (player_color == this.RED_COLOR ){
         if (insertIndex === 0) {
@@ -2395,8 +2380,6 @@ notif_discardTroopFromBoard: function (notif) {
         };
         troopElement.addEventListener('transitionend', onTransitionEnd);
     }
-    
-    console.log(this.tooltips);
 },
 
 
@@ -2444,14 +2427,11 @@ notif_discardTroopFromHand: function (notif) {
         else { // blue spectator
             this.my_hand.pop();
         } 
-        
-
     }
 
     /* check where to insert the troop */
     const newTroop = { id: troop.id, type: troop.type }; 
     let insertIndex;  
-
 
 
     if( (player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue()))
@@ -2539,8 +2519,6 @@ notif_discardTroopFromHand: function (notif) {
     }
     else {
         // rename Troop id and unhide it
-
-            // A CONTROLER
         // remove troop from hand JS array
         if( this.isSpectator == false || player_color == this.RED_COLOR ) {
             this.your_hand.pop();
@@ -2552,26 +2530,18 @@ notif_discardTroopFromHand: function (notif) {
 
         let selected_troop = notif.args.selected_troop;
 
-        console.info('selected_troop 0', selected_troop);
         if( selected_troop == 0) {
             selected_troop = notif.args.nb_cards_in_hand;
         } 
-        console.info('selected_troop 1', selected_troop);
 
         let moving_troop_id = `${player_color_name}_troop_${selected_troop}`;
-        console.info('moving_troop_id', moving_troop_id);
+
 
         const troopElement = document.getElementById(moving_troop_id);
-        console.info('troopElement', troopElement);
-        console.info('troop', troop);
+
         troopElement.id = `troop_${troop.id}`;
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;
-
-
-
-
-       //TODO renommer les suivants -1
 
        if (insertIndex === discardContainer.children.length) {
             discardContainer.appendChild(placeholder);
@@ -2589,36 +2559,15 @@ notif_discardTroopFromHand: function (notif) {
             troopElement.classList.add('opa_70');
             discardContainer.replaceChild(troopElement, placeholder);
 
-
-            console.info( 'rack_name ',rack_name);
-            console.info( 'current player red ',this.isCurrentPlayerRed());
-
     
-
-            if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
-                const rackElement = document.getElementById('red_rack');
-                console.info('rackElement', rackElement );
-            }
-            console.info( 'selected_troop : ',selected_troop);
-            console.info( 'notif.args.nb_cards_in_hand : ',notif.args.nb_cards_in_hand);
-
             for( let i=parseInt(selected_troop) + 1; i<=notif.args.nb_cards_in_hand;i++) {
-                console.info( 'i : ',i);
+  
                 const troop_id = `${player_color_name}_troop_${i}`;
-
                 let troopElement = document.getElementById(troop_id);
-                console.info( 'troop_old', troopElement);
                 troopElement.id = `${player_color_name}_troop_${i-1}`;
-                console.info( 'troop_new', troopElement);
             }
-
-
-
-
 
         } else {
-
-
 
             const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
             const endRect = this.getBoundingClientRectIgnoreZoom(placeholder);
@@ -2650,26 +2599,13 @@ notif_discardTroopFromHand: function (notif) {
 
                 const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
 
-                console.info( 'rack_name ',rack_name);
-                console.info( 'current player red ',this.isCurrentPlayerRed());
-
-        
-
-                if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
-                    const rackElement = document.getElementById('red_rack');
-                    console.info('rackElement', rackElement );
-                }
-                console.info( 'selected_troop : ',selected_troop);
-                console.info( 'notif.args.nb_cards_in_hand : ',notif.args.nb_cards_in_hand);
-
                 for( let i=parseInt(selected_troop) + 1; i<=notif.args.nb_cards_in_hand;i++) {
-                    console.info( 'i : ',i);
+
                     const troop_id = `${player_color_name}_troop_${i}`;
 
                     let troopElement = document.getElementById(troop_id);
-                    console.info( 'troop_old', troopElement);
                     troopElement.id = `${player_color_name}_troop_${i-1}`;
-                    console.info( 'troop_new', troopElement);
+
                 }
 
                 troopElement.removeEventListener("transitionend", onTransitionEnd);
@@ -2738,9 +2674,9 @@ notif_recoverTroopFromBoard: function (notif) {
         placeholder.classList.add('troop-placeholder');
         if (player_color == this.RED_COLOR) {
             if (insertIndex === -1) {
-                insertIndex = 0; // TODO vérifier
+                insertIndex = 0;
             } else {
-                insertIndex = this.my_hand.length - insertIndex - 1; //TODO vérifier le bon index
+                insertIndex = this.my_hand.length - insertIndex - 1;
             }
         }
 
@@ -2775,8 +2711,6 @@ notif_recoverTroopFromBoard: function (notif) {
                 ? `${existingTransform} ${translateTransform}`
                 : translateTransform;
             troopElement.style.transform = newTransform;
-            //troopElement.style.position = 'fixed'; // moves over other elements
-            //troopElement.style.zIndex = 200; // moves over other elements
     
             const onTransitionEnd = () => {
                 troopElement.style.transform = '';
@@ -2844,7 +2778,6 @@ notif_recoverTroopFromBoard: function (notif) {
             rackContainer.replaceChild(troopElement, placeholder);
         }
         else {
-            console.log('troopElement', troopElement);
             const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
             const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
@@ -2970,8 +2903,6 @@ notif_recoverTroopFromDiscard: function (notif) {
             troopElement.style.zIndex = 10;
 
             rackContainer.replaceChild(troopElement, placeholder);
-
-
         }
         else {
 
@@ -3302,7 +3233,6 @@ notif_gainMedal: function (notif) {
 
     
     let medals_already_won = parseInt(notif.args.medals_already_won);
-    console.info('medals_already_won', medals_already_won);
     let index = 1;
     const TB_medals = this.medals;
 
@@ -3314,8 +3244,6 @@ notif_gainMedal: function (notif) {
 
     let player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
 
-
-
     if (this.instantaneousMode) {
 
         Object.entries(TB_medals).forEach(([id, medal]) => {
@@ -3323,7 +3251,6 @@ notif_gainMedal: function (notif) {
             if (notif.args.emptied_regions.includes(medal.region)) {    
                 const medalId = `medal_${id}`;
                 const medalElement = document.getElementById(medalId);
-
 
                 const indice = parseInt(medals_already_won) + index;
                 if( indice == medals_needed ) {
@@ -3399,6 +3326,7 @@ notif_gainMedal: function (notif) {
 notif_score: function( notif ){
     console.info('notif_scorel');
     console.info(notif);
+    
     this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
 },
 

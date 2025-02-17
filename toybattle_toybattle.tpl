@@ -1,12 +1,11 @@
 {OVERALL_GAME_HEADER}
 
-<div id="global_id">
 
+
+
+<div id="global_big_id">
+    <div id="global_id"></div>
 </div>
-
-
-
-
 
 
 

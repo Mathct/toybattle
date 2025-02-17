@@ -43,6 +43,9 @@ class Pending extends APP_GameClass
             $this->player_color_number = 1;
             $this->opponent_color_number = 2;
 
+            $this->player_color_text = "blue";
+            $this->opponent_color_text = "red";
+
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield')) {
                 $this->start_base = [1];
@@ -71,6 +74,9 @@ class Pending extends APP_GameClass
             //DECLARATION DU NUMERO DE COULEUR
             $this->player_color_number = 2;
             $this->opponent_color_number = 1;
+
+            $this->player_color_text = "red";
+            $this->opponent_color_text = "blue";
 
             //DECLARATION DES BASES DE DEPART
             if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield')) {
@@ -476,7 +482,8 @@ class Pending extends APP_GameClass
                     if(in_array($numero_base, $this->opponent_start_base))
                     {
                         game::$instance->setGameStateValue("endgame", 1); // pour progression
-                        game::$instance->addPending($this->player_id, "FinGame1", 3);
+                        $numtroop = intval($type1) % 10;
+                        game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
                     }
                     else
                     {
@@ -584,7 +591,8 @@ class Pending extends APP_GameClass
             if(in_array($numero_base, $this->opponent_start_base))
             {
                 game::$instance->setGameStateValue("endgame", 1); // pour progression
-                game::$instance->addPending($this->player_id, "FinGame1", 3);
+                $numtroop = intval($type1) % 10;
+                game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
             }
             else
             {
@@ -803,6 +811,10 @@ class Pending extends APP_GameClass
             
             if($star_player > $star_opponent)
             {
+                $victory = 1;
+                $colorvictory = $this->player_color_text;
+                $troop_victory = 0;
+
                 self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
 
                 game::$instance->notifyAllPlayers(
@@ -818,6 +830,9 @@ class Pending extends APP_GameClass
 
             else
             {
+                $victory = 1;
+                $colorvictory = $this->opponent_color_text;
+                $troop_victory = 0;
 
                 self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id_opponent}'");
 
@@ -835,6 +850,10 @@ class Pending extends APP_GameClass
         }
 
         if ($parg1== "2") {
+
+            $victory = 1;
+            $colorvictory = $this->player_color_text;
+            $troop_victory = 0;
 
             $max_medals = game::$instance->_medals_to_win[game::$instance->getGameStateValue('board')];
 
@@ -867,6 +886,10 @@ class Pending extends APP_GameClass
 
         if ($parg1== "3") {
 
+            $victory = 2;
+            $colorvictory = $this->player_color_text;
+            $troop_victory = $parg2;
+
             game::$instance->notifyAllPlayers(
                 'message',
                 clienttranslate('${player_name} captured ${opponent}\'s starting base'), //A PRIS LA BASE ADVERSE
@@ -892,6 +915,19 @@ class Pending extends APP_GameClass
             );
             
         }
+
+        game::$instance->notifyAllPlayers(
+            'victory',
+            '',
+            array(
+                'typevictory' => $victory,
+                'colorvictory' => $colorvictory,
+                'troopvictory' => $troop_victory,
+                
+            )
+        );
+
+        self::notifyAllPlayers( 'simplePause', '', [ 'time' => 3000] ); 
 
         game::$instance->gamestate->nextState( 'end' ); 
         
