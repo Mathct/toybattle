@@ -3413,11 +3413,11 @@ animateVictory: function( type, color, troop0 ) {
 
     setTimeout(() => {
         victoryElement.style.opacity = '0'; // Disparition progressive
-    }, 2000);
+    }, 4000);
 
     setTimeout(() => {
         victoryElement.remove(); // Suppression de l'élément du DOM
-    }, 2500); // Attendre que la transition d'opacité soit terminée
+    }, 4500); // Attendre que la transition d'opacité soit terminée
 },
 
 notif_message_allplayers_without_player: function( notif )

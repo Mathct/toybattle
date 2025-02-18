@@ -927,7 +927,7 @@ class Pending extends APP_GameClass
             )
         );
 
-        game::$instance->notifyAllPlayers( 'simplePause', '', [ 'time' => 3000] ); 
+        game::$instance->notifyAllPlayers( 'simplePause', '', [ 'time' => 1000] ); 
 
         game::$instance->gamestate->nextState( 'end' ); 
         
