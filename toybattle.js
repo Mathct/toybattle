@@ -64,6 +64,8 @@ setup: function( gamedatas )
     this.RACK_HEIGHT = 60;
     this.LINE_WIDTH = 670;  
     this.LINE_HEIGHT = 110;
+    this.VICTORY_WIDTH = 953;  
+    this.VICTORY_HEIGHT = 400;    
     this.DECK_COUNTER_SIZE = 16;
 
     this.players = gamedatas.players; // A RAJOUTER/NE PAS SUPPRIMER POUR MOTEUR (UTILITY METHODS)
@@ -497,7 +499,7 @@ setupPlayersBoard: function() {
                     helpModeCheckbox.addEventListener('change', () => {
                         this.toggleHelpMode(helpModeCheckbox.checked);
                     });
-                    this.addTooltip("help-mode-switch", "", _("Toggle Tooltips on Mobile mode."));
+                    this.addTooltip("help-mode-switch", "", _("Toggle Tooltips on Mobile mode."), TOOLTIP_DELAY);
                 /* help mode Tisaac */
 
         }
@@ -640,7 +642,7 @@ setupLandscapeMode: function() {
             }
              troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY); 
         });
     }
     else {
@@ -684,7 +686,7 @@ setupLandscapeMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY); 
         });
     }
     else {
@@ -694,7 +696,7 @@ setupLandscapeMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
         });
     }
     
@@ -716,7 +718,7 @@ setupLandscapeMode: function() {
         const troopElement = this.createTroopElement(troop);
         troopElement.classList.add('opa_70');
         blueDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
     });
 
 
@@ -775,7 +777,7 @@ setupLandscapeMode: function() {
             }
 
             blueTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
         });
     }
 
@@ -837,7 +839,7 @@ setupPortraitMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
         });
     }
     else {
@@ -884,7 +886,7 @@ setupPortraitMode: function() {
         const troopElement = this.createTroopElement(troop);
         troopElement.classList.add('opa_70');
         blueDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
     });
 
          
@@ -914,7 +916,7 @@ setupPortraitMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY); 
         });
     }
     else {
@@ -923,7 +925,7 @@ setupPortraitMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
         });
     }
     
@@ -967,7 +969,7 @@ setupPortraitMode: function() {
         Object.values(this.my_hand).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
             blueTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);  
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
         });
     }
 
@@ -1224,7 +1226,7 @@ createBaseTooltip: function(base_id) {
     
     if (troops.length > 0 || base_power > 0) {
         const base_css_id = `base_${this.board_name}_${base_id}`;
-        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops, base_id), 0);
+        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops, base_id), TOOLTIP_DELAY);
     }
 },
 
@@ -1262,15 +1264,14 @@ setupCounters: function() {
 setupTooltips:function () {
     // Goodie
     html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Medals won')+"</span></div>";
-    this.addCustomTooltip( `goodie_${this.board_id}`, html);
+    this.addCustomTooltip( `goodie_${this.board_id}`, html, TOOLTIP_DELAY);
 
     // Red Deck
     html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Red deck')+"</span></div>";
-    this.addCustomTooltip( `red_deck_counter_id`, html);
-
+    this.addCustomTooltip( `red_deck_counter_id`, html, TOOLTIP_DELAY);
     // Blue Deck
         html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Blue deck')+"</span></div>";
-    this.addCustomTooltip( `blue_deck_counter_id`, html);
+    this.addCustomTooltip( `blue_deck_counter_id`, html, TOOLTIP_DELAY);
 },
 
 
@@ -1315,30 +1316,36 @@ onScreenWidthChange: function() {
     const gamePlayArea = document.getElementById("game_play_area");
     const gamePlayAreaWidth = gamePlayArea.clientWidth;
     const gamePlayAreaHeight = window.innerHeight;
-
+/*
     console.log('gamePlayArea', gamePlayArea);
     console.log('gamePlayAreaWidth', gamePlayAreaWidth);
-    console.log('gamePlayAreaHeight', gamePlayAreaHeight);
+    console.log('gamePlayAreaHeight', gamePlayAreaHeight);*/
+
+    const globalBigContainer = document.getElementById("global_big_id");
+    const sideleft = document.getElementById("sideleft");
+    const sideright = document.getElementById("sideright");
 
 
     if (gamePlayAreaWidth < 1532) {
-    console.log('trop petit');
-    
-    if (sideleft) 
-        sideleft.classList.add("hidden");
-    if (sideright) 
-        sideright.classList.add("hidden");
-
-} else {
-    console.log('assez grand');
-    
-    if (sideleft && dojo.hasClass( sideleft, "hidden")) 
-        sideleft.classList.remove("hidden");
-    if (sideright && dojo.hasClass( sideright, "hidden")) 
-        sideright.classList.remove("hidden");
-}
-
-
+        if (sideleft) {
+            sideleft.classList.add("hidden");
+        }
+        if (sideright) {
+            sideright.classList.add("hidden");
+        }
+        globalBigContainer.style.justifyContent = "center"; // Recentre global_id
+        document.documentElement.style.setProperty('--global-width', `100%`);
+    }
+    else {
+        if (sideleft && sideleft.classList.contains("hidden")) {
+            sideleft.classList.remove("hidden");
+        }
+        if (sideright && sideright.classList.contains("hidden")) {
+            sideright.classList.remove("hidden");
+        }
+        globalBigContainer.style.justifyContent = "space-between"; // Répartit les éléments
+        document.documentElement.style.setProperty('--global-width', `1250px`);
+    }
 
     const board = document.getElementById(`board_${this.board_id}`);       // Élément board
     const playmat = document.getElementById('playmat_id');   // Élément playmat
@@ -1346,7 +1353,6 @@ onScreenWidthChange: function() {
     //TODO hauteur proportionnelle à la largeur du board.
 
     if (board && playmat) {
-
         // Récupérer les dimensions recalculées
         const boardRect = this.getBoundingClientRectIgnoreZoom(board);
         const playmatRect = this.getBoundingClientRectIgnoreZoom(playmat);
@@ -1371,9 +1377,11 @@ onScreenWidthChange: function() {
         const lineWidth = (this.LINE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
         const lineHeight = (this.LINE_HEIGHT / this.LINE_WIDTH) * lineWidth; // 88px basé sur la hauteur originale
 
+
+        const victoryWidth = Math.min( gamePlayAreaWidth, this.VICTORY_WIDTH );
+        const victoryHeight = (this.VICTORY_HEIGHT / this.VICTORY_WIDTH) * victoryWidth;
        
         console.log('baseWidth', baseWidth);
- 
 
         // Mettre à jour les variables CSS
         document.documentElement.style.setProperty('--medal-width', `${medalWidth}px`);
@@ -1385,14 +1393,20 @@ onScreenWidthChange: function() {
         document.documentElement.style.setProperty('--rack-height', `${rackHeight}px`);
         document.documentElement.style.setProperty('--line-width', `${lineWidth}px`);
         document.documentElement.style.setProperty('--line-height', `${lineHeight}px`);
+        document.documentElement.style.setProperty('--victory-width', `${victoryWidth}px`);
+        document.documentElement.style.setProperty('--victory-height', `${victoryHeight}px`);
         document.documentElement.style.setProperty('--deck-counter-size', `${deckCounterSize}px`);
     }
+ 
 
     //const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
     //this.scale = Math.min(horizontalScale, verticalScale)*BB_zoom/100;
     // TO DO 
 
 },
+
+
+
 
 
 /*******************************
@@ -1711,6 +1725,8 @@ onSelect: function(evt)
     {
         this.bgaPerformAction('actSelect', { arg1: evt.currentTarget.id });
     }
+
+    //this.animateVictory(2,'red',8);
 },
 
 onOpButton: function(evt)
@@ -1755,6 +1771,7 @@ setupNotifications: function()
         ['unhideTroopOnRack', 1],
         ['gainMedal', 1],
         ['score', 1],
+        ['victory', 3000],
         ['message_allplayers_without_player', 1],
 
     ];
@@ -2016,7 +2033,7 @@ notif_drawTroopPrivate: function (notif) {
         troopElement.style.left = '0px';
         deckContainer.appendChild(troopElement);
 
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
 
         /* Calcul de l'index d'insertion */
         const newTroop = { id: troop.id, type: troop.type };
@@ -2277,7 +2294,7 @@ notif_discardTroopFromBoard: function (notif) {
             this.destroyBaseTooltip(base_id);
         }
     }
-    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
     
     /* check where to insert the troop */
     const newTroop = { id: troop.id, type: troop.type };
@@ -2615,7 +2632,7 @@ notif_discardTroopFromHand: function (notif) {
 
         }
     }
-    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
 
 },
 
@@ -2727,7 +2744,7 @@ notif_recoverTroopFromBoard: function (notif) {
             troopElement.addEventListener('transitionend', onTransitionEnd);
         }
 
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), 0); 
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
  
     }
 
@@ -3323,11 +3340,84 @@ notif_gainMedal: function (notif) {
     }
 },
 
+
+
 notif_score: function( notif ){
-    console.info('notif_scorel');
+    console.info('notif_score');
     console.info(notif);
     
     this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
+},
+
+
+
+notif_victory: function( notif ) {
+
+    console.info('notif_victory');
+    console.info(notif);
+
+    this.animateVictory( notif.args.typevictory, notif.args.colorvictory, notif.args.troopvictory);
+
+},
+
+
+animateVictory: function( type, color, troop0 ) {
+    const container = document.querySelector('#global_big_id');
+    if (!container) 
+        return;
+
+    const victoryElement = document.createElement('div');
+    victoryElement.classList.add('victory');
+    //victoryElement.style.position = 'relative'; // Permet le positionnement interne
+
+    let x = 0;
+    let y = 0;
+
+    if( type == 1) { // medals
+        y = 4;
+        x = color == 'blue' ? 0 : 1;
+    }
+    else {
+        const troop = parseInt(troop0) - 1;
+        x = troop % 4;
+        y = color == 'blue' ? 0 : 1;
+        y += 2 * Math.floor( troop /4)
+        
+    }
+    victoryElement.style.backgroundPosition = `-${x}00% -${y}00%`;
+
+    const victoryTitle = document.createElement('div');
+    victoryTitle.classList.add('tooltip_content');
+    victoryTitle.innerHTML = `<span class='victory_title'>${_('Victory!')}</span>`;
+
+    const victoryDescription = document.createElement('div');
+    victoryDescription.classList.add('tooltip_content');
+    if( type == 1) {
+        victoryDescription.innerHTML = `<span class='victory_description'>${_('H.Q. captured')}</span>`;
+    }
+    else {
+        victoryDescription.innerHTML = `<span class='victory_description'>${_('Terrain conquered')}</span>`;
+    }
+    
+
+    victoryElement.appendChild(victoryTitle);
+    victoryElement.appendChild(victoryDescription);
+    container.appendChild(victoryElement);
+
+    // Force a reflow before animation
+    victoryElement.offsetHeight;
+
+    setTimeout(() => {
+        victoryElement.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 100);
+
+/*    setTimeout(() => {
+        victoryElement.style.opacity = '0'; // Disparition progressive
+    }, 2000);
+
+    setTimeout(() => {
+        victoryElement.remove(); // Suppression de l'élément du DOM
+    }, 2500); // Attendre que la transition d'opacité soit terminée*/
 },
 
 notif_message_allplayers_without_player: function( notif )

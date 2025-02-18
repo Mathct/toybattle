@@ -1,1 +1,110 @@
-{}
+{
+    "table": {
+
+        "turns_number": {
+          "id": 10,
+          "name": "Number of turns",
+          "type": "int"
+        },
+
+        "win_by_terrain" : {
+          "id": 11,
+          "name": "Win by Terrain conquered",
+          "type": "int"
+        },
+
+        "win_by_hq" : {
+          "id": 12,
+          "name": "Win by H.Q. captured",
+          "type": "int"
+        }
+    },
+
+
+
+    "player": {
+
+        "turns_number": {
+          "id": 10,
+          "name": "Number of turns",
+          "type": "int"
+        },
+
+      "troops_drawn": {
+        "id": 11,
+        "name": "Troops drawn",
+        "type": "int"
+      },
+
+
+      "troops_played": {
+        "id": 12,
+        "name": "Troops played on Terrain",
+        "type": "int"
+      },
+
+
+      "medals_won": {
+        "id": 13,
+        "name": "Medals won",
+        "type": "int"
+      },
+
+      
+      "regions_controlled": {
+        "id": 14,
+        "name": "controlled Regions",
+        "type": "int"
+      },
+      
+
+      "skully_activated": {
+        "id": 15,
+        "name": "Skully activations",
+        "type": "int"
+      },
+
+
+      "capn_activated": {
+        "id": 16,
+        "name": "Cap'n activations",
+        "type": "int"
+      },
+
+
+      "jumbo_activated": {
+        "id": 17,
+        "name": "Jumbo activations",
+        "type": "int"
+      },
+
+
+      "xb42_activated": {
+        "id": 18,
+        "name": "XB-42 activations",
+        "type": "int"
+      },
+
+
+      "star_activated": {
+        "id": 19,
+        "name": "Star activations",
+        "type": "int"
+      },
+
+
+      "base_activated": {
+        "id": 20,
+        "name": "Base activations",
+        "type": "int"
+      },
+
+      
+      "bases_controlled": {
+        "id": 21,
+        "name": "Bases controlled",
+        "type": "int"
+      }
+
+    }
+}

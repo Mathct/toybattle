@@ -81,6 +81,13 @@ body {
     src: local('NotoSans'), url(img/NotoSans.ttf);
   }
 
+    @font-face {
+    font-family: 'RussoOne';
+    font-style: normal;
+    font-weight: normal;
+    src: local('RussoOne'), url(img/RussoOne.ttf);
+  }
+
   
   /* tooltip Card */
   .tooltip_content {
@@ -121,6 +128,31 @@ body {
     font-size: 14px;
     color:#2a5d9c;
   }
+
+.victory_title {
+    font-family: RussoOne;
+    font-size: 76px;
+    text-align: center;
+    color: white;
+    position: absolute;
+    left: 64.2%; 
+    top: 15%; 
+    transform: translate(-50%, 0);
+    white-space: nowrap;
+}
+
+
+.victory_description {
+    font-family: RussoOne;
+    font-size: 24px;
+    text-align: center;
+    color: white;
+    position: absolute;
+    left: 64.2%; 
+    top: 80%; 
+    transform: translate(-50%, 0);
+    white-space: nowrap;
+}
   
 
 .hidden {
@@ -197,11 +229,17 @@ body {
 .victory {
     width: var(--victory-width);
     height: var(--victory-height);
-    position: relative;
-    margin: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
     border-radius: 5px;
     background-image: url('img/TB_Victories.jpg');
-    background-size: 400% 500%;    
+    background-size: 400% 500%;  
+    z-index: 1000;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+    transition: transform 1s ease-out, opacity 1s ease-out;  
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
 }
 
 
