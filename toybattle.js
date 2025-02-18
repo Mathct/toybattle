@@ -1503,7 +1503,9 @@ addCustomTooltip(id, html, config = {}) {
         config,
     );
 
-    // Handle dynamic content out of the box
+    let isMobile = window.matchMedia('(pointer: coarse)').matches;
+    let longPressTimer = null;
+
     let getContent = () => {
         let content = typeof html === 'function' ? html() : html;
         if (config.midSize) {
@@ -1518,7 +1520,6 @@ addCustomTooltip(id, html, config = {}) {
     }
 
     let tooltip = new dijit.Tooltip({
-        //        connectId: [id],
         getContent,
         position: this.defaultTooltipPosition,
         showDelay: config.delay,
@@ -1526,13 +1527,19 @@ addCustomTooltip(id, html, config = {}) {
     this.tooltips[id] = tooltip;
     dojo.addClass(id, 'tooltipable');
 
+    // Empêcher l'affichage au simple clic sur mobile
     dojo.connect($(id), 'click', (evt) => {
+        if (isMobile && !this._helpMode) {
+            evt.stopPropagation();
+            return; // Bloque l'affichage du tooltip sur mobile sauf en mode help
+        }
+
         if (!this._helpMode) {
             tooltip.close();
         } else {
             evt.stopPropagation();
 
-            if (tooltip.state == 'SHOWING') {
+            if (tooltip.state === 'SHOWING') {
                 this.closeCurrentTooltip();
             } else {
                 this.closeCurrentTooltip();
@@ -1543,9 +1550,35 @@ addCustomTooltip(id, html, config = {}) {
     });
 
     tooltip.showTimeout = null;
+
+    // Gestion du long press sur mobile
+    dojo.connect($(id), 'touchstart', (evt) => {
+        if (isMobile) {
+            longPressTimer = setTimeout(() => {
+                tooltip.open($(id));
+            }, 500); // 500ms = temps pour considérer un long press
+        }
+    });
+
+    dojo.connect($(id), 'touchend', (evt) => {
+        if (isMobile) {
+            clearTimeout(longPressTimer);
+        }
+    });
+
+    dojo.connect($(id), 'touchmove', (evt) => {
+        if (isMobile) {
+            clearTimeout(longPressTimer); // Annule le long press si l'utilisateur glisse son doigt
+        }
+    });
+
+    // Gestion normale des tooltips sur PC
     dojo.connect($(id), 'mouseenter', (evt) => {
         evt.stopPropagation();
+
         if (!this._helpMode && !this._dragndropMode) {
+            if (isMobile) return; // Bloque l'affichage des tooltips sur mobile hors help mode
+
             if (tooltip.showTimeout != null) 
                 clearTimeout(tooltip.showTimeout);
 
@@ -1560,11 +1593,12 @@ addCustomTooltip(id, html, config = {}) {
         evt.stopPropagation();
         if (!this._helpMode && !this._dragndropMode) {
             tooltip.close();
-        if (tooltip.showTimeout != null) 
-            clearTimeout(tooltip.showTimeout);
+            if (tooltip.showTimeout != null) 
+                clearTimeout(tooltip.showTimeout);
         }
     });
-    },
+},
+
 
 destroy(elem) {
     if (this.tooltips[elem.id]) {
