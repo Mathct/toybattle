@@ -642,7 +642,7 @@ setupLandscapeMode: function() {
             }
              troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY); 
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id)); 
         });
     }
     else {
@@ -686,7 +686,7 @@ setupLandscapeMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY); 
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id)); 
         });
     }
     else {
@@ -696,7 +696,7 @@ setupLandscapeMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });
     }
     
@@ -718,7 +718,7 @@ setupLandscapeMode: function() {
         const troopElement = this.createTroopElement(troop);
         troopElement.classList.add('opa_70');
         blueDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
     });
 
 
@@ -777,7 +777,7 @@ setupLandscapeMode: function() {
             }
 
             blueTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });
     }
 
@@ -839,7 +839,7 @@ setupPortraitMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });
     }
     else {
@@ -886,7 +886,7 @@ setupPortraitMode: function() {
         const troopElement = this.createTroopElement(troop);
         troopElement.classList.add('opa_70');
         blueDiscardContainer.appendChild(troopElement);
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
     });
 
          
@@ -916,7 +916,7 @@ setupPortraitMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY); 
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id)); 
         });
     }
     else {
@@ -925,7 +925,7 @@ setupPortraitMode: function() {
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });
     }
     
@@ -969,7 +969,7 @@ setupPortraitMode: function() {
         Object.values(this.my_hand).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
             blueTroopsContainer.appendChild(troopElement);
-            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });
     }
 
@@ -1226,7 +1226,7 @@ createBaseTooltip: function(base_id) {
     
     if (troops.length > 0 || base_power > 0) {
         const base_css_id = `base_${this.board_name}_${base_id}`;
-        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops, base_id), TOOLTIP_DELAY);
+        this.addCustomTooltip(base_css_id, this.getTooltipBaseContent(this.board_id, base_power, troops, base_id));
     }
 },
 
@@ -1264,14 +1264,14 @@ setupCounters: function() {
 setupTooltips:function () {
     // Goodie
     html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Medals won')+"</span></div>";
-    this.addCustomTooltip( `goodie_${this.board_id}`, html, TOOLTIP_DELAY);
+    this.addCustomTooltip( `goodie_${this.board_id}`, html);
 
     // Red Deck
     html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Red deck')+"</span></div>";
-    this.addCustomTooltip( `red_deck_counter_id`, html, TOOLTIP_DELAY);
+    this.addCustomTooltip( `red_deck_counter_id`, html);
     // Blue Deck
         html = "<div class='tooltip_content'><span class='tooltip_description'>"+_('Troops in Blue deck')+"</span></div>";
-    this.addCustomTooltip( `blue_deck_counter_id`, html, TOOLTIP_DELAY);
+    this.addCustomTooltip( `blue_deck_counter_id`, html);
 },
 
 
@@ -2033,7 +2033,7 @@ notif_drawTroopPrivate: function (notif) {
         troopElement.style.left = '0px';
         deckContainer.appendChild(troopElement);
 
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
 
         /* Calcul de l'index d'insertion */
         const newTroop = { id: troop.id, type: troop.type };
@@ -2294,7 +2294,7 @@ notif_discardTroopFromBoard: function (notif) {
             this.destroyBaseTooltip(base_id);
         }
     }
-    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id));
     
     /* check where to insert the troop */
     const newTroop = { id: troop.id, type: troop.type };
@@ -2632,7 +2632,7 @@ notif_discardTroopFromHand: function (notif) {
 
         }
     }
-    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+    this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id));
 
 },
 
@@ -2744,7 +2744,7 @@ notif_recoverTroopFromBoard: function (notif) {
             troopElement.addEventListener('transitionend', onTransitionEnd);
         }
 
-        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id), TOOLTIP_DELAY);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
  
     }
 
@@ -3392,7 +3392,7 @@ animateVictory: function( type, color, troop0 ) {
 
     const victoryDescription = document.createElement('div');
     victoryDescription.classList.add('tooltip_content');
-    if( type == 1) {
+    if( type == 2) {
         victoryDescription.innerHTML = `<span class='victory_description'>${_('H.Q. captured')}</span>`;
     }
     else {
@@ -3411,13 +3411,13 @@ animateVictory: function( type, color, troop0 ) {
         victoryElement.style.transform = 'translate(-50%, -50%) scale(1)';
     }, 100);
 
-/*    setTimeout(() => {
+    setTimeout(() => {
         victoryElement.style.opacity = '0'; // Disparition progressive
     }, 2000);
 
     setTimeout(() => {
         victoryElement.remove(); // Suppression de l'élément du DOM
-    }, 2500); // Attendre que la transition d'opacité soit terminée*/
+    }, 2500); // Attendre que la transition d'opacité soit terminée
 },
 
 notif_message_allplayers_without_player: function( notif )
