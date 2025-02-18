@@ -142,7 +142,7 @@ class Game extends \Table
         self::initStat( 'player', 'xb42_activated', 0 );
         self::initStat( 'player', 'star_activated', 0 );
         self::initStat( 'player', 'base_activated', 0 );
-        //self::initStat( 'player', 'bases_controlled', 0 );
+        
 
           
 

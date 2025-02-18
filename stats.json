@@ -97,14 +97,8 @@
         "id": 20,
         "name": "Special base activations",
         "type": "int"
-      },
-
-      
-      "bases_controlled": {
-        "id": 21,
-        "name": "Bases controlled",
-        "type": "int"
       }
+       
 
     }
 }
