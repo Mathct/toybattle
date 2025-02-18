@@ -187,6 +187,7 @@ class Pending extends APP_GameClass
 
             if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2)))
             {
+                game::$instance->incStat(2, 'troops_drawn', $this->player_id);
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
@@ -245,6 +246,7 @@ class Pending extends APP_GameClass
 
             if (($varg1 == 'btn_draw_1') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1)))
             {
+                game::$instance->incStat(1, 'troops_drawn', $this->player_id);
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
@@ -299,6 +301,7 @@ class Pending extends APP_GameClass
 
             game::$instance->giveExtraTime($this->player_id);
             game::$instance->deblock_troops($this->player_id);
+            game::$instance->updateNbTurns();
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
@@ -419,6 +422,9 @@ class Pending extends APP_GameClass
             }
 
             if ($this->player_pref_confirm == 2) {
+
+                game::$instance->incStat(1, 'troops_played', $this->player_id);
+
                 $explode_troop = explode("_", $parg1);
                 $explode_base = explode("_", $varg1);
 
@@ -530,6 +536,9 @@ class Pending extends APP_GameClass
     function ConfirmPlace($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_yes") {
+
+            game::$instance->incStat(1, 'troops_played', $this->player_id);
+            
             $explode_troop = explode("_", $parg1);
             $explode_base = explode("_", $parg2);
 
@@ -646,6 +655,7 @@ class Pending extends APP_GameClass
 
             if (($parg1 == 'btn_draw_2') || (($parg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2)))
             {
+                game::$instance->incStat(2, 'troops_drawn', $this->player_id);
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
@@ -711,6 +721,8 @@ class Pending extends APP_GameClass
 
             if (($parg1 == 'btn_draw_1') || (($parg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($parg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1)))
             {
+                game::$instance->incStat(1, 'troops_drawn', $this->player_id);
+
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
@@ -765,6 +777,7 @@ class Pending extends APP_GameClass
 
             game::$instance->giveExtraTime($this->player_id);
             game::$instance->deblock_troops($this->player_id);
+            game::$instance->updateNbTurns();
             game::$instance->addPendingFirst($this->player_id, "NormalTurn");
         }
 
@@ -847,6 +860,8 @@ class Pending extends APP_GameClass
                 );
 
             }
+
+            game::$instance->incStat(1, 'win_by_terrain');
         }
 
         if ($parg1== "2") {
@@ -880,7 +895,7 @@ class Pending extends APP_GameClass
             );
 
             
-
+            game::$instance->incStat(1, 'win_by_terrain');
             
         }
 
@@ -913,6 +928,8 @@ class Pending extends APP_GameClass
                     
                 )
             );
+
+            game::$instance->incStat(1, 'win_by_hq');
             
         }
 

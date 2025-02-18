@@ -127,10 +127,26 @@ class Game extends \Table
         //$this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 
-        // Init global values with their initial values.
-        // $this->setGameStateInitialValue("my_first_global_variable", 0);
-        // $this->initStat("table", "table_teststat1", 0);
-        // $this->initStat("player", "player_teststat1", 0);
+        self::initStat( 'table', 'turns_number', 0 );
+        self::initStat( 'table', 'win_by_terrain', 0 ); 
+        self::initStat( 'table', 'win_by_hq', 0 );  
+
+        self::initStat( 'player', 'turns_number', 0 );
+        self::initStat( 'player', 'troops_drawn', 0 );
+        self::initStat( 'player', 'troops_played', 0 );
+        self::initStat( 'player', 'medals_won', 0 );
+        self::initStat( 'player', 'regions_controlled', 0 );
+        self::initStat( 'player', 'skully_activated', 0 );
+        self::initStat( 'player', 'capn_activated', 0 );
+        self::initStat( 'player', 'jumbo_activated', 0 );
+        self::initStat( 'player', 'xb42_activated', 0 );
+        self::initStat( 'player', 'star_activated', 0 );
+        self::initStat( 'player', 'base_activated', 0 );
+        //self::initStat( 'player', 'bases_controlled', 0 );
+
+          
+
+
 
         $this->setGameStateInitialValue("endgame", 0);
 
@@ -741,6 +757,9 @@ class Game extends \Table
                     )
                 );
 
+                game::$instance->incStat($count_medals, 'medals_won', $player_id_gain);
+                game::$instance->incStat(1, 'regions_controlled', $player_id_gain);
+
                 // attendre que les animations de medailles soient terminées
 
                 $time = 650 * $count_medals;
@@ -850,7 +869,16 @@ class Game extends \Table
     }
 
 
+    // Stats turns
 
+    function updateNbTurns()
+    {
+        $player_id = self::getActivePlayerId();
+        $this->incStat(1, 'turns_number', $player_id);
+        if (self::getPlayerNoById($player_id) == 1) {
+            $this->incStat(1, 'turns_number');
+        }
+    }
 
 
     // DEBUG

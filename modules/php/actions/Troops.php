@@ -119,6 +119,9 @@ trait TroopsTrait  // ATTENTION
 
             if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2))) 
             {
+                game::$instance->incStat(2, 'troops_drawn', $this->player_id);
+                game::$instance->incStat(1, 'skully_activated', $this->player_id);
+
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
@@ -175,7 +178,11 @@ trait TroopsTrait  // ATTENTION
                 );
             }
 
-            if (($varg1 == 'btn_draw_1')|| (($varg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1))) {
+            if (($varg1 == 'btn_draw_1')|| (($varg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1))) 
+            {
+                game::$instance->incStat(1, 'troops_drawn', $this->player_id);
+                game::$instance->incStat(1, 'skully_activated', $this->player_id);
+
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
@@ -432,6 +439,10 @@ trait TroopsTrait  // ATTENTION
             }
 
             if ($this->player_pref_confirm == 2) {
+
+                game::$instance->incStat(1, 'troops_played', $this->player_id);
+                game::$instance->incStat(1, 'capn_activated', $this->player_id);
+
                 $explode_troop = explode("_", $parg1);
                 $explode_base = explode("_", $varg1);
 
@@ -550,6 +561,9 @@ trait TroopsTrait  // ATTENTION
     function Troop2_Confirm($parg1, $parg2, $varg1, $varg2)
     {
         if ($varg1 == "btn_yes") {
+            game::$instance->incStat(1, 'troops_played', $this->player_id);
+            game::$instance->incStat(1, 'capn_activated', $this->player_id);
+
             $explode = explode("_", $parg1);
 
             $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode[4]}'", true));
@@ -707,6 +721,9 @@ trait TroopsTrait  // ATTENTION
             }
 
             if ($this->player_pref_confirm == 2) {
+
+                game::$instance->incStat(1, 'jumbo_activated', $this->player_id);
+
                 $explode = explode("_", $varg1);
                 $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
 
@@ -784,6 +801,8 @@ trait TroopsTrait  // ATTENTION
         }
 
         if ($varg1 == 'btn_yes') {
+
+            game::$instance->incStat(1, 'jumbo_activated', $this->player_id);
 
             $explode = explode("_", $parg1);
             $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
@@ -900,6 +919,8 @@ trait TroopsTrait  // ATTENTION
 
         if ((strpos($varg1, 'red_troop') === 0)||(strpos($varg1, 'blue_troop') === 0)) 
         {
+            game::$instance->incStat(1, 'xb42_activated', $this->player_id);
+
             $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
             $count = count($troop_id_opponent_hand);
             $rand = bga_rand(1, $count);
@@ -935,6 +956,8 @@ trait TroopsTrait  // ATTENTION
         }
 
         if ($varg1 == 'btn_discard') {
+
+            game::$instance->incStat(1, 'xb42_activated', $this->player_id);
             
                 $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
                 $count = count($troop_id_opponent_hand);
@@ -1019,6 +1042,8 @@ trait TroopsTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "Troop5_Step1", $parg1);
         } else {
 
+            game::$instance->incStat(1, 'xb42_activated', $this->player_id);
+
             $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
             $count = count($troop_id_opponent_hand);
             $rand = bga_rand(1, $count);
@@ -1100,6 +1125,9 @@ trait TroopsTrait  // ATTENTION
     public function Troop6_Step1($parg1, $parg2, $varg1, $varg2)
     {
         if (($varg1 == "btn_draw_1")||($varg1 == $this->player_deck_id)) {
+
+            game::$instance->incStat(1, 'troops_drawn', $this->player_id);
+            game::$instance->incStat(1, 'star_activated', $this->player_id);
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");

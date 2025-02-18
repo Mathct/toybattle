@@ -95,7 +95,7 @@
 
       "base_activated": {
         "id": 20,
-        "name": "Base activations",
+        "name": "Special base activations",
         "type": "int"
       },
 

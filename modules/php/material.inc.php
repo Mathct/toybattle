@@ -228,7 +228,7 @@ $this->_bases = [
         12 => ["value" => 12, "adjacents" => [1, 15],          "power" => 0,  "top" => 81.9, "left" => 71.5],
         13 => ["value" => 13, "adjacents" => [11, 14, 16, 17], "power" => 0,  "top" => 65.7, "left" => 16.1],
         14 => ["value" => 14, "adjacents" => [13, 15, 17, 18], "power" => 81, "top" => 65.7, "left" => 44],
-        15 => ["value" => 15, "adjacents" => [14, 18, 19],     "power" => 0,  "top" => 65.7, "left" => 71.5],
+        15 => ["value" => 15, "adjacents" => [12, 14, 18, 19],     "power" => 0,  "top" => 65.7, "left" => 71.5],
         16 => ["value" => 16, "adjacents" => [13, 20],         "power" => 81, "top" => 43.4, "left" => 6.9],
         17 => ["value" => 17, "adjacents" => [13, 14, 20, 21], "power" => 0,  "top" => 43.4, "left" => 31.2],
         18 => ["value" => 18, "adjacents" => [14, 15, 21, 22], "power" => 0,  "top" => 43.4, "left" => 56.7],
