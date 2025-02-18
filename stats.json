@@ -53,7 +53,7 @@
       
       "regions_controlled": {
         "id": 14,
-        "name": "controlled Regions",
+        "name": "Controlled Regions",
         "type": "int"
       },
       
