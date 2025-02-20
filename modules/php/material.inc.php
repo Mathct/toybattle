@@ -84,12 +84,12 @@ $this->_board_types = [
     ],
     7 => [
         "name" => clienttranslate("Station Metal-X"),
-        "desc1" => clienttranslate("Troops effects are not appied on these special bases."),
+        "desc1" => clienttranslate("Troops effects are not applied on these special bases."),
         "desc2" => "",
     ],
     8 => [
         "name" => clienttranslate("Battlefield"),
-        "desc1" => clienttranslate("Point to 1 Troop on your opponent's rack, without looking at it. Your opponent mays it down, facedown, and cannot place it on their turn. At the end of their turn, your opponent places the Troop back on their rack: it's available again."),
+        "desc1" => clienttranslate("Point to 1 Troop on your opponent's rack, without looking at it. Your opponent lays it down, facedown, and cannot place it on their turn. At the end of their turn, your opponent places the Troop back on their rack: it's available again."),
         "desc2" => clienttranslate("<span style=\"font-weight: bold; text-decoration: underline;\">Note</span>: The lying Troop still counts towards the maximum of 8 Troops on your rack."),
     ],
 ];
@@ -228,7 +228,7 @@ $this->_bases = [
         12 => ["value" => 12, "adjacents" => [1, 15],          "power" => 0,  "top" => 81.9, "left" => 71.5],
         13 => ["value" => 13, "adjacents" => [11, 14, 16, 17], "power" => 0,  "top" => 65.7, "left" => 16.1],
         14 => ["value" => 14, "adjacents" => [13, 15, 17, 18], "power" => 81, "top" => 65.7, "left" => 44],
-        15 => ["value" => 15, "adjacents" => [12, 14, 18, 19],     "power" => 0,  "top" => 65.7, "left" => 71.5],
+        15 => ["value" => 15, "adjacents" => [12, 14, 18, 19], "power" => 0,  "top" => 65.7, "left" => 71.5],
         16 => ["value" => 16, "adjacents" => [13, 20],         "power" => 81, "top" => 43.4, "left" => 6.9],
         17 => ["value" => 17, "adjacents" => [13, 14, 20, 21], "power" => 0,  "top" => 43.4, "left" => 31.2],
         18 => ["value" => 18, "adjacents" => [14, 15, 21, 22], "power" => 0,  "top" => 43.4, "left" => 56.7],
@@ -531,9 +531,3 @@ $this->_goodies = [
 
     ]
 ];
-
-
-
-
-
-

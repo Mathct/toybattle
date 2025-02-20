@@ -127,14 +127,12 @@ class Pending extends APP_GameClass
         $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
 
 
-        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) 
-        {
+        if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
             $ret["selectable"][] = $this->player_deck_id;
             $ret['buttons'][] = 'btn_draw_2';
         }
 
-        if ((($counttroopdeck == 1) && ($counttroophand <= 7)) || (($counttroopdeck >= 1) && ($counttroophand == 7))) 
-        {
+        if ((($counttroopdeck == 1) && ($counttroophand <= 7)) || (($counttroopdeck >= 1) && ($counttroophand == 7))) {
             $ret["selectable"][] = $this->player_deck_id;
             $ret['buttons'][] = 'btn_draw_1';
         }
@@ -162,7 +160,7 @@ class Pending extends APP_GameClass
                     if (count($possible_base) >= 1) {
                         $ret["selectable"][] = $troop_id;
                     }
-                    }
+                }
             }
         }
 
@@ -185,8 +183,7 @@ class Pending extends APP_GameClass
 
             $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
 
-            if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2)))
-            {
+            if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id) && ($nb_troops_hand <= 6) && ($counttroopdeck >= 2))) {
                 game::$instance->incStat(2, 'troops_drawn', $this->player_id);
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
 
@@ -198,9 +195,10 @@ class Pending extends APP_GameClass
                     'drawTroopPrivate',
                     clienttranslate('${you} draw ${log1} ${log2}'),
                     array(
-                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
-                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
-                                    ],
+                        'you' =>    [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                        ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -244,8 +242,7 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if (($varg1 == 'btn_draw_1') || (($varg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($varg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1)))
-            {
+            if (($varg1 == 'btn_draw_1') || (($varg1 == $this->player_deck_id) && ($nb_troops_hand == 7) && ($counttroopdeck >= 2)) || (($varg1 == $this->player_deck_id) && ($nb_troops_hand <= 7) && ($counttroopdeck == 1))) {
                 game::$instance->incStat(1, 'troops_drawn', $this->player_id);
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
@@ -256,9 +253,10 @@ class Pending extends APP_GameClass
                     'drawTroopPrivate',
                     clienttranslate('${you} draw ${log1}'),
                     array(
-                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
-                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
-                                    ],
+                        'you' =>    [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                        ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -390,8 +388,7 @@ class Pending extends APP_GameClass
         foreach ($list_troop as $troop) {
             $troop_id = 'troop_' . $troop;
             $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
-            if ((count($possible_base) >= 1) && ($troop_id != $parg1))
-            {
+            if ((count($possible_base) >= 1) && ($troop_id != $parg1)) {
                 $ret["selectable"][] = $troop_id;
             }
         }
@@ -409,13 +406,9 @@ class Pending extends APP_GameClass
 
         if ($varg1 == "btn_cancel") {
             game::$instance->addPending($this->player_id, "NormalTurn");
-        } 
-
-        elseif (strpos($varg1, 'troop') === 0) {
+        } elseif (strpos($varg1, 'troop') === 0) {
             game::$instance->addPending($this->player_id, "ChooseBase", $varg1);
-        }
-        
-        else {
+        } else {
 
             if ($this->player_pref_confirm == 1) {
                 game::$instance->addPending($this->player_id, "ConfirmPlace", $parg1, $varg1);
@@ -440,14 +433,12 @@ class Pending extends APP_GameClass
                     }
                 }
 
-                if(count($numbers_no_blocked)>=1)
-                {
+                if (count($numbers_no_blocked) >= 1) {
                     $valeur_max = max($numbers_no_blocked);
                     self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
-
                 }
 
-                
+
                 game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
 
                 self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
@@ -456,7 +447,7 @@ class Pending extends APP_GameClass
 
                 $type1 = $infos_troop['type'];
 
-               
+
                 game::$instance->notifyAllPlayers(
                     'moveTroop',
                     clienttranslate('${player_name} places ${log1}'),
@@ -483,28 +474,20 @@ class Pending extends APP_GameClass
 
                 $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
-                if($win == 0)
-                {
-                    if(in_array($numero_base, $this->opponent_start_base))
-                    {
+                if ($win == 0) {
+                    if (in_array($numero_base, $this->opponent_start_base)) {
                         game::$instance->setGameStateValue("endgame", 1); // pour progression
                         $numtroop = intval($type1) % 10;
                         game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
-                    }
-                    else
-                    {
+                    } else {
                         game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
                     }
-                    
                 }
 
-                if($win == 1)
-                {
+                if ($win == 1) {
                     game::$instance->setGameStateValue("endgame", 1); // pour progression
                     game::$instance->addPending($this->player_id, "FinGame1", 2);
                 }
-
-                
             }
         }
     }
@@ -538,7 +521,7 @@ class Pending extends APP_GameClass
         if ($varg1 == "btn_yes") {
 
             game::$instance->incStat(1, 'troops_played', $this->player_id);
-            
+
             $explode_troop = explode("_", $parg1);
             $explode_base = explode("_", $parg2);
 
@@ -554,11 +537,9 @@ class Pending extends APP_GameClass
                 }
             }
 
-            if(count($numbers_no_blocked)>=1)
-            {
+            if (count($numbers_no_blocked) >= 1) {
                 $valeur_max = max($numbers_no_blocked);
                 self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
-
             }
 
             game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
@@ -568,7 +549,7 @@ class Pending extends APP_GameClass
 
             $type1 = $infos_troop['type'];
 
-           
+
             game::$instance->notifyAllPlayers(
                 'moveTroop',
                 clienttranslate('${player_name} places ${log1}'),
@@ -586,7 +567,7 @@ class Pending extends APP_GameClass
                 )
             );
 
-         
+
             $numero_base = $explode_base[2];
             $troop_id = $explode_troop[1];
 
@@ -595,29 +576,20 @@ class Pending extends APP_GameClass
 
             $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
-           if($win == 0)
-           {
-            if(in_array($numero_base, $this->opponent_start_base))
-            {
+            if ($win == 0) {
+                if (in_array($numero_base, $this->opponent_start_base)) {
+                    game::$instance->setGameStateValue("endgame", 1); // pour progression
+                    $numtroop = intval($type1) % 10;
+                    game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
+                } else {
+                    game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
+                }
+            }
+
+            if ($win == 1) {
                 game::$instance->setGameStateValue("endgame", 1); // pour progression
-                $numtroop = intval($type1) % 10;
-                game::$instance->addPending($this->player_id, "FinGame1", 3, $numtroop);
+                game::$instance->addPending($this->player_id, "FinGame1", 2);
             }
-            else
-            {
-                game::$instance->addPending($this->player_id, "VerifTroop", $troop_id, $numero_base);
-            }
-            
-           }
-
-           if($win == 1)
-           {
-            game::$instance->setGameStateValue("endgame", 1); // pour progression
-            game::$instance->addPending($this->player_id, "FinGame1", 2);
-           }
-
-
-            
         }
 
         if ($varg1 == "btn_no") {
@@ -646,15 +618,14 @@ class Pending extends APP_GameClass
 
     function ConfirmDraw($parg1, $parg2, $varg1, $varg2)
     {
-        
+
         if ($varg1 == "btn_yes") {
 
             $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
             $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
             $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
 
-            if (($parg1 == 'btn_draw_2') || (($parg1 == $this->player_deck_id)&&($nb_troops_hand <= 6)&&($counttroopdeck >=2)))
-            {
+            if (($parg1 == 'btn_draw_2') || (($parg1 == $this->player_deck_id) && ($nb_troops_hand <= 6) && ($counttroopdeck >= 2))) {
                 game::$instance->incStat(2, 'troops_drawn', $this->player_id);
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(2, $this->player_deck, 'hand');
@@ -672,10 +643,11 @@ class Pending extends APP_GameClass
                     'drawTroopPrivate',
                     clienttranslate('${you} draw ${log1} ${log2}'),
                     array(
-                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
-                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
-                                    ],
-                        
+                        'you' =>    [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                        ],
+
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -700,7 +672,7 @@ class Pending extends APP_GameClass
                         'origine' => "deck",
                         'nb_troops' => 2,
                         'nb_troops_hand' => $nb_troops_hand,
-                        
+
 
 
                     )
@@ -719,8 +691,7 @@ class Pending extends APP_GameClass
                 );
             }
 
-            if (($parg1 == 'btn_draw_1') || (($parg1 == $this->player_deck_id)&&($nb_troops_hand == 7)&&($counttroopdeck >=2)) || (($parg1 == $this->player_deck_id)&&($nb_troops_hand <= 7)&&($counttroopdeck == 1)))
-            {
+            if (($parg1 == 'btn_draw_1') || (($parg1 == $this->player_deck_id) && ($nb_troops_hand == 7) && ($counttroopdeck >= 2)) || (($parg1 == $this->player_deck_id) && ($nb_troops_hand <= 7) && ($counttroopdeck == 1))) {
                 game::$instance->incStat(1, 'troops_drawn', $this->player_id);
 
                 $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
@@ -732,9 +703,10 @@ class Pending extends APP_GameClass
                     'drawTroopPrivate',
                     clienttranslate('${you} draw ${log1}'),
                     array(
-                        'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
-                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
-                                    ],
+                        'you' =>    [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                        ],
                         'player_id' => $this->player_id,
                         'origine' => "deck",
                         'new_troops' => $new_troops,
@@ -806,24 +778,23 @@ class Pending extends APP_GameClass
     function FinGame1($parg1, $parg2, $varg1, $varg2)
     {
 
-        
 
-        if ($parg1== "1") {
+
+        if ($parg1 == "1") {
 
             game::$instance->notifyAllPlayers(
                 'message',
                 clienttranslate('${player_name} can\'t play anymore'),  //NE PEUT PLUS JOUER (NI DRAW NI PLACE TROOP)
                 array(
                     'player_name' => $this->player_name,
-                    
+
                 )
             );
 
             $star_player = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id}'");
             $star_opponent = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id_opponent}'");
-            
-            if($star_player > $star_opponent)
-            {
+
+            if ($star_player > $star_opponent) {
                 $victory = 1;
                 $colorvictory = $this->player_color_text;
                 $troop_victory = 0;
@@ -836,13 +807,10 @@ class Pending extends APP_GameClass
                     array(
                         'playerid' => $this->player_id,
                         'score' => 1,
-                        
+
                     )
                 );
-            }
-
-            else
-            {
+            } else {
                 $victory = 1;
                 $colorvictory = $this->opponent_color_text;
                 $troop_victory = 0;
@@ -855,16 +823,15 @@ class Pending extends APP_GameClass
                     array(
                         'playerid' => $this->player_id_opponent,
                         'score' => 1,
-                        
+
                     )
                 );
-
             }
 
             game::$instance->incStat(1, 'win_by_terrain');
         }
 
-        if ($parg1== "2") {
+        if ($parg1 == "2") {
 
             $victory = 1;
             $colorvictory = $this->player_color_text;
@@ -874,11 +841,11 @@ class Pending extends APP_GameClass
 
             game::$instance->notifyAllPlayers(
                 'message',
-                clienttranslate('${player_name} won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
+                clienttranslate('${player_name} has won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
                 array(
                     'player_name' => $this->player_name,
                     'max_medals' => $max_medals,
-                    
+
                 )
             );
 
@@ -890,16 +857,15 @@ class Pending extends APP_GameClass
                 array(
                     'playerid' => $this->player_id,
                     'score' => 1,
-                    
+
                 )
             );
 
-            
+
             game::$instance->incStat(1, 'win_by_terrain');
-            
         }
 
-        if ($parg1== "3") {
+        if ($parg1 == "3") {
 
             $victory = 2;
             $colorvictory = $this->player_color_text;
@@ -909,11 +875,12 @@ class Pending extends APP_GameClass
                 'message',
                 clienttranslate('${player_name} captured ${opponent}\'s starting base'), //A PRIS LA BASE ADVERSE
                 array(
-                    'opponent' =>    [   'log' => '<b style="color: #${color};">${opponent_name}</b>',
-                                        'args'=> ['opponent_name' => $this->player_name_opponent, 'color'=>$this->player_color_opponent]
-                                    ],
+                    'opponent' =>    [
+                        'log' => '<b style="color: #${color};">${opponent_name}</b>',
+                        'args' => ['opponent_name' => $this->player_name_opponent, 'color' => $this->player_color_opponent]
+                    ],
                     'player_name' => $this->player_name,
-                    
+
                 )
             );
 
@@ -925,12 +892,11 @@ class Pending extends APP_GameClass
                 array(
                     'playerid' => $this->player_id,
                     'score' => 1,
-                    
+
                 )
             );
 
             game::$instance->incStat(1, 'win_by_hq');
-            
         }
 
         game::$instance->notifyAllPlayers(
@@ -940,17 +906,12 @@ class Pending extends APP_GameClass
                 'typevictory' => $victory,
                 'colorvictory' => $colorvictory,
                 'troopvictory' => $troop_victory,
-                
+
             )
         );
 
-        game::$instance->notifyAllPlayers( 'simplePause', '', [ 'time' => 1000] ); 
+        game::$instance->notifyAllPlayers('simplePause', '', ['time' => 1000]);
 
-        game::$instance->gamestate->nextState( 'end' ); 
-        
+        game::$instance->gamestate->nextState('end');
     }
-
-   
-
-
 }
