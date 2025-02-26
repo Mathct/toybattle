@@ -29,6 +29,8 @@
     --board-height: 833.5px;
     --rack-width: 600px;
     --rack-height: 60px;
+    --line-width: 670px;
+    --line-height: 110px;
     --goodie-width: 54px;
     --goodie-height: 652px;
     --medal-width: 26px;
@@ -183,6 +185,10 @@ body {
     align-items: center;
     margin: 0;
     position: relative;
+    background-image: url('img/TB_Background_Sand.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 
@@ -266,6 +272,9 @@ body {
 .line {
     display: flex;
     flex-direction: row;
+    height: var(--line-height);
+    /*gap: 10px;*/
+    width: var(--line-width);
 }
 
 .deck-wrapper {
@@ -303,7 +312,8 @@ body {
 .rack-wrapper {
     position: relative;
     /*pointer-events: none;*/
-    
+    height: var(--line-height);
+    width: var(--rack-width);    
 }
 
 
@@ -320,7 +330,10 @@ body {
 }
 
 #red_troops_container {
-    top: 18%;
+    bottom: 0%;
+}
+#blue_troops_container {
+    top: 0%;
 }
 
 
@@ -337,6 +350,8 @@ body {
     background-position: 0% 0%;
     height: var(--rack-height);
     width: 100%;
+    position: absolute;
+    bottom: 0;
 }
 
 .rack_red {
@@ -345,6 +360,8 @@ body {
     background-position: 0% -100%;
     height: var(--rack-height);
     width: 100%;
+    position: absolute;
+    top: 0;
 }
 
 
@@ -353,7 +370,7 @@ body {
     display: flex;
     gap: 2px;
     padding: 2px;
-    background:white;
+    /*background:white;*/
 }
 
 .base_all {
@@ -422,25 +439,7 @@ body {
 
     .line {
         justify-content: space-between;
-        height: 110px;
-        gap: 10px;
-        width: 710px;
     }
-
-    .rack-wrapper {
-        height: 100%; /* Ajustez selon vos besoins */
-        width: var(--rack-width);
-    }
-
-    .rack_blue {
-        position: absolute;
-        bottom: 0;
-    }
-
-    #blue_troops_container {
-        top: 0%;
-    }
-
 
     .playmat {
         flex-direction: row;
@@ -453,6 +452,7 @@ body {
     }
 }
 
+
 /* Landscape orientation */
 @media (orientation: landscape) {
 
@@ -462,31 +462,7 @@ body {
 
     .line {
         justify-content: center;
-        /*align-items:center;*/
-        width: 100%;
-        gap: 10px;
-        height: 110px;
     }
-
-    .rack-wrapper {
-        height: 110px;
-        width: var(--rack-width);
-    }
-
-    .rack_blue {
-        position: absolute;
-        bottom: 0;
-    }
-    .rack_red {
-        position: absolute;
-        top: 0;
-    }
-
-    #blue_troops_container {
-        bottom: 18%;
-    }
-
-    
 
     .playmat {
         flex-direction: column;
@@ -503,9 +479,6 @@ body {
     #red_discard {
         align-items:flex-end; 
     }
-
-
-
 }
 
 
@@ -796,8 +769,3 @@ body {
 .check_red {
     background-position: -100% 0%;
 }
-
-
-
-
-

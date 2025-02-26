@@ -1406,7 +1406,9 @@ onScreenWidthChange: function() {
 },
 
 
-
+/*******************************
+ ****** UTILS TISAAC *******
+ ******************************/
 
 
 /*******************************
@@ -1600,14 +1602,15 @@ addCustomTooltip(id, html, config = {}) {
 },
 
 
-destroy(elem) {
-    if (this.tooltips[elem.id]) {
-        this.tooltips[elem.id].destroy();
-        delete this.tooltips[elem.id];
-    }
+    destroy(elem) {
+        if (this.tooltips[elem.id]) {
+            this.tooltips[elem.id].destroy();
+            delete this.tooltips[elem.id];
+        }
 
-    elem.remove();
-},
+        elem.remove();
+    },
+
 
 
 /*******************************
@@ -1636,12 +1639,12 @@ getTooltipTroopContent : function(type, id) {
     const troop_infos = this.troop_types[type % 10];
    
     // Afficher les informations des Troops    
-    html += `<span class='tooltip_title'>${troop_infos.name}</span>`;
+    html += `<span class='tooltip_title'>${_(troop_infos.name)}</span>`;
     let effect_desc = troop_infos.desc1;
-    html += `<br><span class='tooltip_desc'>${effect_desc}</span>`;
+    html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
 
     let effect_info = troop_infos.desc2;
-    html += `<br><span class='tooltip_info'>${effect_info}</span>`;
+    html += `<br><span class='tooltip_info'>${_(effect_info)}</span>`;
      
     html += '</div></div>'; // Fermeture des div      
     return html;          
@@ -1662,7 +1665,7 @@ getTooltipBaseContent: function(board_id, base_power, troops, base_id) {
         html += '<div id="special_base_desc">';
 
         // Ajout du titre avec ou sans l'icône
-        html += `<span class='tooltip_title'>${board_infos.name}`;
+        html += `<span class='tooltip_title'>${_(board_infos.name)}`;
         if ([1, 3, 4, 5, 8].includes(parseInt(board_id))) {
 
             const iconClass = `icon_power_bandeau icon_powerbase_${board_id}`;
@@ -1692,11 +1695,11 @@ getTooltipBaseContent: function(board_id, base_power, troops, base_id) {
         
         // Ajout de la description
         let effect_desc = board_infos.desc1;
-        html += `<br><span class='tooltip_desc'>${effect_desc}</span>`;
+        html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
         
         // Ajout des informations supplémentaires
         let effect_info = board_infos.desc2;
-        html += `<br><span class='tooltip_info'>${effect_info}</span></div>`;
+        html += `<br><span class='tooltip_info'>${_(effect_info)}</span></div>`;
 
 
         if( troops.length > 0) {
