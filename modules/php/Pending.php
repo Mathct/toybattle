@@ -833,33 +833,72 @@ class Pending extends APP_GameClass
 
         if ($parg1 == "2") {
 
-            $victory = 1;
-            $colorvictory = $this->player_color_text;
-            $troop_victory = 0;
-
+            $star_player = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id}'");
+            $star_opponent = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id_opponent}'");
             $max_medals = game::$instance->_medals_to_win[game::$instance->getGameStateValue('board')];
 
-            game::$instance->notifyAllPlayers(
-                'message',
-                clienttranslate('${player_name} has won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
-                array(
-                    'player_name' => $this->player_name,
-                    'max_medals' => $max_medals,
+            if($star_player >= $max_medals)
+            {
 
-                )
-            );
+                $victory = 1;
+                $colorvictory = $this->player_color_text;
+                $troop_victory = 0;
 
-            self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+                game::$instance->notifyAllPlayers(
+                    'message',
+                    clienttranslate('${player_name} has won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
+                    array(
+                        'player_name' => $this->player_name,
+                        'max_medals' => $max_medals,
 
-            game::$instance->notifyAllPlayers(
-                'score',
-                '',
-                array(
-                    'playerid' => $this->player_id,
-                    'score' => 1,
+                    )
+                );
 
-                )
-            );
+                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+
+                game::$instance->notifyAllPlayers(
+                    'score',
+                    '',
+                    array(
+                        'playerid' => $this->player_id,
+                        'score' => 1,
+
+                    )
+                );
+
+            }
+
+            if($star_opponent >= $max_medals)
+            {
+
+                $victory = 1;
+                $colorvictory = $this->opponent_color_text;
+                $troop_victory = 0;
+
+                game::$instance->notifyAllPlayers(
+                    'message',
+                    clienttranslate('${player_name} has won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
+                    array(
+                        'player_name' => $this->player_name_opponent,
+                        'max_medals' => $max_medals,
+
+                    )
+                );
+
+                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id_opponent}'");
+
+                game::$instance->notifyAllPlayers(
+                    'score',
+                    '',
+                    array(
+                        'playerid' => $this->player_id_opponent,
+                        'score' => 1,
+
+                    )
+                );
+
+            }
+
 
 
             game::$instance->incStat(1, 'win_by_terrain');
