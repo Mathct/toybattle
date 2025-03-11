@@ -165,7 +165,7 @@ onEnteringState: function( stateName, args )
                 this.setupConnections(this.args.selectable);
 
                 if(args.args.titleyou != null) {
-                    $('pagemaintitletext').innerHTML = this.format_string_recursive((args.args.titleyou).replace('${you}', this.divYou()).replace(/#opponent#/g,args.args.opponent).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);
+                    $('pagemaintitletext').innerHTML = this.format_string_recursive(_(args.args.titleyou).replace('${you}', this.divYou()).replace(/#opponent#/g,args.args.opponent).replace('#nb#',args.args.nb).replace('#nb2#',args.args.nb2).replace('#icon#',args.args.icon).replace('#icon2#',args.args.icon2), args.args);
                 }   
             }   
             else
@@ -541,16 +541,32 @@ setupPlayersBoard: function() {
 setupBoard: function() {
     console.info('Setting up the board');
 
+    console.log( 'desktop preference '+ this.getGameUserPreference('102'));
+
+    
+    // mobile and portrait mode
+    console.log("mobile ? ",$('ebd-body').classList.contains('mobile_version'));
+    console.log("mobile 2 ? ",/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
+
+    
+
     // Détecter l'orientation initiale
     this.orientation = (window.innerWidth > window.innerHeight) ? "landscape" : "portrait";
 
+    if( this.checkHorizontalMode() ) {
+        this.setupHorizontalMode();
+    }
+    else {
+        if (this.orientation === "landscape") {
+            this.setupLandscapeMode();
+        } else {
+            this.setupPortraitMode();
+        }
+    }
+
     console.log(`Detected ${this.orientation} mode`);
 
-    if (this.orientation === "landscape") {
-        this.setupLandscapeMode();
-    } else {
-        this.setupPortraitMode();
-    }
+
 
     // Gérer les changements d'orientation avec rechargement forcé
     window.addEventListener('resize', () => {
@@ -564,12 +580,40 @@ setupBoard: function() {
 
 },
 
+checkHorizontalMode: function() {
+    //const isMobile =  window.matchMedia("(max-width: 768px)").matches;
+    const isMobile =  /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    return (isMobile == false && this.orientation === "landscape" && this.getGameUserPreference('102') == 2 );
+},
 
+
+setupNewLandscapeMode: function() {
+
+    document.getElementById('game_play_area').insertAdjacentHTML('beforeend', `
+        <div id="global_big_id">
+            <div id="sideleft"></div>
+            <div id="global_id">
+                <div id="goodie_${this.board_id}"></div>
+                <div id="board_${this.board_id}"></div>
+                <div id="playmat_id">
+                    <div id="red_line"></div>
+                    <div id="red_discard"></div>
+                    <div id="blue_discard"></div>
+                    <div id="blue_line"></div>
+                </div> 
+            </div>
+            <div id="sideright"></div> 
+        </div>`);
+
+},
 
 setupLandscapeMode: function() {
 
+
     const globalBigContainer = document.getElementById('global_big_id');
     const globalContainer = document.getElementById('global_id');
+    
+    globalContainer.style.flexDirection = 'row';
 
     // Reinitialization
     globalContainer.className = '';
@@ -603,6 +647,9 @@ setupLandscapeMode: function() {
     */
 
     const playmatContainer = this.createPlaymat();
+    playmatContainer.style.flexDirection = 'column';
+    playmatContainer.style.height = 'var(--board-height)';
+    playmatContainer.style.width = '670px';
     if( this.isCurrentPlayerRed() ) {
         playmatContainer.classList.add('board-inverted');
     }
@@ -610,6 +657,7 @@ setupLandscapeMode: function() {
 
 
     const redLineContainer = this.createLine('red');
+    redLineContainer.style.justifyContent = 'center';
     playmatContainer.appendChild(redLineContainer);
 
     if( this.isCurrentPlayerRed() ) {
@@ -674,6 +722,12 @@ setupLandscapeMode: function() {
     /* redDiscard */
     const redDiscardContainer = this.createDiscard( 'red' );
     redDiscardContainer.style.flexDirection = "row";
+
+    redDiscardContainer.style.width = '100%';
+    redDiscardContainer.style.flexWrap = 'wrap-reverse';
+    redDiscardContainer.style.height = '25%';
+    redDiscardContainer.style.alignItems = 'flex-end'; 
+
     if( this.isCurrentPlayerRed() ) {
         redDiscardContainer.style.justifyContent = 'flex-end';
     }
@@ -707,6 +761,12 @@ setupLandscapeMode: function() {
     */
     const blueDiscardContainer = this.createDiscard( 'blue' );
     blueDiscardContainer.style.flexDirection = "row";
+
+    blueDiscardContainer.style.width = '100%';
+    blueDiscardContainer.style.flexWrap = 'wrap-reverse';
+    blueDiscardContainer.style.height = '25%';
+
+
     if( this.isCurrentPlayerRed() ) {
         blueDiscardContainer.style.justifyContent = 'flex-end';
     }
@@ -724,6 +784,7 @@ setupLandscapeMode: function() {
 
     /* blueLineContainer */
     const blueLineContainer = this.createLine( 'blue');
+    blueLineContainer.style.justifyContent = 'center';
     playmatContainer.appendChild(blueLineContainer);
 
     if( this.isCurrentPlayerRed() ) {
@@ -795,6 +856,7 @@ setupLandscapeMode: function() {
 },
 
 setupPortraitMode: function() {
+
     /*  creates global container with yourLine, playMat and myLine containers  */
     const globalContainer = document.getElementById('global_id');
 
@@ -802,14 +864,18 @@ setupPortraitMode: function() {
     globalContainer.className = '';
     globalContainer.innerHTML = '';
 
+    globalContainer.style.flexDirection = 'column';
+
     if( this.isCurrentPlayerRed() ) {
         globalContainer.classList.add('board-inverted');
     }
+    
 
     /*  redLineContainer definition 
         contains redDeckElement and redRackContainer
     */
     const redLineContainer = this.createLine('red');
+    redLineContainer.style.justifyContent = 'space-between';
     globalContainer.appendChild(redLineContainer);
 
 
@@ -863,6 +929,7 @@ setupPortraitMode: function() {
         contains blueDiscard, Board and redDiscard
     */
     const playmatContainer = this.createPlaymat();
+    playmatContainer.style.flexDirection = 'row';
     globalContainer.appendChild(playmatContainer);
 
     /*  blueDiscardContainer definition 
@@ -878,6 +945,9 @@ setupPortraitMode: function() {
     const blueDiscardContainer = this.createDiscard( 'blue' );
     blueDiscardContainer.style.flexDirection = "column";
     blueDiscardContainer.style.justifyContent = 'flex-end';
+    blueDiscardContainer.style.width = '70px';
+    blueDiscardContainer.style.alignItems = 'center';
+    blueDiscardContainer.style.height = 'var(--board-height)';
     playmatContainer.appendChild(blueDiscardContainer);
     
 
@@ -909,6 +979,9 @@ setupPortraitMode: function() {
     const redDiscardContainer = this.createDiscard( 'red' );
     redDiscardContainer.style.flexDirection = "column";
     redDiscardContainer.style.justifyContent = 'flex-start';
+    redDiscardContainer.style.width = '70px';
+    redDiscardContainer.style.alignItems = 'center';
+    redDiscardContainer.style.height = 'var(--board-height)';
     playmatContainer.appendChild(redDiscardContainer);
     if( this.isCurrentPlayerRed() ) {
         const red_discard_list = this.my_discard;
@@ -935,6 +1008,255 @@ setupPortraitMode: function() {
 
     /* blueLineContainer */
     const blueLineContainer = this.createLine( 'blue');
+    blueLineContainer.style.justifyContent = 'space-between';
+    globalContainer.appendChild(blueLineContainer);
+
+    if( this.isCurrentPlayerRed() ) {
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+        const blueDeckElement = this.createDeck( 'blue' );
+        //blueDeckElement.classList.add('board-inverted');
+        blueLineContainer.appendChild(blueDeckElement);
+    }
+
+
+    /* blueRackContainer */
+
+    const blueRackContainer = this.createRackWithTroops('blue');
+    blueLineContainer.appendChild(blueRackContainer);
+    const blueTroopsContainer = document.getElementById('blue_troops_container');
+
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.your_hand).forEach((troop, index) => {
+            const backTroopElement = this.createBackTroopElement(troop, index);
+            blueTroopsContainer.appendChild(backTroopElement);
+        });
+    }
+    else if( this.isSpectator) {
+        Object.values(this.my_hand).forEach((troop, index) => {
+            const backTroopElement = this.createBackTroopElement(troop, index);
+            blueTroopsContainer.appendChild(backTroopElement);
+        });
+    }
+    else {
+        Object.values(this.my_hand).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            blueTroopsContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
+        });
+    }
+
+    if( this.isSpectator || this.isCurrentPlayerBlue() ) {
+        /* blueDeckElement */
+        const blueDeckElement = this.createDeck( 'blue' );
+        blueLineContainer.appendChild(blueDeckElement);
+    }
+},
+
+setupHorizontalMode: function( ) {
+   
+
+    const globalBigContainer = document.getElementById('global_big_id');
+    const globalContainer = document.getElementById('global_id');
+
+    globalBigContainer.style.height = `724px`;
+    //globalBigContainer.style.pointerEvents = 'none';
+    globalBigContainer.style.justifyContent = 'space-between';
+
+
+    globalContainer.style.flexDirection = 'column';
+
+    // Appliquer la rotation
+    if (this.isCurrentPlayerRed()) {
+        globalContainer.style.transform = "translateX(-50%) rotate(270deg)";
+    } else {
+        globalContainer.style.transform = "translateX(-50%) rotate(90deg)";
+    }
+
+    globalContainer.style.left = `50%`;
+    globalContainer.style.width = `auto`;
+    globalContainer.style.height = `auto`;
+   
+    //globalContainer.style.pointerEvents = 'auto';
+    
+    /*  redLineContainer definition 
+        contains redDeckElement and redRackContainer
+    */
+    const redLineContainer = this.createLine('red');
+    redLineContainer.style.justifyContent = 'space-between';
+    globalContainer.appendChild(redLineContainer);
+
+
+    if( this.isCurrentPlayerRed() ) {
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+            const redDeckElement = this.createDeck( 'red' );
+            redDeckElement.classList.add('board-inverted');
+            redLineContainer.appendChild(redDeckElement);
+    }
+
+
+
+    /*  redRackContainer definition 
+        contains Rack and all Troops in Hand
+    */
+
+    const redRackContainer = this.createRackWithTroops('red');
+    redLineContainer.appendChild(redRackContainer);
+    const redTroopsContainer = document.getElementById('red_troops_container');
+
+
+
+    if( this.isCurrentPlayerRed() ) {
+        Object.values(this.my_hand).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted');
+            redTroopsContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
+        });
+    }
+    else {
+        Object.values(this.your_hand).forEach((troop, index) => {
+            const troopElement = this.createBackTroopElement(troop, index);
+            troopElement.classList.add('board-inverted');
+            redTroopsContainer.appendChild(troopElement);
+        });
+    }
+    
+    if( this.isSpectator || this.isCurrentPlayerBlue() ) {
+        /*  yourDeckContainer definition 
+            contains Deck and number of Troops TODO
+        */
+            const redDeckElement = this.createDeck( 'red' );
+            redDeckElement.classList.add('board-inverted');
+            redLineContainer.appendChild(redDeckElement);
+    }
+
+    /*  PlaymatContainer definition 
+        contains blueDiscard, Board and redDiscard
+    */
+    const playmatContainer = this.createPlaymat();
+    playmatContainer.style.flexDirection = 'row';
+    globalContainer.appendChild(playmatContainer);
+
+    /*  blueDiscardContainer definition 
+        contains possible Troops in opacity 50 and all discarded ones TODO
+    */
+
+    const blueDiscardContainer = this.createDiscard( 'blue' );
+    blueDiscardContainer.style.flexDirection = "column";
+    
+    if( this.isCurrentPlayerRed() ) {
+        blueDiscardContainer.style.flexWrap = "wrap-reverse";
+        blueDiscardContainer.style.justifyContent = 'flex-end';
+    }
+    else {
+        blueDiscardContainer.style.flexWrap = "wrap";
+        blueDiscardContainer.style.justifyContent = 'flex-end';
+    }
+    
+    blueDiscardContainer.style.width = '140px';
+    blueDiscardContainer.style.maxWidth = '140px';
+    //blueDiscardContainer.style.alignItems = 'center';
+    blueDiscardContainer.style.height = 'calc(var(--board-height) / 2)';
+
+
+
+    /* redDiscard */
+    const redDiscardContainer = this.createDiscard( 'red' );
+    redDiscardContainer.style.flexDirection = "column";
+    
+    if( this.isCurrentPlayerRed() ) {
+        redDiscardContainer.style.flexWrap = "wrap-reverse";
+        redDiscardContainer.style.justifyContent = 'flex-start';
+    }
+    else {
+        redDiscardContainer.style.flexWrap = "wrap";
+        redDiscardContainer.style.justifyContent = 'flex-start';
+    }
+    redDiscardContainer.style.width = '140px';
+    redDiscardContainer.style.maxWidth = '140px';
+    //redDiscardContainer.style.alignItems = 'center';
+    redDiscardContainer.style.height = 'calc(var(--board-height) / 2)';
+
+
+    if( this.isCurrentPlayerRed() ) {
+        const discardsContainer = document.createElement('div');
+        discardsContainer.id = `discards_container`;
+        discardsContainer.classList.add('discards_horizontal');
+        discardsContainer.appendChild(redDiscardContainer);
+        discardsContainer.appendChild(blueDiscardContainer);
+        playmatContainer.appendChild(discardsContainer);
+    }
+
+
+    const goodieContainer = this.createGoodie(); 
+    if( this.isCurrentPlayerBlue() || this.isSpectator) {
+        playmatContainer.appendChild(goodieContainer);
+    }
+
+         
+    /*  boardContainer definition 
+        contains board and all troops
+    */
+
+
+
+    
+
+    const boardContainer = this.createBoard();
+    playmatContainer.appendChild(boardContainer);
+    this.createBases();
+    this.createTroopsOnBoard();
+    this.createMedals();
+
+
+
+    if( this.isCurrentPlayerBlue() || this.isSpectator) {
+        const discardsContainer = document.createElement('div');
+        discardsContainer.id = `discards_container`;
+        discardsContainer.classList.add('discards_horizontal');
+        discardsContainer.appendChild(redDiscardContainer);
+        discardsContainer.appendChild(blueDiscardContainer);
+        playmatContainer.appendChild(discardsContainer);
+    }
+    
+    if( this.isCurrentPlayerRed() ) { 
+        playmatContainer.appendChild(goodieContainer);
+    }
+
+
+    const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
+    Object.values(blue_discard_list).forEach(troop => {
+        const troopElement = this.createTroopElement(troop);
+        troopElement.classList.add('opa_70');
+        blueDiscardContainer.appendChild(troopElement);
+        this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
+    });
+     if( this.isCurrentPlayerRed() ) {
+        const red_discard_list = this.my_discard;
+        Object.values(red_discard_list).forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id)); 
+        });
+    }
+    else {
+        const red_discard_list = this.your_discard;
+        Object.values(red_discard_list).reverse().forEach(troop => {
+            const troopElement = this.createTroopElement(troop);
+            troopElement.classList.add('board-inverted', 'opa_70');
+            redDiscardContainer.appendChild(troopElement);
+            this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
+        });
+    }
+
+    /* blueLineContainer */
+    const blueLineContainer = this.createLine( 'blue');
+    blueLineContainer.style.justifyContent = 'space-between';
     globalContainer.appendChild(blueLineContainer);
 
     if( this.isCurrentPlayerRed() ) {
@@ -1316,89 +1638,176 @@ onScreenWidthChange: function() {
     const gamePlayArea = document.getElementById("game_play_area");
     const gamePlayAreaWidth = gamePlayArea.clientWidth;
     const gamePlayAreaHeight = window.innerHeight;
-/*
+
     console.log('gamePlayArea', gamePlayArea);
     console.log('gamePlayAreaWidth', gamePlayAreaWidth);
-    console.log('gamePlayAreaHeight', gamePlayAreaHeight);*/
+    console.log('gamePlayAreaHeight', gamePlayAreaHeight);
 
     const globalBigContainer = document.getElementById("global_big_id");
     const sideleft = document.getElementById("sideleft");
     const sideright = document.getElementById("sideright");
 
+    const globalContainer = document.getElementById("global_id");
 
-    if (gamePlayAreaWidth < 1532) {
-        if (sideleft) {
-            sideleft.classList.add("hidden");
+
+    const bigglobal = this.getBoundingClientRectIgnoreZoom(globalBigContainer);
+
+    const global = this.getBoundingClientRectIgnoreZoom(globalContainer);
+
+
+
+    if(globalBigContainer ) {
+
+
+        const board = document.getElementById(`board_${this.board_id}`);       // Élément board
+        const playmat = document.getElementById('playmat_id');   // Élément playmat
+
+        //TODO hauteur proportionnelle à la largeur du board.
+
+        if( this.checkHorizontalMode()) {
+
+            if( gamePlayAreaWidth < global.width) {
+
+                globalContainer.style.width = `${gamePlayArea.clientWidth}`;
+                globalContainer.style.height = `${gamePlayArea.clientHeight}`;
+
+
+
+                console.log('globalW', gamePlayArea.clientWidth);
+                console.log('globalH', gamePlayArea.clientHeight);
+
+
+               this.scale = gamePlayAreaWidth / global.width;
+
+                const boardWidth = this.BOARD_WIDTH  * this.scale;
+                const boardHeight = this.BOARD_HEIGHT  * this.scale;
+
+                const troopWidth = this.TROOP_WIDTH  * this.scale;
+                const troopHeight = this.TROOP_HEIGHT  * this.scale;
+
+                const rackWidth = this.RACK_WIDTH  * this.scale;
+                const rackHeight = this.RACK_HEIGHT  * this.scale;
+                const lineWidth = this.LINE_WIDTH  * this.scale;
+                const lineHeight = this.LINE_HEIGHT  * this.scale;
+
+                //const goodieWidth = this.GOODIE_WIDTH  * this.scale;
+                const goodieHeight = this.GOODIE_HEIGHT  * this.scale;
+                const medalWidth = this.MEDAL_WIDTH  * this.scale;
+
+
+                const victoryWidth = Math.min( gamePlayAreaWidth, this.VICTORY_WIDTH );
+                const victoryHeight = (this.VICTORY_HEIGHT / this.VICTORY_WIDTH) * victoryWidth;
+
+                const deckCounterSize = this.DECK_COUNTER_SIZE * this.scale;
+                
+
+                document.documentElement.style.setProperty('--board-height', `${boardHeight}px`);
+
+                document.documentElement.style.setProperty('--board-width', `${boardWidth}px`);
+                document.documentElement.style.setProperty('--board-height', `${boardHeight}px`);
+
+                document.documentElement.style.setProperty('--troop-width', `${troopWidth}px`);
+                document.documentElement.style.setProperty('--troop-height', `${troopHeight}px`);
+
+                document.documentElement.style.setProperty('--rack-width', `${rackWidth}px`);
+                document.documentElement.style.setProperty('--rack-height', `${rackHeight}px`);
+                document.documentElement.style.setProperty('--line-width', `${lineWidth}px`);
+                document.documentElement.style.setProperty('--line-height', `${lineHeight}px`);
+
+                //document.documentElement.style.setProperty('--goodie-width', `${goodieWidth}px`);
+                document.documentElement.style.setProperty('--goodie-height', `${goodieHeight}px`);
+
+                document.documentElement.style.setProperty('--medal-width', `${medalWidth}px`);
+
+
+                document.documentElement.style.setProperty('--victory-width', `${victoryWidth}px`);
+                document.documentElement.style.setProperty('--victory-height', `${victoryHeight}px`);
+
+                document.documentElement.style.setProperty('--deck-counter-size', `${deckCounterSize}px`);
+
+
+            }
+
+
+            //globalContainer.style.width = `${gamePlayAreaHeight}px`;
+
         }
-        if (sideright) {
-            sideright.classList.add("hidden");
+        else {
+
+            if (gamePlayAreaWidth < 1532) {
+                if (sideleft) {
+                    sideleft.classList.add("hidden");
+                }
+                if (sideright) {
+                    sideright.classList.add("hidden");
+                }
+                globalBigContainer.style.justifyContent = "center"; // Recentre global_id
+                document.documentElement.style.setProperty('--global-width', `100%`);
+            }
+            else {
+                if (sideleft && sideleft.classList.contains("hidden")) {
+                    sideleft.classList.remove("hidden");
+                }
+                if (sideright && sideright.classList.contains("hidden")) {
+                    sideright.classList.remove("hidden");
+                }
+                globalBigContainer.style.justifyContent = "space-between"; // Répartit les éléments
+                document.documentElement.style.setProperty('--global-width', `1250px`);
+            }
+
+            
+
+            if (board && playmat) {
+                // Récupérer les dimensions recalculées
+                const boardRect = this.getBoundingClientRectIgnoreZoom(board);
+                const playmatRect = this.getBoundingClientRectIgnoreZoom(playmat);
+
+                // Choisir la base de référence (largeur ou hauteur)
+                const baseWidth = boardRect.width;
+                const baseHeight = baseWidth / this.BOARD_WIDTH * this.BOARD_HEIGHT;
+
+                // Calculer la taille des troops proportionnellement
+                const troopWidth = (this.TROOP_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+                const troopHeight = (this.TROOP_HEIGHT / this.TROOP_WIDTH) * troopWidth; // 88px basé sur la hauteur originale
+                const deckCounterSize = (this.DECK_COUNTER_SIZE / this.BOARD_WIDTH) * baseWidth; 
+
+                const goodieWidth = (this.GOODIE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+                const goodieHeight = (this.GOODIE_HEIGHT / this.GOODIE_WIDTH) * goodieWidth; // 88px basé sur la hauteur originale
+
+                const medalWidth = (this.MEDAL_WIDTH / this.BOARD_WIDTH) * baseWidth;
+
+                const rackWidth = (this.RACK_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+                const rackHeight = (this.RACK_HEIGHT / this.RACK_WIDTH) * rackWidth; // 88px basé sur la hauteur originale
+
+                const lineWidth = (this.LINE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
+                const lineHeight = (this.LINE_HEIGHT / this.LINE_WIDTH) * lineWidth; // 88px basé sur la hauteur originale
+
+
+                const victoryWidth = Math.min( gamePlayAreaWidth, this.VICTORY_WIDTH );
+                const victoryHeight = (this.VICTORY_HEIGHT / this.VICTORY_WIDTH) * victoryWidth;
+            
+                console.log('baseWidth', baseWidth);
+
+                // Mettre à jour les variables CSS
+
+                document.documentElement.style.setProperty('--troop-width', `${troopWidth}px`);
+                document.documentElement.style.setProperty('--troop-height', `${troopHeight}px`);
+                document.documentElement.style.setProperty('--deck-counter-size', `${deckCounterSize}px`);
+                document.documentElement.style.setProperty('--board-height', `${baseHeight}px`);
+                //document.documentElement.style.setProperty('--goodie-width', `${goodieWidth}px`);
+                document.documentElement.style.setProperty('--goodie-height', `${goodieHeight}px`);
+                document.documentElement.style.setProperty('--medal-width', `${medalWidth}px`);
+                document.documentElement.style.setProperty('--rack-width', `${rackWidth}px`);
+                document.documentElement.style.setProperty('--rack-height', `${rackHeight}px`);
+                document.documentElement.style.setProperty('--line-width', `${lineWidth}px`);
+                document.documentElement.style.setProperty('--line-height', `${lineHeight}px`);
+                document.documentElement.style.setProperty('--victory-width', `${victoryWidth}px`);
+                document.documentElement.style.setProperty('--victory-height', `${victoryHeight}px`);
+
+            }
         }
-        globalBigContainer.style.justifyContent = "center"; // Recentre global_id
-        document.documentElement.style.setProperty('--global-width', `100%`);
+
     }
-    else {
-        if (sideleft && sideleft.classList.contains("hidden")) {
-            sideleft.classList.remove("hidden");
-        }
-        if (sideright && sideright.classList.contains("hidden")) {
-            sideright.classList.remove("hidden");
-        }
-        globalBigContainer.style.justifyContent = "space-between"; // Répartit les éléments
-        document.documentElement.style.setProperty('--global-width', `1250px`);
-    }
-
-    const board = document.getElementById(`board_${this.board_id}`);       // Élément board
-    const playmat = document.getElementById('playmat_id');   // Élément playmat
-
-    //TODO hauteur proportionnelle à la largeur du board.
-
-    if (board && playmat) {
-        // Récupérer les dimensions recalculées
-        const boardRect = this.getBoundingClientRectIgnoreZoom(board);
-        const playmatRect = this.getBoundingClientRectIgnoreZoom(playmat);
-
-        // Choisir la base de référence (largeur ou hauteur)
-        const baseWidth = boardRect.width;
-        const baseHeight = baseWidth / this.BOARD_WIDTH * this.BOARD_HEIGHT;
-
-        // Calculer la taille des troops proportionnellement
-        const troopWidth = (this.TROOP_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
-        const troopHeight = (this.TROOP_HEIGHT / this.TROOP_WIDTH) * troopWidth; // 88px basé sur la hauteur originale
-        const deckCounterSize = (this.DECK_COUNTER_SIZE / this.BOARD_WIDTH) * baseWidth; 
-
-        const goodieWidth = (this.GOODIE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
-        const goodieHeight = (this.GOODIE_HEIGHT / this.GOODIE_WIDTH) * goodieWidth; // 88px basé sur la hauteur originale
-
-        const medalWidth = (this.MEDAL_WIDTH / this.BOARD_WIDTH) * baseWidth;
-
-        const rackWidth = (this.RACK_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
-        const rackHeight = (this.RACK_HEIGHT / this.RACK_WIDTH) * rackWidth; // 88px basé sur la hauteur originale
-
-        const lineWidth = (this.LINE_WIDTH / this.BOARD_WIDTH) * baseWidth; // 66px basé sur la largeur du board original
-        const lineHeight = (this.LINE_HEIGHT / this.LINE_WIDTH) * lineWidth; // 88px basé sur la hauteur originale
-
-
-        const victoryWidth = Math.min( gamePlayAreaWidth, this.VICTORY_WIDTH );
-        const victoryHeight = (this.VICTORY_HEIGHT / this.VICTORY_WIDTH) * victoryWidth;
-       
-        console.log('baseWidth', baseWidth);
-
-        // Mettre à jour les variables CSS
-        document.documentElement.style.setProperty('--medal-width', `${medalWidth}px`);
-        document.documentElement.style.setProperty('--troop-width', `${troopWidth}px`);
-        document.documentElement.style.setProperty('--troop-height', `${troopHeight}px`);
-        document.documentElement.style.setProperty('--board-height', `${baseHeight}px`);
-        document.documentElement.style.setProperty('--goodie-height', `${goodieHeight}px`);
-        document.documentElement.style.setProperty('--rack-width', `${rackWidth}px`);
-        document.documentElement.style.setProperty('--rack-height', `${rackHeight}px`);
-        document.documentElement.style.setProperty('--line-width', `${lineWidth}px`);
-        document.documentElement.style.setProperty('--line-height', `${lineHeight}px`);
-        document.documentElement.style.setProperty('--victory-width', `${victoryWidth}px`);
-        document.documentElement.style.setProperty('--victory-height', `${victoryHeight}px`);
-        document.documentElement.style.setProperty('--deck-counter-size', `${deckCounterSize}px`);
-    }
- 
-
     //const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
     //this.scale = Math.min(horizontalScale, verticalScale)*BB_zoom/100;
     // TO DO 
@@ -1815,7 +2224,10 @@ setupNotifications: function()
 
     notifs.forEach((notif) => {
         dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
-        this.notifqueue.setSynchronous(notif[0], notif[1]);
+        if(notif[1] != 1)
+        {
+            this.notifqueue.setSynchronous(notif[0], notif[1]);
+        }
     });
 
     this.notifqueue.setIgnoreNotificationCheck( 'message_allplayers_without_player', (notif) => (notif.args.player_id == this.player_id) );
@@ -1931,6 +2343,23 @@ notif_moveTroop: function(notif)
 
             let deltaX = endRect.left - startRect.left;
             let deltaY = endRect.top - startRect.top;
+
+            console.log( 'deltaX', deltaX);
+            console.log( 'deltaY', deltaY);
+
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
+            }
+            console.log( 'deltaX', deltaX);
+            console.log( 'deltaY', deltaY);
+
+
+
+
+
+
             // transformation
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
 
@@ -1998,6 +2427,13 @@ notif_moveTroop: function(notif)
                 deltaX = -deltaX;
                 deltaY = -deltaY;
             }
+
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
+            }
+
             troopElement.style.zIndex = 1000;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
 
@@ -2118,9 +2554,16 @@ notif_drawTroopPrivate: function (notif) {
             const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
             const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
-            const deltaX = targetRect.left - startRect.left;
-            const deltaY = rackRect.top - startRect.top;
+            let deltaX = targetRect.left - startRect.left;
+            let deltaY = rackRect.top - startRect.top;
+            
+            if( this.checkHorizontalMode() ) {
+                deltaX = rackRect.top - startRect.top;
+                deltaY = targetRect.left - startRect.left;
+            }
 
+            
+        
             troopElement.style.zIndex = 1000;
             troopElement.style.position = 'absolute';
             troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -2262,6 +2705,15 @@ notif_drawTroopPublic: function (notif) {
                     deltaX = -deltaX;
                     deltaY = -deltaY;
                 }
+
+            
+                if( this.checkHorizontalMode() ) {
+                    const deltaZ = deltaX;
+                    deltaX = deltaY;
+                    deltaY = deltaZ;
+                }
+
+
 
                 troopElement.style.zIndex = 1000;
                 troopElement.style.position = 'absolute';
@@ -2412,6 +2864,14 @@ notif_discardTroopFromBoard: function (notif) {
             deltaY = -deltaY;
         }
 
+        if( this.checkHorizontalMode() ) {
+            const deltaZ = deltaX;
+            deltaX = deltaY;
+            deltaY = -deltaZ;
+        }
+
+
+
         const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
 
         const existingTransform = window.getComputedStyle(troopElement).transform;
@@ -2548,6 +3008,18 @@ notif_discardTroopFromHand: function (notif) {
 
             let deltaX = endRect.left - startRect.left;
             let deltaY = endRect.top - startRect.top;
+            console.log('deltaX', deltaX);
+            console.log('deltaY', deltaY);
+
+            if( this.isSpectator == false) {
+                deltaX = - deltaX;
+            }
+
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = deltaZ;
+            }
 
             const existingTransform = window.getComputedStyle(troopElement).transform;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -2629,10 +3101,18 @@ notif_discardTroopFromHand: function (notif) {
 
             let deltaX = endRect.left - startRect.left;
             let deltaY = endRect.top - startRect.top;
+
             if( this.isSpectator == false || player_color == this.RED_COLOR ) {
                 deltaX = -deltaX;
                 deltaY = -deltaY;
             }
+
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
+            }
+
 
             const existingTransform = window.getComputedStyle(troopElement).transform;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -2651,12 +3131,9 @@ notif_discardTroopFromHand: function (notif) {
                 troopElement.classList.add('opa_70');
                 discardContainer.replaceChild(troopElement, placeholder);
 
-                const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
-
                 for( let i=parseInt(selected_troop) + 1; i<=notif.args.nb_cards_in_hand;i++) {
 
                     const troop_id = `${player_color_name}_troop_${i}`;
-
                     let troopElement = document.getElementById(troop_id);
                     troopElement.id = `${player_color_name}_troop_${i-1}`;
 
@@ -2758,6 +3235,12 @@ notif_recoverTroopFromBoard: function (notif) {
     
             let deltaX = targetRect.left - startRect.left;
             let deltaY = targetRect.top - startRect.top;
+
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
+            }
     
             const existingTransform = window.getComputedStyle(troopElement).transform;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -2841,6 +3324,12 @@ notif_recoverTroopFromBoard: function (notif) {
             if ( this.isSpectator == false || player_color == this.RED_COLOR ) {
                 deltaX = -deltaX;
                 deltaY = -deltaY;
+            }
+
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
             }
 
             troopElement.style.zIndex = 100;
@@ -2966,6 +3455,11 @@ notif_recoverTroopFromDiscard: function (notif) {
             let deltaX = targetRect.left - startRect.left;
             let deltaY = targetRect.top - startRect.top;
 
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
+            }
 
             const existingTransform = window.getComputedStyle(troopElement).transform;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -3047,6 +3541,11 @@ notif_recoverTroopFromDiscard: function (notif) {
                 deltaY = -deltaY;
             }
 
+            if( this.checkHorizontalMode() ) {
+                const deltaZ = deltaX;
+                deltaX = deltaY;
+                deltaY = -deltaZ;
+            }
 
             const existingTransform = window.getComputedStyle(troopElement).transform;
             const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
@@ -3165,6 +3664,12 @@ notif_moveTroopBoardToBoard: function (notif) {
             deltaY = -deltaY;
         }
 
+        if( this.checkHorizontalMode() ) {
+            const deltaZ = deltaX;
+            deltaX = deltaY;
+            deltaY = -deltaZ;
+        }
+
         const existingTransform = window.getComputedStyle(troopElement).transform;
         const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
         const newTransform = existingTransform !== "none"
@@ -3214,7 +3719,6 @@ notif_hideTroopOnRackPrivate: function (notif) {
 
 
     troopElement.appendChild(checkElement);  
-
 },
 
 notif_hideTroopOnRackPublic: function (notif) {
@@ -3249,30 +3753,36 @@ notif_unhideTroopOnRack: function( notif )
         element.remove();
     });
 
+    const nb_troops_hand = notif.args.nb_troops_hand;
+    console.log('nb_troops_hand', nb_troops_hand);
  // TODO utiliser nb_cards_in_hands au lieu du front.
 
     const rack_name = player_color == this.RED_COLOR ? 'red_rack' : 'blue_rack';
-
+    
+    
     if( rack_name == 'red_rack' && this.isCurrentPlayerRed() == false) {
-        const rackElement = document.getElementById('red_rack');
-
-        const children = Array.from(rackElement.children); // Récupérer tous les enfants
-        children.forEach((child, index) => {
-            child.id = `red_troop_${index + 1}`; // Renommer chaque enfant
+        const rackElement = document.getElementById('red_troops_container');
+        let count = 1;
+        const children = Array.from(rackElement.children); 
+        children.forEach((child) => {
+            if( count <= nb_troops_hand) {
+                child.id = `red_troop_${count}`;
+                count ++;
+            }
         });
     }
 
     if( rack_name == 'blue_rack' && this.isCurrentPlayerBlue() == false) {
-        const rackElement = document.getElementById('blue_rack');
-
-        const children = Array.from(rackElement.children); // Récupérer tous les enfants
-        children.forEach((child, index) => {
-            child.id = `blue_troop_${index + 1}`; // Renommer chaque enfant
-
+        const rackElement = document.getElementById('blue_troops_container');
+        let count = 1;
+        const children = Array.from(rackElement.children);
+        children.forEach((child) => {
+            if( count <= nb_troops_hand) {
+                child.id = `blue_troop_${count}`;
+                count ++;
+            }
         });
     }
-
-
 },
 
 /*********************************

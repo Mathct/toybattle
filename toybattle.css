@@ -203,6 +203,19 @@ body {
     position: relative;
 }
 
+.rotate-90 {
+    transform: rotate(90deg);
+}
+
+.rotate-270 {
+    transform: rotate(270deg);
+}
+
+
+.board-inverted {
+    transform: rotate(180deg);
+}
+
 .sideleft {
     width: var(--sideleft-width);
     height: var(--board-height);
@@ -250,9 +263,6 @@ body {
 }
 
 
-.board-inverted {
-    transform: rotate(180deg);
-}
 
 .board {
     width: var(--board-width);
@@ -427,60 +437,19 @@ body {
     width: var(--troop-width);
     height: var(--troop-height);
     background: transparent; /* when moving a troop to a flex */
+    z-index: 1000;
     /*background: purple,*/
 }
 
 
 
-@media (orientation: portrait) {
-
-    #global_id {
-        flex-direction: column;
-    }
-
-    .line {
-        justify-content: space-between;
-    }
-
-    .playmat {
-        flex-direction: row;
-    }
-
-    .discard {
-        width: 70px;
-        align-items: center;
-        height: var(--board-height);
-    }
-}
 
 
-/* Landscape orientation */
-@media (orientation: landscape) {
 
-    #global_id {
-        flex-direction: row;
-    }
 
-    .line {
-        justify-content: center;
-    }
 
-    .playmat {
-        flex-direction: column;
-        height: var(--board-height);
-        width: 670px;
-    }
 
-    .discard {
-        width: 100%;
-        height: 25%;
-        flex-wrap: wrap-reverse;
-    }
 
-    #red_discard {
-        align-items:flex-end; 
-    }
-}
 
 
 
