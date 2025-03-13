@@ -268,7 +268,7 @@ body {
     width: var(--board-width);
     height: var(--board-height);
     position: relative;
-    margin: 0 5px;
+    margin: 5px;
     border-radius: 5px;
     background-image: url('img/TB_Boards.jpg');
     background-size: 400% 200%;
