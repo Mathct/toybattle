@@ -3821,6 +3821,7 @@ notif_gainMedal: function (notif) {
                     player_indice = 3;
                 }
 
+                if(indice <= medals_needed){
                 const goodie_id = `${player_indice}${indice}`;
                 const goodieElement = document.createElement('div');
                 goodieElement.id = `goodie_${goodie_id}`;
@@ -3828,6 +3829,7 @@ notif_gainMedal: function (notif) {
                 const goodie = this.goodies[medals_needed][goodie_id];
                 goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
                 goodieContainer.appendChild(goodieElement);
+                }
 
                 medalElement.remove();
 
@@ -3849,17 +3851,23 @@ notif_gainMedal: function (notif) {
                     player_indice = 3;
                 }
 
+                let goodieElement;
+
+                if(indice <= medals_needed){
+            
                 const goodie_id = `${player_indice}${indice}`;
-                const goodieElement = document.createElement('div');
+                goodieElement = document.createElement('div');
                 goodieElement.id = `goodie_${goodie_id}`;
                 goodieElement.classList.add('medals', 'board_medal');
                 const goodie = this.goodies[medals_needed][goodie_id];
                 goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
                 
+                }
 
+                
                 const animationDelay = index * 500; // Décalage par médaille
                 index++; // Incrémentation après utilisation
-
+                
                 setTimeout(() => {
                     // Étape 1 : Agrandir la médaille source
                     medalElement.style.transform = 'scale(4)'; // Échelle fixe pour toutes les médailles
@@ -3867,18 +3875,26 @@ notif_gainMedal: function (notif) {
                         // Étape 2 : Réduire pour faire disparaître
                         medalElement.style.transform = 'scale(0)';
 
-                        if (goodieElement) {
-                            // Étape 3 : Traiter la médaille destination
-                            setTimeout(() => {
-                                goodieContainer.appendChild(goodieElement);
+                        
+                            if (goodieElement) {
 
-                                // Étape 4 : Agrandir et réduire la médaille destination
-                                goodieElement.style.transform = 'scale(3)'; // Taille fixe
+                                if(indice <= medals_needed){
+                                
+                                // Étape 3 : Traiter la médaille destination
                                 setTimeout(() => {
-                                    goodieElement.style.transform = 'scale(1)'; // Retour à la taille normale
+                                    goodieContainer.appendChild(goodieElement);
+
+                                    // Étape 4 : Agrandir et réduire la médaille destination
+                                    goodieElement.style.transform = 'scale(3)'; // Taille fixe
+                                    setTimeout(() => {
+                                        goodieElement.style.transform = 'scale(1)'; // Retour à la taille normale
+                                    }, timeoutDelay);
                                 }, timeoutDelay);
-                            }, timeoutDelay);
-                        }
+
+                            }
+                                
+                            }
+                        
                     }, timeoutDelay);
                 }, animationDelay);
             }
