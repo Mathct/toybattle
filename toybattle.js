@@ -3832,7 +3832,7 @@ notif_gainMedal: function (notif) {
                 }
 
                 medalElement.remove();
-
+                index++;
            }
         });
         
