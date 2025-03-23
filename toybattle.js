@@ -2396,7 +2396,7 @@ notif_moveTroop: function(notif)
         let moving_troop_id = `${player_color_name}_troop_${maxValue}`;
 
         const troopElement = document.getElementById(moving_troop_id);
-        troopElement.id = `troop_${troop.id}`;
+        
         const x = troop.type.toString().slice(-1);
         troopElement.style.backgroundPositionX = `-${x}00%`;
 
@@ -2410,6 +2410,7 @@ notif_moveTroop: function(notif)
             troopElement.style.position = 'absolute';
             troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
             troopElement.style.left = `${baseData.left}%`;
+            troopElement.id = `troop_${troop.id}`;
 
             boardContainer.appendChild(troopElement);
         } else {
@@ -2452,6 +2453,8 @@ notif_moveTroop: function(notif)
                 const troopColor = Math.floor(troop.type / 10) - 1;
                 troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
                 troopElement.style.left = `${baseData.left}%`;
+
+                troopElement.id = `troop_${troop.id}`;
 
                 boardContainer.appendChild(troopElement);
                 troopElement.removeEventListener("transitionend", onTransitionEnd);
