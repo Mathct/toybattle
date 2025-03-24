@@ -2204,7 +2204,7 @@ setupNotifications: function()
     
     const notifs = [
         ['displayNotif', 1],
-        ['moveTroop', 1],
+        ['moveTroop', this.DELAY_BATTLEFIELD],
         ['drawTroopPrivate', 1],
         ['drawTroopPublic', 1],
         ['discardTroopFromBoard', this.DELAY_JUNGLE],
