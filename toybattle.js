@@ -110,7 +110,7 @@ setup: function( gamedatas )
     this.setupCounters();
     this.setupTooltips();
 
-
+    this.addHelp();
 
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
@@ -1597,6 +1597,56 @@ setupTooltips:function () {
 },
 
 
+addHelp: function() {
+    // Créer l'élément bouton
+    const helpButton = document.createElement('div');
+    helpButton.id = 'toybattle_help_button';
+    helpButton.textContent = '?';
+
+    // Ajouter le bouton au body
+    document.body.appendChild(helpButton);
+
+    // Ajouter un gestionnaire d'événement pour afficher une aide (modifiable selon besoin)
+    helpButton.addEventListener('click', () => {
+        this.showHelpModal();
+    });
+},
+
+showHelpModal: function() {
+    if (document.getElementById('helpModal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'helpModal';
+    modal.className = 'modal';
+
+    let modalContent = `
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="troop-list">
+    `;
+
+    // Liste des troupes à afficher
+    const troopOrder = [11, 22, 13, 24, 15, 26, 17, 28];
+
+    // Génération des troupes dynamiquement
+    troopOrder.forEach(type => {
+        modalContent += this.getTooltipTroopContent(type, `troop_${type}`);
+    });
+
+    modalContent += `</div></div>`; // Fermeture de .troop-list et .modal-content
+    modal.innerHTML = modalContent;
+    document.body.appendChild(modal);
+
+    const closeButton = modal.querySelector('.close');
+
+    modal.style.display = 'flex';
+
+    closeButton.addEventListener('click', () => modal.remove());
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) modal.remove();
+    });
+},
 
 isCurrentPlayerRed: function()
 {
