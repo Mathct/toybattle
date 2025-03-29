@@ -2458,6 +2458,7 @@ notif_moveTroop: function(notif)
             const troopColor = Math.floor(troop.type / 10) - 1;
 
             troopElement.style.position = 'absolute';
+            troopElement.style.zIndex = troop.ordre * 10;
             troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
             troopElement.style.left = `${baseData.left}%`;
             troopElement.id = `troop_${troop.id}`;
