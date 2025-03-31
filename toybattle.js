@@ -245,6 +245,7 @@ onUpdateActionButtons: function( stateName, args )
                             break;
                         case "btn_yes":
                             this.addActionButton('btn_yes', _("Yes"), 'onOpButton', null, null, 'blue');
+                            this.startActionTimer('btn_yes', 5, 1);
                             break;
                         case "btn_no":
                             this.addActionButton('btn_no', _("No"), 'onOpButton', null, null, 'red');
@@ -417,6 +418,58 @@ removeSVGs: function() {
 
         
     });
+},
+
+// TIMER sur bouton confirm
+
+startActionTimer: function(buttonId, time, pref, autoclick = false) {
+    var button = $(buttonId);
+    var isReadOnly = this.isReadOnly();
+    if (button == null || isReadOnly || pref == 2) {
+        //debug('Ignoring startActionTimer(' + buttonId + ')', 'readOnly=' + isReadOnly, 'prefValue=' + pref);
+        return;
+    }
+
+    // If confirm disabled, click on button
+    if (pref == 0) {
+        if (autoclick) 
+            button.click();
+        return;
+    }
+
+    this._actionTimerLabel = button.innerHTML;
+    this._actionTimerSeconds = time;
+    this._actionTimerFunction = () => {
+        var button = $(buttonId);
+        if (button == null) {
+            this.stopActionTimer();
+        } 
+        else if (this._actionTimerSeconds-- > 1) {
+            button.innerHTML = this._actionTimerLabel + ' (' + this._actionTimerSeconds + ')';
+        } 
+        else {
+            //debug('Timer ' + buttonId + ' execute');
+            button.click();
+            this.stopActionTimer();
+        }
+    };
+    this._actionTimerFunction();
+    this._actionTimerId = window.setInterval(this._actionTimerFunction.bind(this), 1000);
+    //debug('Timer #' + this._actionTimerId + ' ' + buttonId + ' start');
+},
+
+stopActionTimer() {
+    if (this._actionTimerId != null) {
+        //debug('Timer #' + this._actionTimerId + ' stop');
+        window.clearInterval(this._actionTimerId);
+        delete this._actionTimerId;
+    }
+},
+
+isReadOnly: function () {
+    return (
+        this.isSpectator || typeof g_replayFrom != "undefined" || g_archive_mode
+    );
 },
 
 
@@ -2211,18 +2264,11 @@ onSelect: function(evt)
 {        	 
     // Preventing default browser reaction
     this.stopEvent( evt );
-        
-    if( !this.isCurrentPlayerActive() || !(evt.currentTarget.classList.contains('selectable')) )
-    {   
-        return; 
-    }
-    
-    if(this.isCurrentPlayerActive() && evt.currentTarget.classList.contains('selectable'))
+           
+    if(this.isCurrentPlayerActive() && !this._helpMode && evt.currentTarget.classList.contains('selectable'))
     {
         this.bgaPerformAction('actSelect', { arg1: evt.currentTarget.id });
     }
-
-    //this.animateVictory(2,'red',8);
 },
 
 onOpButton: function(evt)
