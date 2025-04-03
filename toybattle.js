@@ -956,6 +956,12 @@ setupPortraitMode: function() {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.my_hand).reverse().forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);
+            }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
@@ -964,6 +970,12 @@ setupPortraitMode: function() {
     else {
         Object.values(this.your_hand).forEach((troop, index) => {
             const troopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[1].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                TroopElement.appendChild(checkElement);                
+            }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
         });
@@ -1083,18 +1095,36 @@ setupPortraitMode: function() {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.your_hand).forEach((troop, index) => {
             const backTroopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                backTroopElement.appendChild(checkElement);                
+            }
             blueTroopsContainer.appendChild(backTroopElement);
         });
     }
     else if( this.isSpectator) {
         Object.values(this.my_hand).forEach((troop, index) => {
             const backTroopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                backTroopElement.appendChild(checkElement);                
+            }
             blueTroopsContainer.appendChild(backTroopElement);
         });
     }
     else {
         Object.values(this.my_hand).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);
+            }
             blueTroopsContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });
@@ -1165,6 +1195,12 @@ setupHorizontalMode: function( ) {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.my_hand).reverse().forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_blue');
+                troopElement.appendChild(checkElement);
+            }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
@@ -1173,6 +1209,12 @@ setupHorizontalMode: function( ) {
     else {
         Object.values(this.your_hand).forEach((troop, index) => {
             const troopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[1].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);                
+            }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
         });
@@ -1331,18 +1373,36 @@ setupHorizontalMode: function( ) {
     if( this.isCurrentPlayerRed() ) {
         Object.values(this.your_hand).forEach((troop, index) => {
             const backTroopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                backTroopElement.appendChild(checkElement);                
+            }
             blueTroopsContainer.appendChild(backTroopElement);
         });
     }
     else if( this.isSpectator) {
         Object.values(this.my_hand).forEach((troop, index) => {
             const backTroopElement = this.createBackTroopElement(troop, index);
+            if( this.troops_blocked[0].includes(`${index + 1}`)) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${index + 1}`;
+                checkElement.classList.add('checks', 'check_red');
+                backTroopElement.appendChild(checkElement);                
+            }
             blueTroopsContainer.appendChild(backTroopElement);
         });
     }
     else {
         Object.values(this.my_hand).forEach(troop => {
             const troopElement = this.createTroopElement(troop);
+            if( troop.blocked > 0) {
+                const checkElement = document.createElement('div');
+                checkElement.id = `check_${troop.blocked}`;
+                checkElement.classList.add('checks', 'check_red');
+                troopElement.appendChild(checkElement);
+            }
             blueTroopsContainer.appendChild(troopElement);
             this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
         });

@@ -938,6 +938,8 @@ class Pending extends APP_GameClass
             game::$instance->incStat(1, 'win_by_hq');
         }
 
+        if($troop_victory != 4)
+        {
         game::$instance->notifyAllPlayers(
             'victory',
             '',
@@ -948,6 +950,7 @@ class Pending extends APP_GameClass
 
             )
         );
+        }
 
         game::$instance->notifyAllPlayers('simplePause', '', ['time' => 1000]);
 
