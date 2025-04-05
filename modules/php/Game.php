@@ -758,7 +758,7 @@ class Game extends \Table
                 );
 
                 game::$instance->incStat($count_medals, 'medals_won', $player_id_gain);
-                game::$instance->incStat(1, 'regions_controlled', $player_id_gain);
+                game::$instance->incStat($count_regions, 'regions_controlled', $player_id_gain);
 
                 // attendre que les animations de medailles soient terminées
 
