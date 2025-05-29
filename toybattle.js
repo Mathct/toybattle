@@ -25,7 +25,7 @@ define([
 function (dojo, declare, counter) {
   return declare("bgagame.toybattle",  ebg.core.gamegui, {
 
-    constructor: function(){ console.info('toybattle constructor'); },
+    constructor: function(){ console.log('toybattle constructor'); },
        
        
 /////////////////////////////////////////////////////////////////////////////////           
@@ -40,10 +40,10 @@ function (dojo, declare, counter) {
         
 setup: function( gamedatas )
 {
-    console.info( "Starting game setup" );
+    console.log( "Starting game setup" );
 
-    console.info('gamedatas');
-    console.info(gamedatas);
+    console.log('gamedatas');
+    console.log(gamedatas);
 
     this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean","station", "battlefield"];
     this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8];
@@ -115,7 +115,7 @@ setup: function( gamedatas )
     // Setup game notifications to handle (see "setupNotifications" method below)
     this.setupNotifications();
 
-    console.info( "Ending game setup" );
+    console.log( "Ending game setup" );
 },
 
 /////////////////////////////////////////////////////////////////////////////////   
@@ -136,7 +136,7 @@ onEnteringState: function( stateName, args )
 {
     
     if( stateName != 'pending') {
-        console.info('Entering state: '+stateName, args);
+        console.log('Entering state: '+stateName, args);
     }
     
     switch( stateName ) {
@@ -188,7 +188,7 @@ onEnteringState: function( stateName, args )
 onLeavingState: function( stateName )
 {
     if( stateName != 'pending') {
-        console.info('Leaving state: '+stateName);
+        console.log('Leaving state: '+stateName);
     }
     
     dojo.query(".selectable").removeClass("selectable");
@@ -211,7 +211,7 @@ onLeavingState: function( stateName )
 
 onUpdateActionButtons: function( stateName, args )
 {
-    console.info( 'onUpdateActionButtons: '+stateName, args );
+    console.log( 'onUpdateActionButtons: '+stateName, args );
             
     if( this.isCurrentPlayerActive() )  {            
         switch( stateName )
@@ -592,7 +592,7 @@ setupPlayersBoard: function() {
 
 
 setupBoard: function() {
-    console.info('Setting up the board');
+    console.log('Setting up the board');
 
     console.log( 'desktop preference '+ this.getGameUserPreference('102'));
 
@@ -789,7 +789,7 @@ setupLandscapeMode: function() {
     if( this.isCurrentPlayerRed() ) {
         const red_discard_list = this.my_discard;
         Object.values(red_discard_list).reverse().forEach(troop => {
-            console.info('land discard red',troop);
+            console.log('land discard red',troop);
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
@@ -799,7 +799,7 @@ setupLandscapeMode: function() {
     else {
         const red_discard_list = this.your_discard;
         Object.values(red_discard_list).reverse().forEach(troop => {
-            console.info('land discard red',troop);
+            console.log('land discard red',troop);
             const troopElement = this.createTroopElement(troop);
             troopElement.classList.add('board-inverted', 'opa_70');
             redDiscardContainer.appendChild(troopElement);
@@ -827,7 +827,7 @@ setupLandscapeMode: function() {
 
     const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
     Object.values(blue_discard_list).forEach(troop => {
-        console.info('land discard blue',troop);
+        console.log('land discard blue',troop);
         const troopElement = this.createTroopElement(troop);
         troopElement.classList.add('opa_70');
         blueDiscardContainer.appendChild(troopElement);
@@ -2356,7 +2356,7 @@ onOpButton: function(evt)
 
 setupNotifications: function()
 {
-    console.info( 'notifications subscriptions setup' );
+    console.log( 'notifications subscriptions setup' );
     
     const notifs = [
         ['displayNotif', 1],
@@ -2392,8 +2392,8 @@ setupNotifications: function()
 
 notif_displayNotif: function(notif)
 {
-    console.info('notif_displayNotif');
-    console.info(notif);
+    console.log('notif_displayNotif');
+    console.log(notif);
 },
 
 
@@ -2409,8 +2409,8 @@ notif_displayNotif: function(notif)
 
 notif_moveTroop: function(notif)
 {
-    console.info('notif_moveTroop');
-    console.info(notif);
+    console.log('notif_moveTroop');
+    console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -2642,8 +2642,8 @@ notif_moveTroop: function(notif)
  *  
  *********************************/
 notif_drawTroopPrivate: function (notif) {
-    console.info('notif_drawTroopPrivate');
-    console.info(notif);
+    console.log('notif_drawTroopPrivate');
+    console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -2777,8 +2777,8 @@ notif_drawTroopPrivate: function (notif) {
  *********************************/
 
 notif_drawTroopPublic: function (notif) {
-    console.info('notif_drawTroopPublic');
-    console.info(notif);
+    console.log('notif_drawTroopPublic');
+    console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -2920,8 +2920,8 @@ notif_drawTroopPublic: function (notif) {
  ************************************/
 
 notif_discardTroopFromBoard: function (notif) {
-    console.info('notif_discardTroopFromBoard');
-    console.info(notif);
+    console.log('notif_discardTroopFromBoard');
+    console.log(notif);
 
     const troop = notif.args.infos_troop;
 
@@ -3066,8 +3066,8 @@ notif_discardTroopFromBoard: function (notif) {
  ************************************/
 
 notif_discardTroopFromHand: function (notif) {
-    console.info('notif_discardTroopFromHand');
-    console.info(notif);
+    console.log('notif_discardTroopFromHand');
+    console.log(notif);
 
 
     const troop = notif.args.infos_troop;
@@ -3320,8 +3320,8 @@ notif_discardTroopFromHand: function (notif) {
  ************************************/
 
 notif_recoverTroopFromBoard: function (notif) {
-    console.info('notif_recoverTroopFromBoard');
-    console.info(notif);
+    console.log('notif_recoverTroopFromBoard');
+    console.log(notif);
 
     const troop = notif.args.infos_troop;
     
@@ -3555,8 +3555,8 @@ notif_recoverTroopFromBoard: function (notif) {
  ***********************************/
 
 notif_recoverTroopFromDiscard: function (notif) {
-    console.info('notif_recoverTroopFromDiscard');
-    console.info(notif);
+    console.log('notif_recoverTroopFromDiscard');
+    console.log(notif);
 
     const troop = notif.args.infos_troop;
     
@@ -3766,10 +3766,11 @@ notif_recoverTroopFromDiscard: function (notif) {
  ***********************************/
 
 notif_moveTroopBoardToBoard: function (notif) {
-    console.info('notif_moveTroopBoardToBoard');
-    console.info(notif);
+    console.log('notif_moveTroopBoardToBoard');
+    console.log(notif);
 
     const troop = notif.args.infos_troop;
+    const troop_after = notif.args.infos_troop_after;
     
     const player_color = this.players[troop.type_arg].color;
     const player_color_name = player_color == this.RED_COLOR ? 'red' : 'blue';
@@ -3778,6 +3779,7 @@ notif_moveTroopBoardToBoard: function (notif) {
     const troopElement = document.getElementById(`troop_${troop.id}`);
     troopElement.style.zIndex = notif.args.ordre * 10;
 
+    // modify troop_before
     const base_id = troop.location_arg;
     let base_troops = this.troops_on_bases[base_id];
     const index = base_troops.findIndex(t => t.id === troop.id);
@@ -3791,7 +3793,8 @@ notif_moveTroopBoardToBoard: function (notif) {
         }
     }
 
-    this.troops_on_bases[notif.args.base_id].push(troop);
+    // modify trrop_after
+    this.troops_on_bases[notif.args.base_id].push(troop_after);
     this.createBaseTooltip(notif.args.base_id);
 
     const destination_id = `${player_color_name}_base_${this.board_name}_${notif.args.base_id}`;
@@ -3862,8 +3865,8 @@ notif_moveTroopBoardToBoard: function (notif) {
  ***********************************/
 
 notif_hideTroopOnRackPrivate: function (notif) {
-    console.info('notif_hideTroopOnRackPrivate');
-    console.info(notif);
+    console.log('notif_hideTroopOnRackPrivate');
+    console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const other_player_color_name = player_color == this.RED_COLOR ? 'blue' : 'red';
@@ -3882,8 +3885,8 @@ notif_hideTroopOnRackPrivate: function (notif) {
 },
 
 notif_hideTroopOnRackPublic: function (notif) {
-    console.info('notif_hideTroopOnRackPublic');
-    console.info(notif);
+    console.log('notif_hideTroopOnRackPublic');
+    console.log(notif);
 
     if( notif.args.player_id != this.opponent_id || this.isSpectator) {
         const player_color = this.players[notif.args.player_id].color;
@@ -3902,8 +3905,8 @@ notif_hideTroopOnRackPublic: function (notif) {
 
 notif_unhideTroopOnRack: function( notif )
 {
-    console.info('notif_unhideTroopOnRack');
-    console.info(notif);
+    console.log('notif_unhideTroopOnRack');
+    console.log(notif);
 
     const player_color = this.players[notif.args.player_id].color;
     const check_name = player_color == this.RED_COLOR ? 'check_blue' : 'check_red';
@@ -3952,8 +3955,8 @@ notif_unhideTroopOnRack: function( notif )
  ************************************/
 
 notif_gainMedal: function (notif) {
-    console.info('notif_gainMedal');
-    console.info(notif);
+    console.log('notif_gainMedal');
+    console.log(notif);
 
     
     let medals_already_won = parseInt(notif.args.medals_already_won);
@@ -4066,8 +4069,8 @@ notif_gainMedal: function (notif) {
 
 
 notif_score: function( notif ){
-    console.info('notif_score');
-    console.info(notif);
+    console.log('notif_score');
+    console.log(notif);
     
     this.scoreCtrl[ notif.args.playerid ].toValue( notif.args.score );
 },
@@ -4076,8 +4079,8 @@ notif_score: function( notif ){
 
 notif_victory: function( notif ) {
 
-    console.info('notif_victory');
-    console.info(notif);
+    console.log('notif_victory');
+    console.log(notif);
 
     this.animateVictory( notif.args.typevictory, notif.args.colorvictory, notif.args.troopvictory);
 
@@ -4145,7 +4148,7 @@ animateVictory: function( type, color, troop0 ) {
 
 notif_message_allplayers_without_player: function( notif )
 {
-    console.info('notif_message_allplayers_without_player');
+    console.log('notif_message_allplayers_without_player');
     
     // juste un message envoyé en php
 },

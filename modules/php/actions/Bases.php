@@ -497,6 +497,8 @@ trait BasesTrait  // ATTENTION
                 game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'board', $explode2[2]);
                 self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$infos_troopmax[0]['id']}'");
 
+                $infos_troop_after = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$infos_troopmax[0]['id']}'");
+
                 $type1 = $infos_troopmax[0]['type'];
 
                 game::$instance->notifyAllPlayers(
@@ -505,6 +507,7 @@ trait BasesTrait  // ATTENTION
                     array(
                         'player_name' => $this->player_name,
                         'infos_troop' => $infos_troopmax[0],
+                        'infos_troop_after' => $infos_troop_after[0],
                         'base_id' => $explode2[2],
                         'ordre' => $compteur_troop_sur_base + 1,
                         'log1' => game::$instance->getLogsType($type1),
@@ -570,6 +573,8 @@ trait BasesTrait  // ATTENTION
             game::$instance->troop->moveCard($infos_troopmax[0]['id'], 'board', $explode[5]);
             self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$infos_troopmax[0]['id']}'");
 
+            $infos_troop_after = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$infos_troopmax[0]['id']}'");
+
             $type1 = $infos_troopmax[0]['type'];
 
             game::$instance->notifyAllPlayers(
@@ -578,6 +583,7 @@ trait BasesTrait  // ATTENTION
                 array(
                     'player_name' => $this->player_name,
                     'infos_troop' => $infos_troopmax[0],
+                    'infos_troop_after' => $infos_troop_after[0],
                     'base_id' => $explode[5],
                     'ordre' => $compteur_troop_sur_base + 1,
                     'log1' => game::$instance->getLogsType($type1),
