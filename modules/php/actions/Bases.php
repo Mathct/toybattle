@@ -516,7 +516,7 @@ trait BasesTrait  // ATTENTION
                 );
 
                 $win = game::$instance->testZoneAndStar($explode2[2], $this->board_name);
-                $win2 = game::$instance->testZoneAndStar($parg2, $this->board_name);
+                $win2 = game::$instance->testZoneAndStar($explode1[2], $this->board_name);
 
                 if (($win == 0)&&($win2 == 0)) {
                     game::$instance->addPending($this->player_id, "VerifBase");
@@ -593,7 +593,7 @@ trait BasesTrait  // ATTENTION
 
             
             $win = game::$instance->testZoneAndStar($explode[5], $this->board_name);
-            $win2 = game::$instance->testZoneAndStar($parg2, $this->board_name);
+            $win2 = game::$instance->testZoneAndStar($explode[2], $this->board_name);
 
             if (($win == 0)&&($win2 == 0)) {
                 game::$instance->addPending($this->player_id, "VerifBase");
