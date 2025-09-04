@@ -105,14 +105,30 @@ class Game extends \Table
         $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
 
+        // foreach ($players as $player_id => $player) {
+        //     // Now you can access both $player_id and $player array
+        //     $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
+        //         $player_id,
+        //         array_shift($default_colors),
+        //         $player["player_canal"],
+        //         addslashes($player["player_name"]),
+        //         addslashes($player["player_avatar"]),
+        //     ]);
+        // }
+
         foreach ($players as $player_id => $player) {
-            // Now you can access both $player_id and $player array
-            $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
-                $player_id,
-                array_shift($default_colors),
-                $player["player_canal"],
-                addslashes($player["player_name"]),
-                addslashes($player["player_avatar"]),
+
+        $index = random_int(0, count($default_colors) - 1); // choix sûr
+        $color = $default_colors[$index];
+        array_splice($default_colors, $index, 1); // enlève la couleur utilisée
+
+        // Now you can access both $player_id and $player array
+        $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
+            $player_id,
+            $color,
+            $player["player_canal"],
+            addslashes($player["player_name"]),
+            addslashes($player["player_avatar"]),
             ]);
         }
 
@@ -129,7 +145,11 @@ class Game extends \Table
 
         self::initStat( 'table', 'turns_number', 0 );
         self::initStat( 'table', 'win_by_terrain', 0 ); 
-        self::initStat( 'table', 'win_by_hq', 0 );  
+        self::initStat( 'table', 'win_by_hq', 0 ); 
+        self::initStat( 'table', 'no_board', 0 ); 
+        self::initStat( 'table', 'color_start', 0 ); 
+        self::initStat( 'table', 'color_win', 0 ); 
+        self::initStat( 'table', 'type_victory', 0 );  
 
         self::initStat( 'player', 'turns_number', 0 );
         self::initStat( 'player', 'troops_drawn', 0 );
@@ -142,10 +162,6 @@ class Game extends \Table
         self::initStat( 'player', 'xb42_activated', 0 );
         self::initStat( 'player', 'star_activated', 0 );
         self::initStat( 'player', 'base_activated', 0 );
-        
-
-          
-
 
 
         $this->setGameStateInitialValue("endgame", 0);
@@ -200,10 +216,12 @@ class Game extends \Table
             if ($numero == 1) {
                 if ($color == 'd1553e') {
                     $this->troop->pickCardsForLocation(3, 'deckred', 'hand');
+                    game::$instance->setStat(2, 'color_start');
                 }
 
                 if ($color == '4f66a2') {
                     $this->troop->pickCardsForLocation(3, 'deckblue', 'hand');
+                    game::$instance->setStat(1, 'color_start');
                 }
             }
 
@@ -224,12 +242,14 @@ class Game extends \Table
         // BOARD DE 1 A 8
         if (($this->gamestate->table_globals[101] >= 1) && ($this->gamestate->table_globals[101] <= 8)) {
             $this->setGameStateValue('board', $this->gamestate->table_globals[101]);
+            game::$instance->setStat($this->gamestate->table_globals[101], 'no_board');
         }
 
         // BOARD RANDOM
         if ($this->gamestate->table_globals[101] == 9) {
             $random = bga_rand(1, 8);
             $this->setGameStateValue('board', $random);
+            game::$instance->setStat($random, 'no_board');
         }
 
         // BOARD DU MOIS
@@ -269,6 +289,7 @@ class Game extends \Table
 
 
             $this->setGameStateValue('board', $valeurs[$index_cible]);
+            game::$instance->setStat($valeurs[$index_cible], 'no_board');
         }
 
 

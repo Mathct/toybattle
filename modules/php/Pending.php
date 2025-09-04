@@ -829,6 +829,7 @@ class Pending extends APP_GameClass
             }
 
             game::$instance->incStat(1, 'win_by_terrain');
+            game::$instance->setStat(2, 'type_victory');
         }
 
         if ($parg1 == "2") {
@@ -902,6 +903,7 @@ class Pending extends APP_GameClass
 
 
             game::$instance->incStat(1, 'win_by_terrain');
+            game::$instance->setStat(2, 'type_victory');
         }
 
         if ($parg1 == "3") {
@@ -936,6 +938,7 @@ class Pending extends APP_GameClass
             );
 
             game::$instance->incStat(1, 'win_by_hq');
+            game::$instance->setStat(1, 'type_victory');
         }
 
         
@@ -949,6 +952,16 @@ class Pending extends APP_GameClass
 
             )
         );
+
+        if($colorvictory == 'blue')
+        {
+            game::$instance->setStat(1, 'color_win');
+        }
+
+        if($colorvictory == 'red')
+        {
+            game::$instance->setStat(2, 'color_win');
+        }
         
 
         game::$instance->notifyAllPlayers('simplePause', '', ['time' => 1000]);

@@ -17,6 +17,34 @@
           "id": 12,
           "name": "Win by H.Q. captured",
           "type": "int"
+        },
+
+        "no_board" : {
+          "id": 13,
+          "name": "Board number",
+          "type": "int",
+          "display": "limited"
+        },
+
+        "color_start" : {
+          "id": 14,
+          "name": "Color start",
+          "type": "int",
+          "display": "limited"
+        },
+
+        "color_win" : {
+          "id": 15,
+          "name": "Color win",
+          "type": "int",
+          "display": "limited"
+        },
+
+        "type_victory" : {
+          "id": 16,
+          "name": "Type victory",
+          "type": "int",
+          "display": "limited"
         }
     },
 
