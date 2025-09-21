@@ -974,7 +974,7 @@ setupPortraitMode: function() {
                 const checkElement = document.createElement('div');
                 checkElement.id = `check_${index + 1}`;
                 checkElement.classList.add('checks', 'check_red');
-                TroopElement.appendChild(checkElement);                
+                troopElement.appendChild(checkElement);                
             }
             troopElement.classList.add('board-inverted');
             redTroopsContainer.appendChild(troopElement);
