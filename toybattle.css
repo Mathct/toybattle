@@ -192,6 +192,10 @@ body {
     background-repeat: no-repeat;
 }
 
+body.snow-mode #global_big_id {
+    background-image: url('img/TB_Background_Snow.jpg');
+}
+
 
 #global_id {
     width: var(--global-width);
@@ -274,6 +278,16 @@ body {
     background-size: 400% 200%;
 }
 
+.board_x {
+    width: var(--board-width);
+    height: var(--board-height);
+    position: relative;
+    margin: 5px;
+    border-radius: 5px;
+    background-image: url('img/TB_X_Board.jpg');
+    background-size: 100% 100%;
+}
+
 .playmat {
     display: flex;
     justify-content: space-between;
@@ -301,6 +315,14 @@ body {
     height: var(--troop-height);
     position: relative;
     background-image: url('img/TB_Tiles.png');
+    background-size: 900% 200%;
+}
+
+.deck_x {
+    width: var(--troop-width);
+    height: var(--troop-height);
+    position: relative;
+    background-image: url('img/TB_X_Tiles.png');
     background-size: 900% 200%;
 }
 
@@ -418,6 +440,14 @@ body {
     z-index: 100;
 }
 
+.troop_x {
+    width: var(--troop-width);
+    height: var(--troop-height);
+    background-image: url('img/TB_X_Tiles.png');
+    background-size: 900% 200%;
+    transition: transform 0.5s ease-in-out;
+    z-index: 100;
+}
 
 
 .troop:hover {
@@ -430,6 +460,14 @@ body {
     width: 24px;
     height: 32px;
     background-image: url('img/TB_Tiles.png');
+    background-size: 900% 200%;
+}
+
+.troop_icon_x
+ {
+    width: 24px;
+    height: 32px;
+    background-image: url('img/TB_X_Tiles.png');
     background-size: 900% 200%;
 }
 
@@ -653,6 +691,17 @@ body {
    
 }
 
+.icon_bandeau_x {
+    
+    width: 50px;
+    height: 50px;
+    background-image: url('img/TB_X_Tiles_no_num.png');
+    background-size: 900% 200%;
+    display: inline-block;
+    vertical-align: middle;
+   
+}
+
 .icon_power_bandeau {
     
     width: 50px;
@@ -669,6 +718,16 @@ body {
     width: 35px;
     height: 35px;
     background-image: url('img/TB_Tiles_no_num.png');
+    background-size: 900% 200%;
+    display: inline-block;
+    vertical-align: middle; 
+}
+
+.icon_log_x {
+    
+    width: 35px;
+    height: 35px;
+    background-image: url('img/TB_X_Tiles_no_num.png');
     background-size: 900% 200%;
     display: inline-block;
     vertical-align: middle; 

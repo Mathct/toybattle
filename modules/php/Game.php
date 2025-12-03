@@ -118,17 +118,17 @@ class Game extends \Table
 
         foreach ($players as $player_id => $player) {
 
-        $index = random_int(0, count($default_colors) - 1); // choix sûr
-        $color = $default_colors[$index];
-        array_splice($default_colors, $index, 1); // enlève la couleur utilisée
+            $index = random_int(0, count($default_colors) - 1); // choix sûr
+            $color = $default_colors[$index];
+            array_splice($default_colors, $index, 1); // enlève la couleur utilisée
 
-        // Now you can access both $player_id and $player array
-        $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
-            $player_id,
-            $color,
-            $player["player_canal"],
-            addslashes($player["player_name"]),
-            addslashes($player["player_avatar"]),
+            // Now you can access both $player_id and $player array
+            $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
+                $player_id,
+                $color,
+                $player["player_canal"],
+                addslashes($player["player_name"]),
+                addslashes($player["player_avatar"]),
             ]);
         }
 
@@ -143,25 +143,25 @@ class Game extends \Table
         //$this->reattributeColorsBasedOnPreferences($players, $gameinfos["player_colors"]);
         $this->reloadPlayersBasicInfos();
 
-        self::initStat( 'table', 'turns_number', 0 );
-        self::initStat( 'table', 'win_by_terrain', 0 ); 
-        self::initStat( 'table', 'win_by_hq', 0 ); 
-        self::initStat( 'table', 'no_board', 0 ); 
-        self::initStat( 'table', 'color_start', 0 ); 
-        self::initStat( 'table', 'color_win', 0 ); 
-        self::initStat( 'table', 'type_victory', 0 );  
+        self::initStat('table', 'turns_number', 0);
+        self::initStat('table', 'win_by_terrain', 0);
+        self::initStat('table', 'win_by_hq', 0);
+        self::initStat('table', 'no_board', 0);
+        self::initStat('table', 'color_start', 0);
+        self::initStat('table', 'color_win', 0);
+        self::initStat('table', 'type_victory', 0);
 
-        self::initStat( 'player', 'turns_number', 0 );
-        self::initStat( 'player', 'troops_drawn', 0 );
-        self::initStat( 'player', 'troops_played', 0 );
-        self::initStat( 'player', 'medals_won', 0 );
-        self::initStat( 'player', 'regions_controlled', 0 );
-        self::initStat( 'player', 'skully_activated', 0 );
-        self::initStat( 'player', 'capn_activated', 0 );
-        self::initStat( 'player', 'jumbo_activated', 0 );
-        self::initStat( 'player', 'xb42_activated', 0 );
-        self::initStat( 'player', 'star_activated', 0 );
-        self::initStat( 'player', 'base_activated', 0 );
+        self::initStat('player', 'turns_number', 0);
+        self::initStat('player', 'troops_drawn', 0);
+        self::initStat('player', 'troops_played', 0);
+        self::initStat('player', 'medals_won', 0);
+        self::initStat('player', 'regions_controlled', 0);
+        self::initStat('player', 'skully_activated', 0);
+        self::initStat('player', 'capn_activated', 0);
+        self::initStat('player', 'jumbo_activated', 0);
+        self::initStat('player', 'xb42_activated', 0);
+        self::initStat('player', 'star_activated', 0);
+        self::initStat('player', 'base_activated', 0);
 
 
         $this->setGameStateInitialValue("endgame", 0);
@@ -240,7 +240,7 @@ class Game extends \Table
         // CHOIX DU BOARD (GSV 101)
 
         // BOARD DE 1 A 8
-        if (($this->gamestate->table_globals[101] >= 1) && ($this->gamestate->table_globals[101] <= 8)) {
+        if (($this->gamestate->table_globals[101] >= 1) && ($this->gamestate->table_globals[101] <= 9)) {
             $this->setGameStateValue('board', $this->gamestate->table_globals[101]);
             game::$instance->setStat($this->gamestate->table_globals[101], 'no_board');
         }
@@ -287,16 +287,23 @@ class Game extends \Table
             // Obtenir l'indice circulaire dans le tableau
             $index_cible = ($diff_mois % count($valeurs) + count($valeurs)) % count($valeurs); // Toujours positif
 
+            $board = $valeurs[$index_cible];
 
-            $this->setGameStateValue('board', $valeurs[$index_cible]);
-            game::$instance->setStat($valeurs[$index_cible], 'no_board');
+            if (($mois_actuel == 10 || $mois_actuel = 11) && $annee_actuelle == 2025) { // A REMPLACER PAR 11 EN DEC
+                $board = 9;
+            }
+
+
+            $this->setGameStateValue('board', $board);
+            game::$instance->setStat($board, 'no_board');
         }
 
 
         // INIT DE LA BdD ZONE
 
-        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
         $board_selected = $board_name[$this->getGameStateValue('board') - 1];
+        // christmas = castle
         $nb_zones = count($this->_regions[$board_selected]);
 
         for ($i = 1; $i <= $nb_zones; $i++) {
@@ -397,24 +404,16 @@ class Game extends \Table
 
     public function getGameProgression()
     {
-        if (game::$instance->getGameStateValue('endgame') == 1)
-        {
+        if (game::$instance->getGameStateValue('endgame') == 1) {
             return 100;
-        }
-
-        else
-        {
+        } else {
 
             $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
-            $players_star = self::getObjectListFromDB( "SELECT player_star star FROM player", true );
+            $players_star = self::getObjectListFromDB("SELECT player_star star FROM player", true);
             $max_player = max($players_star);
 
-            return floor(($max_player*100)/$max_medals);
-
-
+            return floor(($max_player * 100) / $max_medals);
         }
-
-        
     }
 
 
@@ -490,7 +489,7 @@ class Game extends \Table
 
 
         // recuperation du nom du board
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
         $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
         //recuperation de la force de la troupe selectionnée
@@ -707,7 +706,7 @@ class Game extends \Table
                     $idplayer = $list_id_player_sur_zone[0]; // La première valeur du tableau
                     $allEqual = true;
 
-                    
+
 
                     foreach ($list_id_player_sur_zone as $value) {
                         if ($value !== $idplayer) {
@@ -716,13 +715,13 @@ class Game extends \Table
                         }
                     }
 
-                    
 
 
-                    
+
+
                     if (($allEqual) && ($idplayer != 0)) {
 
-                        
+
                         // GAIN REGION POUR JOUEUR $idplayer
 
                         // TEST SI MEDAILLES ENCORE PRESENTES (pas deja gagnées)
@@ -730,7 +729,7 @@ class Game extends \Table
 
                         if ($etoile >= 1) {
                             self::DbQuery("UPDATE zone set zone_star = 0 WHERE zone_id = '{$test['value']}'");
-                            
+
 
                             $count_regions = $count_regions + 1;
                             $count_medals = $count_medals + $etoile;
@@ -738,14 +737,12 @@ class Game extends \Table
                             $emptied_regions[] = $test['value'];
 
                             $player_id_gain = $idplayer;
-
-
                         }
                     }
                 }
             }
 
-            
+
 
             if ($count_medals >= 1) {
 
@@ -807,8 +804,7 @@ class Game extends \Table
     {
         $nb_bloque = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked > 0", true));
 
-        if($nb_bloque >= 1)
-        {
+        if ($nb_bloque >= 1) {
             $nb_troops_hand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}'", true));
             self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_type_arg = '{$player_id}' AND card_blocked > 0");
 
@@ -830,62 +826,123 @@ class Game extends \Table
 
     function getLogsType($type)
     {
-        if ($type == 10) {
-            return "<div class='icon_log icon_blue icon_troop_0' title=''></div>";
-        }
-        if ($type == 11) {
-            return "<div class='icon_log icon_blue icon_troop_1' title=''></div>";
-        }
-        if ($type == 12) {
-            return "<div class='icon_log icon_blue icon_troop_2' title=''></div>";
-        }
-        if ($type == 13) {
-            return "<div class='icon_log icon_blue icon_troop_3' title=''></div>";
-        }
-        if ($type == 14) {
-            return "<div class='icon_log icon_blue icon_troop_4' title=''></div>";
-        }
-        if ($type == 15) {
-            return "<div class='icon_log icon_blue icon_troop_5' title=''></div>";
-        }
-        if ($type == 16) {
-            return "<div class='icon_log icon_blue icon_troop_6' title=''></div>";
-        }
-        if ($type == 17) {
-            return "<div class='icon_log icon_blue icon_troop_7' title=''></div>";
-        }
-        if ($type == 18) {
-            return "<div class='icon_log icon_blue icon_troop_8' title=''></div>";
-        }
-        if ($type == 20) {
-            return "<div class='icon_log icon_red icon_troop_0' title=''></div>";
-        }
-        if ($type == 21) {
-            return "<div class='icon_log icon_red icon_troop_1' title=''></div>";
-        }
-        if ($type == 22) {
-            return "<div class='icon_log icon_red icon_troop_2' title=''></div>";
-        }
-        if ($type == 23) {
-            return "<div class='icon_log icon_red icon_troop_3' title=''></div>";
-        }
-        if ($type == 24) {
-            return "<div class='icon_log icon_red icon_troop_4' title=''></div>";
-        }
-        if ($type == 25) {
-            return "<div class='icon_log icon_red icon_troop_5' title=''></div>";
-        }
-        if ($type == 26) {
-            return "<div class='icon_log icon_red icon_troop_6' title=''></div>";
-        }
-        if ($type == 27) {
-            return "<div class='icon_log icon_red icon_troop_7' title=''></div>";
-        }
-        if ($type == 28) {
-            return "<div class='icon_log icon_red icon_troop_8' title=''></div>";
-        }
-        if ($type == "M") {
-            return "<div class='icon_medal_log' title=''></div>";
+        $board_id = $this->getGameStateValue('board');
+        if ($board_id == 9) {
+            if ($type == 10) {
+                return "<div class='icon_log_x icon_blue icon_troop_0' title=''></div>";
+            }
+            if ($type == 11) {
+                return "<div class='icon_log_x icon_blue icon_troop_1' title=''></div>";
+            }
+            if ($type == 12) {
+                return "<div class='icon_log_x icon_blue icon_troop_2' title=''></div>";
+            }
+            if ($type == 13) {
+                return "<div class='icon_log_x icon_blue icon_troop_3' title=''></div>";
+            }
+            if ($type == 14) {
+                return "<div class='icon_log_x icon_blue icon_troop_4' title=''></div>";
+            }
+            if ($type == 15) {
+                return "<div class='icon_log_x icon_blue icon_troop_5' title=''></div>";
+            }
+            if ($type == 16) {
+                return "<div class='icon_log_x icon_blue icon_troop_6' title=''></div>";
+            }
+            if ($type == 17) {
+                return "<div class='icon_log_x icon_blue icon_troop_7' title=''></div>";
+            }
+            if ($type == 18) {
+                return "<div class='icon_log_x icon_blue icon_troop_8' title=''></div>";
+            }
+            if ($type == 20) {
+                return "<div class='icon_log_x icon_red icon_troop_0' title=''></div>";
+            }
+            if ($type == 21) {
+                return "<div class='icon_log_x icon_red icon_troop_1' title=''></div>";
+            }
+            if ($type == 22) {
+                return "<div class='icon_log_x icon_red icon_troop_2' title=''></div>";
+            }
+            if ($type == 23) {
+                return "<div class='icon_log_x icon_red icon_troop_3' title=''></div>";
+            }
+            if ($type == 24) {
+                return "<div class='icon_log_x icon_red icon_troop_4' title=''></div>";
+            }
+            if ($type == 25) {
+                return "<div class='icon_log_x icon_red icon_troop_5' title=''></div>";
+            }
+            if ($type == 26) {
+                return "<div class='icon_log_x icon_red icon_troop_6' title=''></div>";
+            }
+            if ($type == 27) {
+                return "<div class='icon_log_x icon_red icon_troop_7' title=''></div>";
+            }
+            if ($type == 28) {
+                return "<div class='icon_log_x icon_red icon_troop_8' title=''></div>";
+            }
+            if ($type == "M") {
+                return "<div class='icon_medal_log' title=''></div>";
+            }
+        } else {
+            if ($type == 10) {
+                return "<div class='icon_log icon_blue icon_troop_0' title=''></div>";
+            }
+            if ($type == 11) {
+                return "<div class='icon_log icon_blue icon_troop_1' title=''></div>";
+            }
+            if ($type == 12) {
+                return "<div class='icon_log icon_blue icon_troop_2' title=''></div>";
+            }
+            if ($type == 13) {
+                return "<div class='icon_log icon_blue icon_troop_3' title=''></div>";
+            }
+            if ($type == 14) {
+                return "<div class='icon_log icon_blue icon_troop_4' title=''></div>";
+            }
+            if ($type == 15) {
+                return "<div class='icon_log icon_blue icon_troop_5' title=''></div>";
+            }
+            if ($type == 16) {
+                return "<div class='icon_log icon_blue icon_troop_6' title=''></div>";
+            }
+            if ($type == 17) {
+                return "<div class='icon_log icon_blue icon_troop_7' title=''></div>";
+            }
+            if ($type == 18) {
+                return "<div class='icon_log icon_blue icon_troop_8' title=''></div>";
+            }
+            if ($type == 20) {
+                return "<div class='icon_log icon_red icon_troop_0' title=''></div>";
+            }
+            if ($type == 21) {
+                return "<div class='icon_log icon_red icon_troop_1' title=''></div>";
+            }
+            if ($type == 22) {
+                return "<div class='icon_log icon_red icon_troop_2' title=''></div>";
+            }
+            if ($type == 23) {
+                return "<div class='icon_log icon_red icon_troop_3' title=''></div>";
+            }
+            if ($type == 24) {
+                return "<div class='icon_log icon_red icon_troop_4' title=''></div>";
+            }
+            if ($type == 25) {
+                return "<div class='icon_log icon_red icon_troop_5' title=''></div>";
+            }
+            if ($type == 26) {
+                return "<div class='icon_log icon_red icon_troop_6' title=''></div>";
+            }
+            if ($type == 27) {
+                return "<div class='icon_log icon_red icon_troop_7' title=''></div>";
+            }
+            if ($type == 28) {
+                return "<div class='icon_log icon_red icon_troop_8' title=''></div>";
+            }
+            if ($type == "M") {
+                return "<div class='icon_medal_log' title=''></div>";
+            }
         }
     }
 
@@ -926,7 +983,7 @@ class Game extends \Table
             $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$player_deck}'", true));
 
             if ($counttroopdeck >= 1) {
-                $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield"];
+                $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
                 $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
                 $all_bases = $this->_bases[$board_name];
