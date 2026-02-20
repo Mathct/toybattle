@@ -21,7 +21,7 @@ class Pending extends APP_GameClass
         $this->player_score = $p['player_score'];
         $this->player_color = $p['player_color'];
 
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
         $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
         $this->player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$this->player_id}'");
@@ -47,7 +47,7 @@ class Pending extends APP_GameClass
             $this->opponent_color_text = "red";
 
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield') || ($this->board_name == 'christmas')) {
+            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield') || ($this->board_name == 'christmas') || ($this->board_name == 'croisette')) {
                 $this->start_base = [1];
                 $this->opponent_start_base = [41];
             }
@@ -79,7 +79,7 @@ class Pending extends APP_GameClass
             $this->opponent_color_text = "blue";
 
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield') || ($this->board_name == 'christmas')) {
+            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield') || ($this->board_name == 'christmas') || ($this->board_name == 'croisette')) {
                 $this->start_base = [41];
                 $this->opponent_start_base = [1];
             }

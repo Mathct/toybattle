@@ -118,6 +118,7 @@ class Game extends \Table
 
         foreach ($players as $player_id => $player) {
 
+            /* FIX 12/2025 spectator mode bug when first player is red
             $index = random_int(0, count($default_colors) - 1); // choix sûr
             $color = $default_colors[$index];
             array_splice($default_colors, $index, 1); // enlève la couleur utilisée
@@ -126,6 +127,14 @@ class Game extends \Table
             $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
                 $player_id,
                 $color,
+                $player["player_canal"],
+                addslashes($player["player_name"]),
+                addslashes($player["player_avatar"]),
+            ]);*/
+
+            $query_values[] = vsprintf("('%s', '%s', '%s', '%s', '%s')", [
+                $player_id,
+                array_shift($default_colors),
                 $player["player_canal"],
                 addslashes($player["player_name"]),
                 addslashes($player["player_avatar"]),
@@ -292,6 +301,9 @@ class Game extends \Table
             if (($mois_actuel == 10 || $mois_actuel = 11) && $annee_actuelle == 2025) { // A REMPLACER PAR 11 EN DEC
                 $board = 9;
             }
+            if (($mois_actuel == 1 || $mois_actuel = 2) && $annee_actuelle == 2026) { // A REMPLACER PAR 11 EN DEC
+                $board = 10;
+            }
 
 
             $this->setGameStateValue('board', $board);
@@ -301,7 +313,7 @@ class Game extends \Table
 
         // INIT DE LA BdD ZONE
 
-        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
+        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
         $board_selected = $board_name[$this->getGameStateValue('board') - 1];
         // christmas = castle
         $nb_zones = count($this->_regions[$board_selected]);
@@ -377,6 +389,7 @@ class Game extends \Table
         $result["goodies"] = $this->_goodies;
         $result["troop_types"] = $this->_troop_types;
         $result["board_type"] = $this->_board_types[$board_id];
+        $result["board_types"] = $this->_board_types;
 
         $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckblue'");
         $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckred'");
@@ -430,14 +443,14 @@ class Game extends \Table
 
     function addPending($player_id, $function, $arg = NULL, $arg2 = NULL, $arg3 = NULL, $arg4 = NULL)
     {
-        $sql = "INSERT INTO pending (player_id, function, arg, arg2, arg3, arg4) VALUES (" . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "', '" . $arg3 . "', '" . $arg4 . "')";
+        $sql = "INSERT INTO pending (player_id, `function`, arg, arg2, arg3, arg4) VALUES (" . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "', '" . $arg3 . "', '" . $arg4 . "')";
         self::DbQuery($sql);
     }
 
     function addPendingFirst($player_id, $function, $arg = NULL, $arg2 = NULL, $arg3 = NULL, $arg4 = NULL)
     {
         $minid = self::getUniqueValueFromDB("select min(id) from pending") - 1;
-        $sql = "INSERT INTO pending (id, player_id, function, arg, arg2) VALUES (" . $minid . "," . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "')";
+        $sql = "INSERT INTO pending (id, player_id, `function`, arg, arg2) VALUES (" . $minid . "," . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "')";
         self::DbQuery($sql);
     }
 
@@ -489,7 +502,7 @@ class Game extends \Table
 
 
         // recuperation du nom du board
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
         $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
         //recuperation de la force de la troupe selectionnée
@@ -529,6 +542,10 @@ class Game extends \Table
                                 if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
+                            } elseif (($base_power == 24) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
+                                    $possible_bases[] = $base_adjacente;
+                                }
                             } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                 if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
@@ -554,6 +571,10 @@ class Game extends \Table
                                         if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
+                                    } elseif (($base_power == 24) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                        if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
+                                            $possible_bases[] = $base_adjacente;
+                                        }
                                     } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                         if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
@@ -570,6 +591,10 @@ class Game extends \Table
                                     }
                                 } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
                                     if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
+                                        $possible_bases[] = $base_adjacente;
+                                    }
+                                } elseif (($base_power == 24) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                    if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
                                 } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
@@ -983,7 +1008,7 @@ class Game extends \Table
             $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$player_deck}'", true));
 
             if ($counttroopdeck >= 1) {
-                $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
+                $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
                 $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
                 $all_bases = $this->_bases[$board_name];

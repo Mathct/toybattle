@@ -99,6 +99,12 @@ $this->_board_types = [
         "desc2" => "",
     ],
 
+    10 => [
+        "name" => clienttranslate("Croisette"),
+        "desc1" => clienttranslate("Only Troops with the indicated value can be placed on these special bases and H.Q."),
+        "desc2" => "",
+    ],
+
 ];
 
 
@@ -266,6 +272,23 @@ $this->_bases = [
         25 => ["value" => 25, "adjacents" => [23, 41],         "power" => 0, "top" => 2.4,   "left" => 78.3],
         41 => ["value" => 41, "adjacents" => [24, 25],         "power" => 0, "top" => 1.4,   "left" => 43.2],
     ],
+    "croisette" => [
+        1  => ["value" => 1,  "adjacents" => [11, 13, 14],     "power" => 0, "top" => 85,  "left" => 64.2],
+        11 => ["value" => 11, "adjacents" => [1, 12],          "power" => 0, "top" => 83.9,  "left" => 30.2],
+        12 => ["value" => 12, "adjacents" => [11, 13],         "power" => 31, "top" => 69,  "left" => 14],
+        13 => ["value" => 13, "adjacents" => [11, 12, 15, 16], "power" => 0, "top" => 69.5,  "left" => 46.5],
+        14 => ["value" => 14, "adjacents" => [1, 17],          "power" => 24, "top" => 63,  "left" => 77.6],
+        15 => ["value" => 15, "adjacents" => [13, 16, 18],     "power" => 81, "top" => 54.5,  "left" => 8.9],
+        16 => ["value" => 16, "adjacents" => [13, 15, 17, 19], "power" => 0, "top" => 51.2,  "left" => 39.5],
+        17 => ["value" => 17, "adjacents" => [14, 16, 19, 20], "power" => 71, "top" => 43,  "left" => 77.6],
+        18 => ["value" => 18, "adjacents" => [15, 19, 21],     "power" => 81, "top" => 31.1,  "left" => 9.3],
+        19 => ["value" => 19, "adjacents" => [16, 17, 18, 21], "power" => 0, "top" => 34.4,  "left" => 39.5],
+        20 => ["value" => 20, "adjacents" => [17, 41],         "power" => 24, "top" => 23,  "left" => 77.6],
+        21 => ["value" => 21, "adjacents" => [18, 19, 21],     "power" => 0, "top" => 17.2,  "left" => 46.6],
+        22 => ["value" => 22, "adjacents" => [21, 23],         "power" => 31, "top" => 17.1,  "left" => 14.5],
+        23 => ["value" => 23, "adjacents" => [22, 41],         "power" => 0, "top" => 2.9,  "left" => 30.2],
+        41 => ["value" => 41, "adjacents" => [20, 21, 23],     "power" => 0, "top" => 1.4,   "left" => 64],
+    ],
 ];
 
 $this->_regions = [
@@ -369,6 +392,7 @@ $this->_regions = [
         7 => ["value" => 7, "bases" => [19, 21, 23],          "medals" => 1],
         8 => ["value" => 8, "bases" => [18, 22, 23, 24, 25],  "medals" => 3],
     ],
+    "croisette" => [],
 ];
 
 $this->_medals = [
@@ -515,14 +539,15 @@ $this->_medals = [
         13 => ["region" => 8, "top" => 28.4, "left" => 47.9],
         14 => ["region" => 8, "top" => 31.4, "left" => 47.9]
     ],
+    "croisette" => [],
 ];
 
 
-$this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81], [11]];
+$this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81], [11], [24, 31, 71, 81]];
 
-$this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8, 7];
+$this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8, 7, 20];
 
-$this->_board_names = ["", "castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
+$this->_board_names = ["", "castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
 
 $this->_goodies = [
     "5" => [
@@ -580,6 +605,5 @@ $this->_goodies = [
         23 => ["value" => 23, "top" => 18.5, "left" => 25.8],
         22 => ["value" => 22, "top" => 12.6, "left" => 25.8],
         21 => ["value" => 21, "top" => 6.7, "left" => 25.8]
-
     ]
 ];

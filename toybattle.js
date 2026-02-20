@@ -38,8 +38,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       console.log("gamedatas");
       console.log(gamedatas);
 
-      this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
-      this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8, 7];
+      this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
+      this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8, 7, 20];
 
       this.BLUE_COLOR = "4f66a2";
       this.RED_COLOR = "d1553e";
@@ -73,6 +73,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       this.goodies = gamedatas.goodies;
       this.troop_types = gamedatas.troop_types;
       this.board_type = gamedatas.board_type;
+      this.board_types = gamedatas.board_types;
       this.board_name = gamedatas.board_name;
       this.board_id = gamedatas.board_id;
 
@@ -161,7 +162,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
                   .replace("#nb2#", args.args.nb2)
                   .replace("#icon#", args.args.icon)
                   .replace("#icon2#", args.args.icon2),
-                args.args
+                args.args,
               );
             }
           } else {
@@ -173,7 +174,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
                   .replace("#nb2#", args.args.nb2)
                   .replace("#icon#", args.args.icon)
                   .replace("#icon2#", args.args.icon2),
-                args.args
+                args.args,
               );
             }
           }
@@ -309,14 +310,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute(
           "d",
-          "M 35.491522,942.07978 C 23.624815,939.29461 11.444392,929.03145 5.3325369,916.66798 L 1.5112321,908.93796 V 590.20163 271.46527 l 3.7536732,-7.59319 c 6.1213237,-12.38264 15.8105097,-20.78854 28.4713127,-24.70042 5.837234,-1.80357 9.380906,-1.95574 45.544214,-1.95574 h 39.214488 l 0.27046,-63.4997 0.27046,-63.4997 3.2299,-6.55818 c 2.29409,-4.658061 6.31563,-9.800429 13.88011,-17.748617 41.97018,-44.099052 98.80953,-71.214525 170.63059,-81.4000971 18.00898,-2.5540102 76.6838,-2.5363174 94.52981,0.028485 47.52846,6.8307941 84.84403,19.5580121 119.95702,40.9137591 27.51567,16.73507 57.48146,44.189214 64.7601,59.33216 l 3.11097,6.47224 0.2842,62.97981 0.2842,62.97983 h 39.33702 c 37.1769,0 39.67716,0.1136 45.53046,2.06891 15.46952,5.16763 27.01465,17.42438 31.19373,33.11654 1.14802,4.31077 1.36725,55.66089 1.35675,317.80027 -0.008,207.25117 -0.35233,314.13177 -1.02008,317.02817 -3.55255,15.40614 -16.55893,29.29712 -31.9014,34.07105 -5.89919,1.83559 -14.54136,1.88378 -320.45191,1.78646 -185.33552,-0.0588 -315.976376,-0.47253 -318.255788,-1.00753 z"
+          "M 35.491522,942.07978 C 23.624815,939.29461 11.444392,929.03145 5.3325369,916.66798 L 1.5112321,908.93796 V 590.20163 271.46527 l 3.7536732,-7.59319 c 6.1213237,-12.38264 15.8105097,-20.78854 28.4713127,-24.70042 5.837234,-1.80357 9.380906,-1.95574 45.544214,-1.95574 h 39.214488 l 0.27046,-63.4997 0.27046,-63.4997 3.2299,-6.55818 c 2.29409,-4.658061 6.31563,-9.800429 13.88011,-17.748617 41.97018,-44.099052 98.80953,-71.214525 170.63059,-81.4000971 18.00898,-2.5540102 76.6838,-2.5363174 94.52981,0.028485 47.52846,6.8307941 84.84403,19.5580121 119.95702,40.9137591 27.51567,16.73507 57.48146,44.189214 64.7601,59.33216 l 3.11097,6.47224 0.2842,62.97981 0.2842,62.97983 h 39.33702 c 37.1769,0 39.67716,0.1136 45.53046,2.06891 15.46952,5.16763 27.01465,17.42438 31.19373,33.11654 1.14802,4.31077 1.36725,55.66089 1.35675,317.80027 -0.008,207.25117 -0.35233,314.13177 -1.02008,317.02817 -3.55255,15.40614 -16.55893,29.29712 -31.9014,34.07105 -5.89919,1.83559 -14.54136,1.88378 -320.45191,1.78646 -185.33552,-0.0588 -315.976376,-0.47253 -318.255788,-1.00753 z",
         ); // code path
 
         // Créer un path pour un contour
         const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path2.setAttribute(
           "d",
-          "M 35.491522,942.07978 C 23.624815,939.29461 11.444392,929.03145 5.3325369,916.66798 L 1.5112321,908.93796 V 590.20163 271.46527 l 3.7536732,-7.59319 c 6.1213237,-12.38264 15.8105097,-20.78854 28.4713127,-24.70042 5.837234,-1.80357 9.380906,-1.95574 45.544214,-1.95574 h 39.214488 l 0.27046,-63.4997 0.27046,-63.4997 3.2299,-6.55818 c 2.29409,-4.658061 6.31563,-9.800429 13.88011,-17.748617 41.97018,-44.099052 98.80953,-71.214525 170.63059,-81.4000971 18.00898,-2.5540102 76.6838,-2.5363174 94.52981,0.028485 47.52846,6.8307941 84.84403,19.5580121 119.95702,40.9137591 27.51567,16.73507 57.48146,44.189214 64.7601,59.33216 l 3.11097,6.47224 0.2842,62.97981 0.2842,62.97983 h 39.33702 c 37.1769,0 39.67716,0.1136 45.53046,2.06891 15.46952,5.16763 27.01465,17.42438 31.19373,33.11654 1.14802,4.31077 1.36725,55.66089 1.35675,317.80027 -0.008,207.25117 -0.35233,314.13177 -1.02008,317.02817 -3.55255,15.40614 -16.55893,29.29712 -31.9014,34.07105 -5.89919,1.83559 -14.54136,1.88378 -320.45191,1.78646 -185.33552,-0.0588 -315.976376,-0.47253 -318.255788,-1.00753 z"
+          "M 35.491522,942.07978 C 23.624815,939.29461 11.444392,929.03145 5.3325369,916.66798 L 1.5112321,908.93796 V 590.20163 271.46527 l 3.7536732,-7.59319 c 6.1213237,-12.38264 15.8105097,-20.78854 28.4713127,-24.70042 5.837234,-1.80357 9.380906,-1.95574 45.544214,-1.95574 h 39.214488 l 0.27046,-63.4997 0.27046,-63.4997 3.2299,-6.55818 c 2.29409,-4.658061 6.31563,-9.800429 13.88011,-17.748617 41.97018,-44.099052 98.80953,-71.214525 170.63059,-81.4000971 18.00898,-2.5540102 76.6838,-2.5363174 94.52981,0.028485 47.52846,6.8307941 84.84403,19.5580121 119.95702,40.9137591 27.51567,16.73507 57.48146,44.189214 64.7601,59.33216 l 3.11097,6.47224 0.2842,62.97981 0.2842,62.97983 h 39.33702 c 37.1769,0 39.67716,0.1136 45.53046,2.06891 15.46952,5.16763 27.01465,17.42438 31.19373,33.11654 1.14802,4.31077 1.36725,55.66089 1.35675,317.80027 -0.008,207.25117 -0.35233,314.13177 -1.02008,317.02817 -3.55255,15.40614 -16.55893,29.29712 -31.9014,34.07105 -5.89919,1.83559 -14.54136,1.88378 -320.45191,1.78646 -185.33552,-0.0588 -315.976376,-0.47253 -318.255788,-1.00753 z",
         ); // code path
 
         if (type == "selectable") {
@@ -352,14 +353,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute(
           "d",
-          "m 33.926433,941.19236 c -3.122354,-0.99971 -7.602391,-2.94788 -9.955638,-4.32924 C 17.331631,932.96585 8.5383965,923.07395 4.9524655,915.46854 L 1.7720181,908.72316 1.5169738,591.72589 C 1.2822128,299.93877 1.3920358,274.33006 2.8979073,269.71738 6.5493291,258.53259 13.50774,249.48519 23.296168,243.19535 c 10.294055,-6.61474 12.630356,-6.9017 56.190614,-6.9017 h 39.208168 l 0.27679,-64.55124 0.27679,-64.55124 2.30925,-4.8329 c 3.06463,-6.413798 9.48372,-13.246091 15.14308,-16.117842 2.52447,-1.281 50.03084,-20.867913 105.56972,-43.526481 l 100.97978,-41.1973878 10.9512,0.064554 10.9512,0.064554 83.62736,34.1651588 c 45.99505,18.790836 91.8015,37.471582 101.79215,41.512769 9.99062,4.041183 20.21431,8.550369 22.71933,10.020414 4.88515,2.866822 11.22713,10.498706 14.04473,16.901241 2.10251,4.77769 2.24399,9.75538 2.28568,80.40616 l 0.0301,51.54005 41.06699,0.30034 41.06703,0.30034 7.77382,3.71704 c 13.01663,6.22386 21.81107,16.59141 25.96429,30.60877 1.46071,4.92986 1.60332,33.45687 1.59255,318.51923 -0.0113,258.24412 -0.24533,313.97781 -1.34349,318.08906 -4.22614,15.81904 -15.78474,28.15579 -31.21797,33.31962 l -6.19087,2.07142 -314.38066,-0.0535 C 52.583971,943.01253 39.368765,942.93491 33.926162,941.19251 Z"
+          "m 33.926433,941.19236 c -3.122354,-0.99971 -7.602391,-2.94788 -9.955638,-4.32924 C 17.331631,932.96585 8.5383965,923.07395 4.9524655,915.46854 L 1.7720181,908.72316 1.5169738,591.72589 C 1.2822128,299.93877 1.3920358,274.33006 2.8979073,269.71738 6.5493291,258.53259 13.50774,249.48519 23.296168,243.19535 c 10.294055,-6.61474 12.630356,-6.9017 56.190614,-6.9017 h 39.208168 l 0.27679,-64.55124 0.27679,-64.55124 2.30925,-4.8329 c 3.06463,-6.413798 9.48372,-13.246091 15.14308,-16.117842 2.52447,-1.281 50.03084,-20.867913 105.56972,-43.526481 l 100.97978,-41.1973878 10.9512,0.064554 10.9512,0.064554 83.62736,34.1651588 c 45.99505,18.790836 91.8015,37.471582 101.79215,41.512769 9.99062,4.041183 20.21431,8.550369 22.71933,10.020414 4.88515,2.866822 11.22713,10.498706 14.04473,16.901241 2.10251,4.77769 2.24399,9.75538 2.28568,80.40616 l 0.0301,51.54005 41.06699,0.30034 41.06703,0.30034 7.77382,3.71704 c 13.01663,6.22386 21.81107,16.59141 25.96429,30.60877 1.46071,4.92986 1.60332,33.45687 1.59255,318.51923 -0.0113,258.24412 -0.24533,313.97781 -1.34349,318.08906 -4.22614,15.81904 -15.78474,28.15579 -31.21797,33.31962 l -6.19087,2.07142 -314.38066,-0.0535 C 52.583971,943.01253 39.368765,942.93491 33.926162,941.19251 Z",
         ); // code path
 
         // Créer un path pour un contour
         const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path2.setAttribute(
           "d",
-          "m 33.926433,941.19236 c -3.122354,-0.99971 -7.602391,-2.94788 -9.955638,-4.32924 C 17.331631,932.96585 8.5383965,923.07395 4.9524655,915.46854 L 1.7720181,908.72316 1.5169738,591.72589 C 1.2822128,299.93877 1.3920358,274.33006 2.8979073,269.71738 6.5493291,258.53259 13.50774,249.48519 23.296168,243.19535 c 10.294055,-6.61474 12.630356,-6.9017 56.190614,-6.9017 h 39.208168 l 0.27679,-64.55124 0.27679,-64.55124 2.30925,-4.8329 c 3.06463,-6.413798 9.48372,-13.246091 15.14308,-16.117842 2.52447,-1.281 50.03084,-20.867913 105.56972,-43.526481 l 100.97978,-41.1973878 10.9512,0.064554 10.9512,0.064554 83.62736,34.1651588 c 45.99505,18.790836 91.8015,37.471582 101.79215,41.512769 9.99062,4.041183 20.21431,8.550369 22.71933,10.020414 4.88515,2.866822 11.22713,10.498706 14.04473,16.901241 2.10251,4.77769 2.24399,9.75538 2.28568,80.40616 l 0.0301,51.54005 41.06699,0.30034 41.06703,0.30034 7.77382,3.71704 c 13.01663,6.22386 21.81107,16.59141 25.96429,30.60877 1.46071,4.92986 1.60332,33.45687 1.59255,318.51923 -0.0113,258.24412 -0.24533,313.97781 -1.34349,318.08906 -4.22614,15.81904 -15.78474,28.15579 -31.21797,33.31962 l -6.19087,2.07142 -314.38066,-0.0535 C 52.583971,943.01253 39.368765,942.93491 33.926162,941.19251 Z"
+          "m 33.926433,941.19236 c -3.122354,-0.99971 -7.602391,-2.94788 -9.955638,-4.32924 C 17.331631,932.96585 8.5383965,923.07395 4.9524655,915.46854 L 1.7720181,908.72316 1.5169738,591.72589 C 1.2822128,299.93877 1.3920358,274.33006 2.8979073,269.71738 6.5493291,258.53259 13.50774,249.48519 23.296168,243.19535 c 10.294055,-6.61474 12.630356,-6.9017 56.190614,-6.9017 h 39.208168 l 0.27679,-64.55124 0.27679,-64.55124 2.30925,-4.8329 c 3.06463,-6.413798 9.48372,-13.246091 15.14308,-16.117842 2.52447,-1.281 50.03084,-20.867913 105.56972,-43.526481 l 100.97978,-41.1973878 10.9512,0.064554 10.9512,0.064554 83.62736,34.1651588 c 45.99505,18.790836 91.8015,37.471582 101.79215,41.512769 9.99062,4.041183 20.21431,8.550369 22.71933,10.020414 4.88515,2.866822 11.22713,10.498706 14.04473,16.901241 2.10251,4.77769 2.24399,9.75538 2.28568,80.40616 l 0.0301,51.54005 41.06699,0.30034 41.06703,0.30034 7.77382,3.71704 c 13.01663,6.22386 21.81107,16.59141 25.96429,30.60877 1.46071,4.92986 1.60332,33.45687 1.59255,318.51923 -0.0113,258.24412 -0.24533,313.97781 -1.34349,318.08906 -4.22614,15.81904 -15.78474,28.15579 -31.21797,33.31962 l -6.19087,2.07142 -314.38066,-0.0535 C 52.583971,943.01253 39.368765,942.93491 33.926162,941.19251 Z",
         ); // code path
 
         if (type == "selectable") {
@@ -499,7 +500,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           "beforeend",
           `
             <div class="a_board" id="a2_board_${player.id}"></div>
-        `
+        `,
         );
 
         if (player.id == this.player_id || (this.isSpectator && player.id == this.spectator_id)) {
@@ -521,7 +522,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
                                 </g>
                             </svg>
                         </div>
-                    `
+                    `,
           );
           const helpModeSwitchElement = document.getElementById("help-mode-switch");
           helpModeSwitchElement.style.display = "inline-block";
@@ -622,7 +623,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
                 </div> 
             </div>
             <div id="sideright"></div> 
-        </div>`
+        </div>`,
       );
     },
 
@@ -643,11 +644,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const sideleftContainer = this.createSideLeft();
       globalBigContainer.insertBefore(sideleftContainer, globalContainer);
 
-      const goodieContainer = this.createGoodie();
-      if (this.isCurrentPlayerRed()) {
-        goodieContainer.classList.add("board-inverted");
+      if (this.board_id != 10) {
+        const goodieContainer = this.createGoodie();
+        if (this.isCurrentPlayerRed()) {
+          goodieContainer.classList.add("board-inverted");
+        }
+        globalContainer.appendChild(goodieContainer);
       }
-      globalContainer.appendChild(goodieContainer);
 
       const boardContainer = this.createBoard();
       if (this.isCurrentPlayerRed()) {
@@ -699,10 +702,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           .forEach((troop) => {
             const troopElement = this.createTroopElement(troop);
             if (troop.blocked > 0) {
-              const checkElement = document.createElement("div");
-              checkElement.id = `check_${troop.blocked}`;
-              checkElement.classList.add("checks", "check_blue");
-              troopElement.appendChild(checkElement);
+              troopElement.insertAdjacentHTML("beforeend", `<div id="check_${troop.blocked}" class="checks check_blue"></div>`);
             }
             troopElement.classList.add("board-inverted");
             redTroopsContainer.appendChild(troopElement);
@@ -712,10 +712,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.your_hand).forEach((troop, index) => {
           const troopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[1].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_blue");
-            troopElement.appendChild(checkElement);
+            troopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_blue"></div>`);
           }
 
           troopElement.classList.add("board-inverted");
@@ -815,10 +812,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.your_hand).forEach((troop, index) => {
           const backTroopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[0].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            backTroopElement.appendChild(checkElement);
+            backTroopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(backTroopElement);
         });
@@ -826,10 +820,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.my_hand).forEach((troop, index) => {
           const backTroopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[0].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            backTroopElement.appendChild(checkElement);
+            backTroopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
 
           blueTroopsContainer.appendChild(backTroopElement);
@@ -838,10 +829,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.my_hand).forEach((troop) => {
           const troopElement = this.createTroopElement(troop);
           if (troop.blocked > 0) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${troop.blocked}`;
-            checkElement.classList.add("checks", "check_red");
-            troopElement.appendChild(checkElement);
+            troopElement.insertAdjacentHTML("beforeend", `<div id="check_${troop.blocked}" class="checks check_red"></div>`);
           }
 
           blueTroopsContainer.appendChild(troopElement);
@@ -903,10 +891,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           .forEach((troop) => {
             const troopElement = this.createTroopElement(troop);
             if (troop.blocked > 0) {
-              const checkElement = document.createElement("div");
-              checkElement.id = `check_${troop.blocked}`;
-              checkElement.classList.add("checks", "check_blue");
-              troopElement.appendChild(checkElement);
+              troopElement.insertAdjacentHTML("beforeend", `<div id="check_${troop.blocked}" class="checks check_blue"></div>`);
             }
             troopElement.classList.add("board-inverted");
             redTroopsContainer.appendChild(troopElement);
@@ -916,10 +901,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.your_hand).forEach((troop, index) => {
           const troopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[1].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            troopElement.appendChild(checkElement);
+            troopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           troopElement.classList.add("board-inverted");
           redTroopsContainer.appendChild(troopElement);
@@ -945,12 +927,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       /*  blueDiscardContainer definition 
         contains possible Troops in opacity 50 and all discarded ones TODO
     */
-
-      const goodieContainer = this.createGoodie();
-      if (this.isCurrentPlayerBlue() || this.isSpectator) {
-        playmatContainer.appendChild(goodieContainer);
+      if (this.board_id != 10) {
+        const goodieContainer = this.createGoodie();
+        if (this.isCurrentPlayerBlue() || this.isSpectator) {
+          playmatContainer.appendChild(goodieContainer);
+        }
       }
-
       const blueDiscardContainer = this.createDiscard("blue");
       blueDiscardContainer.style.flexDirection = "column";
       blueDiscardContainer.style.justifyContent = "flex-end";
@@ -1007,7 +989,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           });
       }
 
-      if (this.isCurrentPlayerRed()) {
+      if (this.isCurrentPlayerRed() && this.board_id != 10) {
         playmatContainer.appendChild(goodieContainer);
       }
 
@@ -1035,10 +1017,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.your_hand).forEach((troop, index) => {
           const backTroopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[0].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            backTroopElement.appendChild(checkElement);
+            backTroopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(backTroopElement);
         });
@@ -1046,10 +1025,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.my_hand).forEach((troop, index) => {
           const backTroopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[0].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            backTroopElement.appendChild(checkElement);
+            backTroopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(backTroopElement);
         });
@@ -1057,10 +1033,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.my_hand).forEach((troop) => {
           const troopElement = this.createTroopElement(troop);
           if (troop.blocked > 0) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${troop.blocked}`;
-            checkElement.classList.add("checks", "check_red");
-            troopElement.appendChild(checkElement);
+            troopElement.insertAdjacentHTML("beforeend", `<div id="check_${troop.blocked}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(troopElement);
           this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
@@ -1127,10 +1100,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           .forEach((troop) => {
             const troopElement = this.createTroopElement(troop);
             if (troop.blocked > 0) {
-              const checkElement = document.createElement("div");
-              checkElement.id = `check_${troop.blocked}`;
-              checkElement.classList.add("checks", "check_blue");
-              troopElement.appendChild(checkElement);
+              troopElement.insertAdjacentHTML("beforeend", `<div id="check_${troop.blocked}" class="checks check_blue"></div>`);
             }
             troopElement.classList.add("board-inverted");
             redTroopsContainer.appendChild(troopElement);
@@ -1140,10 +1110,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.your_hand).forEach((troop, index) => {
           const troopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[1].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            troopElement.appendChild(checkElement);
+            troopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           troopElement.classList.add("board-inverted");
           redTroopsContainer.appendChild(troopElement);
@@ -1203,19 +1170,19 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       redDiscardContainer.style.height = "calc(var(--board-height) / 2)";
 
       if (this.isCurrentPlayerRed()) {
-        const discardsContainer = document.createElement("div");
-        discardsContainer.id = `discards_container`;
-        discardsContainer.classList.add("discards_horizontal");
+        playmatContainer.insertAdjacentHTML("beforeend", `<div id="discards_container" class="discards_horizontal"></div>`);
+
+        const discardsContainer = document.getElementById("discards_container");
         discardsContainer.appendChild(redDiscardContainer);
         discardsContainer.appendChild(blueDiscardContainer);
-        playmatContainer.appendChild(discardsContainer);
       }
 
-      const goodieContainer = this.createGoodie();
-      if (this.isCurrentPlayerBlue() || this.isSpectator) {
-        playmatContainer.appendChild(goodieContainer);
+      if (this.board_id != 10) {
+        const goodieContainer = this.createGoodie();
+        if (this.isCurrentPlayerBlue() || this.isSpectator) {
+          playmatContainer.appendChild(goodieContainer);
+        }
       }
-
       /*  boardContainer definition 
         contains board and all troops
     */
@@ -1227,15 +1194,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       this.createMedals();
 
       if (this.isCurrentPlayerBlue() || this.isSpectator) {
-        const discardsContainer = document.createElement("div");
-        discardsContainer.id = `discards_container`;
-        discardsContainer.classList.add("discards_horizontal");
+        playmatContainer.insertAdjacentHTML("beforeend", `<div id="discards_container" class="discards_horizontal"></div>`);
+        const discardsContainer = document.getElementById("discards_container");
+
         discardsContainer.appendChild(redDiscardContainer);
         discardsContainer.appendChild(blueDiscardContainer);
-        playmatContainer.appendChild(discardsContainer);
       }
 
-      if (this.isCurrentPlayerRed()) {
+      if (this.isCurrentPlayerRed() && this.board_id != 10) {
         playmatContainer.appendChild(goodieContainer);
       }
 
@@ -1290,10 +1256,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.your_hand).forEach((troop, index) => {
           const backTroopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[0].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            backTroopElement.appendChild(checkElement);
+            backTroopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(backTroopElement);
         });
@@ -1301,10 +1264,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.my_hand).forEach((troop, index) => {
           const backTroopElement = this.createBackTroopElement(troop, index);
           if (this.troops_blocked[0].includes(`${index + 1}`)) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${index + 1}`;
-            checkElement.classList.add("checks", "check_red");
-            backTroopElement.appendChild(checkElement);
+            backTroopElement.insertAdjacentHTML("beforeend", `<div id="check_${index + 1}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(backTroopElement);
         });
@@ -1312,10 +1272,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         Object.values(this.my_hand).forEach((troop) => {
           const troopElement = this.createTroopElement(troop);
           if (troop.blocked > 0) {
-            const checkElement = document.createElement("div");
-            checkElement.id = `check_${troop.blocked}`;
-            checkElement.classList.add("checks", "check_red");
-            troopElement.appendChild(checkElement);
+            troopElement.insertAdjacentHTML("beforeend", `<div id="check_${troop.blocked}" class="checks check_red"></div>`);
           }
           blueTroopsContainer.appendChild(troopElement);
           this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
@@ -1358,7 +1315,11 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const back_color = troop.type == 1 ? "blue" : "red";
       const sprite_line = troop.type == 1 ? "0" : "1";
       backTroopElement.id = `${back_color}_troop_${index + 1}`;
-      backTroopElement.classList.add("troop");
+      if (this.board_id == 9) {
+        backTroopElement.classList.add("troop_x");
+      } else {
+        backTroopElement.classList.add("troop");
+      }
       backTroopElement.style.backgroundPosition = `-0% -${sprite_line}00%`;
 
       return backTroopElement;
@@ -1488,6 +1449,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       if (this.board_id == 9) {
         boardContainer.classList.add("board_x");
+      } else if (this.board_id == 10) {
+        boardContainer.classList.add("board_croisette");
       } else {
         boardContainer.classList.add("board");
 
@@ -1504,31 +1467,28 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       this.troops_on_bases = {};
 
       const boardContainer = document.getElementById(`board_${this.board_id}`);
-      // defines bases position from TB_bases array */
+
       for (const baseId of Object.keys(TB_bases)) {
         this.troops_on_bases[baseId] = [];
         const baseData = TB_bases[baseId];
-        // big base element
-        const baseElement = document.createElement("div");
-        baseElement.id = `base_${this.board_name}_${baseId}`;
-        baseElement.classList.add("base_all");
-        //baseElement.classList.add('selected');
-        baseElement.style.cssText = `top: ${baseData.top}%; left: ${baseData.left}%;`;
-        boardContainer.appendChild(baseElement);
 
-        // blue base element
-        const baseBlueElement = document.createElement("div");
-        baseBlueElement.id = `blue_base_${this.board_name}_${baseId}`;
-        baseBlueElement.classList.add("base");
-        baseBlueElement.style.cssText = `top: ${baseData.top}%; left: ${baseData.left}%;`;
-        boardContainer.appendChild(baseBlueElement);
+        // insert big base element
+        boardContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div id="base_${this.board_name}_${baseId}" class="base_all" style="top: ${baseData.top}%; left: ${baseData.left}%;"></div>`,
+        );
 
-        // red base element
-        const baseRedElement = document.createElement("div");
-        baseRedElement.id = `red_base_${this.board_name}_${baseId}`;
-        baseRedElement.classList.add("base");
-        baseRedElement.style.cssText = `top: ${baseData.top + 2.5}%; left: ${baseData.left}%;`;
-        boardContainer.appendChild(baseRedElement);
+        // insert blue base element
+        boardContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div id="blue_base_${this.board_name}_${baseId}" class="base" style="top: ${baseData.top}%; left: ${baseData.left}%;"></div>`,
+        );
+
+        // insert red base element
+        boardContainer.insertAdjacentHTML(
+          "beforeend",
+          `<div id="red_base_${this.board_name}_${baseId}" class="base" style="top: ${baseData.top + 2.5}%; left: ${baseData.left}%;"></div>`,
+        );
       }
     },
 
@@ -1560,11 +1520,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const TB_medals = this.medals;
       Object.entries(TB_medals).forEach(([id, medal]) => {
         if (this.gamedatas.full_regions.includes(medal.region.toString())) {
-          const medalElement = document.createElement("div");
-          medalElement.id = `medal_${id}`;
-          medalElement.classList.add("medals", "board_medal");
-          medalElement.style.cssText = `position: absolute; top: ${medal.top}%; left: ${medal.left}%; z-index: 10;`;
-          boardContainer.appendChild(medalElement);
+          boardContainer.insertAdjacentHTML(
+            "beforeend",
+            `<div id="medal_${id}" class="medals board_medal" style="position: absolute; top: ${medal.top}%; left: ${medal.left}%; z-index: 10;"></div>`,
+          );
         }
       });
     },
@@ -1599,11 +1558,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const boardContainer = document.getElementById(`board_${this.board_id}`);
       const baseData = TB_bases[base_id];
       // big base element
-      const baseElement = document.createElement("div");
-      baseElement.id = `base_${this.board_name}_${base_id}`;
-      baseElement.classList.add("base_all");
-      baseElement.style.cssText = `top: ${baseData.top}%; left: ${baseData.left}%;`;
-      boardContainer.appendChild(baseElement);
+      boardContainer.insertAdjacentHTML(
+        "beforeend",
+        `<div id="base_${this.board_name}_${base_id}" class="base_all" style="top: ${baseData.top}%; left: ${baseData.left}%;"></div>`,
+      );
     },
 
     setupCounters: function () {
@@ -1618,8 +1576,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
     setupTooltips: function () {
       // Goodie
-      html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
-      this.addCustomTooltip(`goodie_${this.board_id}`, html);
+      if (this.board_id != 10) {
+        html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
+        this.addCustomTooltip(`goodie_${this.board_id}`, html);
+      }
 
       // Red Deck
       html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Troops in Red deck") + "</span></div>";
@@ -1630,13 +1590,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     },
 
     addHelp: function () {
-      // Créer l'élément bouton
-      const helpButton = document.createElement("div");
-      helpButton.id = "toybattle_help_button";
-      helpButton.textContent = "?";
-
-      // Ajouter le bouton au body
-      document.body.appendChild(helpButton);
+      document.body.insertAdjacentHTML("beforeend", `<div id="toybattle_help_button">?</div>`);
+      const helpButton = document.getElementById("toybattle_help_button");
 
       // Ajouter un gestionnaire d'événement pour afficher une aide (modifiable selon besoin)
       helpButton.addEventListener("click", () => {
@@ -1647,34 +1602,29 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     showHelpModal: function () {
       if (document.getElementById("helpModal")) return;
 
-      const modal = document.createElement("div");
-      modal.id = "helpModal";
-      modal.className = "modal";
-
       let modalContent = `
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="troop-list">
-    `;
+    <div id="helpModal" class="modal" style="display: flex;">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="troop-list">
+  `;
 
-      // Liste des troupes à afficher
       const troopOrder = [11, 22, 13, 24, 15, 26, 17, 28];
 
-      // Génération des troupes dynamiquement
       troopOrder.forEach((type) => {
         modalContent += this.getTooltipTroopContent(type, `troop_${type}`);
       });
 
-      modalContent += `</div></div>`; // Fermeture de .troop-list et .modal-content
-      modal.innerHTML = modalContent;
-      document.body.appendChild(modal);
+      modalContent += `</div></div></div>`; // fermeture .troop-list et .modal-content et .modal
 
+      // insérer la modal dans le body
+      document.body.insertAdjacentHTML("beforeend", modalContent);
+
+      const modal = document.getElementById("helpModal");
       const closeButton = modal.querySelector(".close");
 
-      modal.style.display = "flex";
-
+      // événements
       closeButton.addEventListener("click", () => modal.remove());
-
       window.addEventListener("click", (event) => {
         if (event.target === modal) modal.remove();
       });
@@ -1955,7 +1905,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           midSize: true,
           forceRecreate: false,
         },
-        config
+        config,
       );
 
       let isMobile = window.matchMedia("(pointer: coarse)").matches;
@@ -2123,7 +2073,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         } else if (parseInt(board_id) == 7) {
           const iconClass = `icon_triangle icon_powerbase_${board_id}`;
           html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
-        } else {
+        } else if (parseInt(board_id) == 2) {
           // board 2
           if ([12, 22].includes(parseInt(base_id))) {
             const iconClass = `icon_triangle icon_powerbase_212`;
@@ -2135,19 +2085,67 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
             const iconClass = `icon_triangle icon_powerbase_267`;
             html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
           }
+        } else if (parseInt(board_id) == 10) {
+          // board 2
+          if ([12, 22].includes(parseInt(base_id))) {
+            const iconClass = `icon_power_bandeau icon_powerbase_101`;
+            html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+          } else if ([15, 18].includes(parseInt(base_id))) {
+            const iconClass = `icon_power_bandeau icon_powerbase_102`;
+            html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+          } else if ([14, 20].includes(parseInt(base_id))) {
+            const iconClass = `icon_triangle icon_powerbase_103`;
+            html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+          } else if ([17].includes(parseInt(base_id))) {
+            const iconClass = `icon_triangle icon_powerbase_104`;
+            html += `<span class="${iconClass}" style="margin-left: 10px;"></span>`;
+          }
         }
-        html += `</span>`;
 
-        // Ajout de la description
-        let effect_desc = board_infos.desc1;
-        html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
+        if (parseInt(board_id) != 10) {
+          html += `</span>`;
 
-        // Ajout des informations supplémentaires
-        let effect_info = board_infos.desc2;
-        html += `<br><span class='tooltip_info'>${_(effect_info)}</span></div>`;
+          // Ajout de la description
+          let effect_desc = board_infos.desc1;
+          html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
 
-        if (troops.length > 0) {
-          html += `<hr style="border: 1px solid #7a9f34; margin: 10px 0;">`;
+          // Ajout des informations supplémentaires
+          let effect_info = board_infos.desc2;
+          html += `<br><span class='tooltip_info'>${_(effect_info)}</span></div>`;
+
+          if (troops.length > 0) {
+            html += `<hr style="border: 1px solid #7a9f34; margin: 10px 0;">`;
+          }
+        }
+        if (parseInt(board_id) == 10) {
+          html += `</span>`;
+
+          let effect_desc = "";
+          let effect_info = "";
+          console.log("base_id", base_id);
+          if ([12, 22].includes(parseInt(base_id))) {
+            effect_desc = this.board_types[3].desc1;
+            effect_info = this.board_types[3].desc2;
+          } else if ([15, 18].includes(parseInt(base_id))) {
+            effect_desc = this.board_types[8].desc1;
+            effect_info = this.board_types[8].desc2;
+          } else if ([14, 20].includes(parseInt(base_id))) {
+            effect_desc = board_infos.desc1;
+            effect_info = board_infos.desc2;
+          } else if ([17].includes(parseInt(base_id))) {
+            effect_desc = this.board_types[7].desc1;
+            effect_info = this.board_types[7].desc2;
+          }
+
+          // Ajout de la description
+          html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
+
+          // Ajout des informations supplémentaires
+          html += `<br><span class='tooltip_info'>${_(effect_info)}</span></div>`;
+
+          if (troops.length > 0) {
+            html += `<hr style="border: 1px solid #7a9f34; margin: 10px 0;">`;
+          }
         }
       }
       if (troops.length > 0) {

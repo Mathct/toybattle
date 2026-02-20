@@ -380,7 +380,7 @@ trait TroopsTrait  // ATTENTION
 
         $ret["selected"][] = $parg1;
 
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas"];
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
         $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
 

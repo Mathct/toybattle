@@ -288,6 +288,16 @@ body.snow-mode #global_big_id {
     background-size: 100% 100%;
 }
 
+.board_croisette {
+    width: var(--board-width);
+    height: var(--board-height);
+    position: relative;
+    margin: 5px;
+    border-radius: 5px;
+    background-image: url('img/TB_Croisette_Board.jpg');
+    background-size: 100% 100%;
+}
+
 .playmat {
     display: flex;
     justify-content: space-between;
@@ -411,6 +421,8 @@ body.snow-mode #global_big_id {
     width: var(--troop-width);
     height: calc(var(--troop-width) + var(--troop-height) / 2);
     z-index: 300;
+    /*background-color: #71c09a7e;
+    border: 2px solid olive;*/
 }
 
 .base {
@@ -706,8 +718,8 @@ body.snow-mode #global_big_id {
     
     width: 50px;
     height: 50px;
-    background-image: url('img/Power_base_icon.png');
-    background-size: 500% 100%;
+    background-image: url('img/TB_Base_Icons.png');
+    background-size: 500% 200%;
     display: inline-block;
     vertical-align: middle;
    
@@ -751,11 +763,14 @@ body.snow-mode #global_big_id {
 .icon_troop_7 {background-position-x: -700%;}
 .icon_troop_8 {background-position-x: -800%;}
 
-.icon_powerbase_1 {background-position-x: 0%;}
-.icon_powerbase_3 {background-position-x: -100%;}
-.icon_powerbase_4 {background-position-x: -200%;}
-.icon_powerbase_5 {background-position-x: -300%;}
-.icon_powerbase_8 {background-position-x: -400%;}
+.icon_powerbase_1 {background-position: 0% 0%;}
+.icon_powerbase_3 {background-position: -100% 0%;}
+.icon_powerbase_4 {background-position: -200% 0%;}
+.icon_powerbase_5 {background-position: -300% 0%;}
+.icon_powerbase_101 {background-position: 0% -100%;}
+.icon_powerbase_102 {background-position: -100% -100%;}
+
+
 
 .icon_medal_log {
     
@@ -772,16 +787,18 @@ body.snow-mode #global_big_id {
     width: 56px;
     height: 50px;
     background-image: url('img/TB_Triangles.png');
-    background-size: 400% 100%;
+    background-size: 400% 200%;
     display: inline-block;
     vertical-align: middle; 
 
 }
 
-.icon_powerbase_212 {background-position-x: 0%;}
-.icon_powerbase_235 {background-position-x: -100%;}
-.icon_powerbase_267 {background-position-x: -200%;}
-.icon_powerbase_7   {background-position-x: -300%;}
+.icon_powerbase_212 {background-position: 0% 0%;}
+.icon_powerbase_235 {background-position: 0% -100%;}
+.icon_powerbase_267 {background-position: 0% -200%;}
+.icon_powerbase_7   {background-position: 0% -300%;}
+.icon_powerbase_103 {background-position: 0% -100%;}
+.icon_powerbase_104 {background-position: -100% -100%;}
 
 .checks {
     
