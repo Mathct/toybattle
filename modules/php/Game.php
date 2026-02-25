@@ -20,11 +20,14 @@ declare(strict_types=1);
 
 namespace Bga\Games\toybattle;
 
-require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
+use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\Table;
+use Bga\GameFramework\UserException;
+use Bga\GameFramework\VisibleSystemException;
 
 include('Pending.php'); // ATTENTION
 
-class Game extends \Table
+class Game extends Table
 {
     //private static array $CARD_TYPES; // ATTENTION
     public $_bases;
@@ -35,12 +38,12 @@ class Game extends \Table
     public $_board_types;
     public $_powers;
     public $_medals_to_win;
-    public $troop;
+    public Deck $troop;
     public $_board_names;
 
 
 
-    public static $instance = null;  // ATTENTION
+    public static ?Game $instance = null;  // ATTENTION
 
     /**
      * Your global variables labels:
@@ -72,19 +75,7 @@ class Game extends \Table
 
         self::$instance = $this; // ATTENTION
 
-        $this->troop = self::getNew("module.common.deck");
-        $this->troop->init("troop");
-    }
-
-
-    /**
-     * Returns the game name.
-     *
-     * IMPORTANT: Please do not modify.
-     */
-    protected function getGameName()
-    {
-        return "toybattle";
+        $this->troop = $this->bga->deckFactory->createDeck("troop");
     }
 
     /////////////////////////////////////////////////////////////////////////////////  
@@ -144,7 +135,7 @@ class Game extends \Table
 
         static::DbQuery(
             sprintf(
-                "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES %s",
+                "INSERT INTO `player` (`player_id`, `player_color`, `player_canal`, `player_name`, `player_avatar`) VALUES %s",
                 implode(",", $query_values)
             )
         );
@@ -177,7 +168,7 @@ class Game extends \Table
 
         foreach ($players as $player_id => $player) {
 
-            $color = self::getUniqueValueFromDB("SELECT player_color FROM player WHERE player_id={$player_id}");
+            $color = self::getUniqueValueFromDB("SELECT `player_color` FROM `player` WHERE `player_id`={$player_id}");
 
             // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
@@ -217,8 +208,8 @@ class Game extends \Table
 
         foreach ($players as $player_id => $player) {
 
-            $numero = self::getUniqueValueFromDB("SELECT player_no FROM player WHERE player_id={$player_id}");
-            $color = self::getUniqueValueFromDB("SELECT player_color FROM player WHERE player_id={$player_id}");
+            $numero = self::getUniqueValueFromDB("SELECT `player_no` FROM `player` WHERE `player_id`={$player_id}");
+            $color = self::getUniqueValueFromDB("SELECT `player_color` FROM `player` WHERE `player_id`={$player_id}");
 
             // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
 
@@ -249,20 +240,20 @@ class Game extends \Table
         // CHOIX DU BOARD (GSV 101)
 
         // BOARD DE 1 A 8
-        if (($this->gamestate->table_globals[101] >= 1) && ($this->gamestate->table_globals[101] <= 9)) {
-            $this->setGameStateValue('board', $this->gamestate->table_globals[101]);
-            game::$instance->setStat($this->gamestate->table_globals[101], 'no_board');
+        if (($this->bga->tableOptions->get(101) >= 1) && ($this->bga->tableOptions->get(101) <= 9)) {
+            $this->setGameStateValue('board', $this->bga->tableOptions->get(101));
+            game::$instance->setStat($this->bga->tableOptions->get(101), 'no_board');
         }
 
         // BOARD RANDOM
-        if ($this->gamestate->table_globals[101] == 9) {
+        if ($this->bga->tableOptions->get(101) == 9) {
             $random = bga_rand(1, 8);
             $this->setGameStateValue('board', $random);
             game::$instance->setStat($random, 'no_board');
         }
 
         // BOARD DU MOIS
-        if ($this->gamestate->table_globals[101] == 10) {
+        if ($this->bga->tableOptions->get(101) == 10) {
             $valeurs = [1, 2, 3, 4, 5, 6, 7, 8];
             $mois_depart = "Décembre 2024";
 
@@ -319,7 +310,7 @@ class Game extends \Table
         $nb_zones = count($this->_regions[$board_selected]);
 
         for ($i = 1; $i <= $nb_zones; $i++) {
-            self::DbQuery("INSERT INTO zone (zone_star) VALUES ({$this->_regions[$board_selected][$i]['medals']})");
+            self::DbQuery("INSERT INTO `zone` (`zone_star`) VALUES ({$this->_regions[$board_selected][$i]['medals']})");
         }
 
 
@@ -360,23 +351,23 @@ class Game extends \Table
 
         // Get information about players.
         // NOTE: you can retrieve some extra field you added for "player" table in `dbmodel.sql` if you need it.
-        $sql = "SELECT player_id id, player_score score, player_color color, player_no no, player_name name, player_star star FROM player ORDER BY player_no";
+        $sql = "SELECT `player_id` `id`, `player_score` score, `player_color` color, `player_no` no, `player_name` name, `player_star` star FROM `player` ORDER BY `player_no`";
         $result['players'] = self::getCollectionFromDb($sql);
 
         if (!$this->isSpectator()) {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT card_id id , card_type type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$opponent_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$current_player_id}' ORDER BY card_type");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id , card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$opponent_id}' ORDER BY card_type");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$current_player_id}' ORDER BY `card_type`");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(`card_type` / 10) type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$opponent_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$current_player_id}' ORDER BY `card_type`");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$opponent_id}' ORDER BY `card_type`");
         } else {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS card_id, FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$spectator_id}'");
-            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(card_type / 10) type, card_blocked blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$no_spectator_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type  FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$spectator_id}' ORDER BY card_type");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT card_id id, card_type type FROM troop WHERE card_location = 'discard' AND card_type_arg = '{$no_spectator_id}' ORDER BY card_type");
+            $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS `card_id`, FLOOR(`card_type` / 10) type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$spectator_id}'");
+            $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(`card_type` / 10) type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$no_spectator_id}'");
+            $result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type  FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$spectator_id}' ORDER BY `card_type`");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$no_spectator_id}' ORDER BY `card_type`");
         }
-        $result["board_troops"] = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' ORDER BY card_ordre");
-        $result["blue_blocked"] = self::getObjectListFromDB("SELECT card_blocked blocked FROM troop WHERE card_blocked > 0 AND card_type_arg = '{$spectator_id}'", true);
-        $result["red_blocked"] = self::getObjectListFromDB("SELECT card_blocked blocked FROM troop WHERE card_blocked > 0 AND card_type_arg = '{$no_spectator_id}'", true);
+        $result["board_troops"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' ORDER BY `card_ordre`");
+        $result["blue_blocked"] = self::getObjectListFromDB("SELECT `card_blocked` blocked FROM `troop` WHERE `card_blocked` > 0 AND `card_type_arg` = '{$spectator_id}'", true);
+        $result["red_blocked"] = self::getObjectListFromDB("SELECT `card_blocked` blocked FROM `troop` WHERE `card_blocked` > 0 AND `card_type_arg` = '{$no_spectator_id}'", true);
 
         $board_name = $this->_board_names[$this->getGameStateValue('board')];
         $board_id = $this->getGameStateValue('board');
@@ -391,10 +382,10 @@ class Game extends \Table
         $result["board_type"] = $this->_board_types[$board_id];
         $result["board_types"] = $this->_board_types;
 
-        $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckblue'");
-        $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location='deckred'");
+        $result["nb_deck_blue"] = self::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location`='deckblue'");
+        $result["nb_deck_red"] = self::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location`='deckred'");
 
-        $result["full_regions"] = self::getObjectListFromDB("SELECT zone_id id FROM zone WHERE zone_star > 0", true);
+        $result["full_regions"] = self::getObjectListFromDB("SELECT `zone_id` `id` FROM `zone` WHERE `zone_star` > 0", true);
 
 
 
@@ -422,7 +413,7 @@ class Game extends \Table
         } else {
 
             $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
-            $players_star = self::getObjectListFromDB("SELECT player_star star FROM player", true);
+            $players_star = self::getObjectListFromDB("SELECT `player_star` star FROM `player`", true);
             $max_player = max($players_star);
 
             return floor(($max_player * 100) / $max_medals);
@@ -441,17 +432,21 @@ class Game extends \Table
     //                          |___/                                              
     /////////////////////////////////////////////////////////////////////////////////  
 
-    function addPending($player_id, $function, $arg = NULL, $arg2 = NULL, $arg3 = NULL, $arg4 = NULL)
+    public function addPending(int $player_id, string $function, ?string $arg = NULL, ?string $arg2 = NULL, ?string $arg3 = NULL, ?string $arg4 = NULL): void
     {
-        $sql = "INSERT INTO pending (player_id, `function`, arg, arg2, arg3, arg4) VALUES (" . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "', '" . $arg3 . "', '" . $arg4 . "')";
-        self::DbQuery($sql);
+        $sql = "INSERT INTO `pending` (`player_id`, `function`, `arg`, `arg2`, `arg3`, `arg4`) 
+                VALUES (" . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "', '" . $arg3 . "', '" . $arg4 . "')";
+        $this->DbQuery($sql);
     }
 
-    function addPendingFirst($player_id, $function, $arg = NULL, $arg2 = NULL, $arg3 = NULL, $arg4 = NULL)
+
+    // le pending est envoyé au fond (First mais on lit de Bas en Haut)
+    public function addPendingFirst(int $player_id, string $function, ?string $arg = NULL, ?string $arg2 = NULL, ?string $arg3 = NULL, ?string $arg4 = NULL): void
     {
-        $minid = self::getUniqueValueFromDB("select min(id) from pending") - 1;
-        $sql = "INSERT INTO pending (id, player_id, `function`, arg, arg2) VALUES (" . $minid . "," . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "')";
-        self::DbQuery($sql);
+        $minid = $this->getUniqueValueFromDB("SELECT MIN(`id`) FROM `pending`") - 1;
+        $sql = "INSERT INTO `pending` (`id`, `player_id`, `function`, `arg`, `arg2`, `arg3`, `arg4`) 
+                VALUES (" . $minid . "," . $player_id . ", '" . $function . "', '" . $arg . "', '" . $arg2 . "', '" . $arg3 . "', '" . $arg4 . "')";
+        $this->DbQuery($sql);
     }
 
     function checkArgs($arg1)
@@ -459,7 +454,7 @@ class Game extends \Table
         $ret = self::argPlayerTurn();
 
         if (!in_array($arg1, $ret['selectable']) && !in_array($arg1, $ret['buttons'])) {
-            throw new \feException("Not a valid selection");
+            throw new UserException("Not a valid selection");
         }
     }
 
@@ -473,7 +468,7 @@ class Game extends \Table
         if (in_array($player_id, $player_ids)) {
             return (int) array_values(array_diff($player_ids, [$player_id]))[0];
         } else {
-            $sql = "SELECT player_id FROM player WHERE player_no = (SELECT MAX(player_no) FROM player)";
+            $sql = "SELECT `player_id` FROM `player` WHERE `player_no` = (SELECT MAX(`player_no`) FROM `player`)";
             return (int) $this->getUniqueValueFromDB($sql);
         }
     }
@@ -483,7 +478,7 @@ class Game extends \Table
      */
     function getSpectatorId(): int
     {
-        $sql = "SELECT player_id FROM player WHERE player_no = (SELECT MIN(player_no) FROM player)";
+        $sql = "SELECT `player_id` FROM `player` WHERE `player_no` = (SELECT MIN(`player_no`) FROM `player`)";
         return (int) $this->getUniqueValueFromDB($sql);
     }
 
@@ -507,7 +502,7 @@ class Game extends \Table
 
         //recuperation de la force de la troupe selectionnée
         $explode_troop_id = explode("_", $troop_id);
-        $troop_selected_force = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id='{$explode_troop_id[1]}'") % 10;
+        $troop_selected_force = self::getUniqueValueFromDB("SELECT `card_type` FROM `troop` WHERE `card_id`='{$explode_troop_id[1]}'") % 10;
 
 
 
@@ -530,23 +525,23 @@ class Game extends \Table
 
 
                         // Vérifie le nombre de troupes sur la base adjacente
-                        $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}'", true));
+                        $nb_troop_on_base = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base_adjacente}'", true));
 
                         if ($nb_troop_on_base == 0) //si la base est vide
                         {
-                            if (($base_power == 21) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                            if (($base_power == 21) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                            } elseif (($base_power == 23) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif (($base_power == 24) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                            } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                            } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
@@ -555,7 +550,7 @@ class Game extends \Table
                             }
                         } else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
                         {
-                            $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base_adjacente}')");
+                            $infos_troopmax = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base_adjacente}' AND `card_ordre` = (SELECT MAX(`card_ordre`) FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base_adjacente}')");
 
                             if ($infos_troopmax[0]['type_arg'] != $player_id) // si elle appartient au joueur adverse on compare les forces
                             {
@@ -563,19 +558,19 @@ class Game extends \Table
 
                                 if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8)) {
 
-                                    if (($base_power == 21) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                    if (($base_power == 21) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                    } elseif (($base_power == 23) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif (($base_power == 24) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                    } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                    } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
@@ -585,19 +580,19 @@ class Game extends \Table
                                 }
                             } else // si elle appartient au joueur actif, on peut s'y positionner
                             {
-                                if (($base_power == 21) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                if (($base_power == 21) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif (($base_power == 23) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                } elseif (($base_power == 23) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif (($base_power == 24) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif (($base_power == 26) && (game::$instance->gamestate->table_globals[100] == 1)) {
+                                } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
@@ -643,12 +638,12 @@ class Game extends \Table
             $bases_crochet_ok = [];
 
             foreach ($diff as $testotherbase) {
-                $nb_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}'", true));
+                $nb_troop_on_base = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$testotherbase}'", true));
 
                 // recuperation du pouvoir de la base (pour gérer le board Pool)
                 $base_power = game::$instance->_bases[$board_name][$testotherbase]['power'];
 
-                if ((($base_power != 21) && ($base_power != 26) && ($base_power != 71)) || (game::$instance->gamestate->table_globals[100] == 2)) {
+                if ((($base_power != 21) && ($base_power != 26) && ($base_power != 71)) || (game::$instance->bga->tableOptions->get(100) == 2)) {
 
                     if ($nb_troop_on_base == 0) //si la base est vide
                     {
@@ -656,7 +651,7 @@ class Game extends \Table
                         $bases_crochet_ok[] = $testotherbase;
                     } else // si la base est occupée on recupere la troupe avec l'ordre max et on regarde à quel joueur elle appartient
                     {
-                        $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$testotherbase}')");
+                        $infos_troopmax = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$testotherbase}' AND `card_ordre` = (SELECT MAX(`card_ordre`) FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$testotherbase}')");
 
                         if ($infos_troopmax[0]['type_arg'] != $player_id) // si elle appartient au joueur adverse on compare les forces
                         {
@@ -716,11 +711,11 @@ class Game extends \Table
                     foreach ($test['bases'] as $base) {
                         // on va placer l'id du joueur qui detient une base et 0 si elle est vide
 
-                        $count_troop_on_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}'", true));
+                        $count_troop_on_base = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base}'", true));
 
                         if ($count_troop_on_base >= 1) {
 
-                            $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
+                            $infos_troopmax = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base}' AND `card_ordre` = (SELECT MAX(`card_ordre`) FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base}')");
                             $list_id_player_sur_zone[] = $infos_troopmax[0]['type_arg'];
                         } else {
 
@@ -750,10 +745,10 @@ class Game extends \Table
                         // GAIN REGION POUR JOUEUR $idplayer
 
                         // TEST SI MEDAILLES ENCORE PRESENTES (pas deja gagnées)
-                        $etoile = (int)self::getUniqueValueFromDB("SELECT zone_star FROM zone WHERE zone_id = '{$test['value']}'");
+                        $etoile = (int)self::getUniqueValueFromDB("SELECT `zone_star` FROM `zone` WHERE `zone_id` = '{$test['value']}'");
 
                         if ($etoile >= 1) {
-                            self::DbQuery("UPDATE zone set zone_star = 0 WHERE zone_id = '{$test['value']}'");
+                            self::DbQuery("UPDATE `zone` set `zone_star` = 0 WHERE `zone_id` = '{$test['value']}'");
 
 
                             $count_regions = $count_regions + 1;
@@ -771,10 +766,10 @@ class Game extends \Table
 
             if ($count_medals >= 1) {
 
-                $medals_already_won = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$player_id_gain}'");
-                self::DbQuery("UPDATE player set player_star = player_star + $count_medals WHERE player_id = '{$player_id_gain}'");
+                $medals_already_won = (int)self::getUniqueValueFromDB("SELECT `player_star` FROM `player` WHERE `player_id` = '{$player_id_gain}'");
+                self::DbQuery("UPDATE `player` set `player_star` = `player_star` + $count_medals WHERE `player_id` = '{$player_id_gain}'");
 
-                $player_name = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = '{$player_id_gain}'");
+                $player_name = self::getUniqueValueFromDB("SELECT `player_name` FROM `player` WHERE `player_id` = '{$player_id_gain}'");
 
                 if ($count_regions == 1 && $count_medals == 1) {
                     $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> region and takes <b>${nb_medal}</b>${log}');
@@ -806,12 +801,12 @@ class Game extends \Table
                 // attendre que les animations de medailles soient terminées
 
                 $time = 650 * $count_medals;
-                self::notifyAllPlayers('simplePause', '', ['time' => $time]);
+                $this->bga->notify->all('simplePause', '', ['time' => $time]);
 
                 // Test Fin de partie
 
                 $max_medals = $this->_medals_to_win[$this->getGameStateValue('board')];
-                $total_player_medals = (int)self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id = '{$player_id_gain}'");
+                $total_player_medals = (int)self::getUniqueValueFromDB("SELECT `player_star` FROM `player` WHERE `player_id` = '{$player_id_gain}'");
 
 
                 if ($total_player_medals >= $max_medals) {
@@ -827,11 +822,11 @@ class Game extends \Table
 
     function deblock_troops(int $player_id)
     {
-        $nb_bloque = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}' AND card_blocked > 0", true));
+        $nb_bloque = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$player_id}' AND `card_blocked` > 0", true));
 
         if ($nb_bloque >= 1) {
-            $nb_troops_hand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$player_id}'", true));
-            self::DbQuery("UPDATE troop set card_blocked = 0 WHERE card_type_arg = '{$player_id}' AND card_blocked > 0");
+            $nb_troops_hand = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$player_id}'", true));
+            self::DbQuery("UPDATE `troop` set `card_blocked` = 0 WHERE `card_type_arg` = '{$player_id}' AND `card_blocked` > 0");
 
             game::$instance->notifyAllPlayers(
                 'unhideTroopOnRack',
@@ -977,8 +972,8 @@ class Game extends \Table
     function updateNbTurns()
     {
         $player_id = self::getActivePlayerId();
-        $this->incStat(1, 'turns_number', $player_id);
-        if (self::getPlayerNoById($player_id) == 1) {
+        $this->incStat(1, 'turns_number', (int)$player_id);
+        if (self::getPlayerNoById((int)$player_id) == 1) {
             $this->incStat(1, 'turns_number');
         }
     }
@@ -989,11 +984,11 @@ class Game extends \Table
     function debug_placeTroopOnBaseFromDeck(int $player_id, int $base)
     {
 
-        $players = self::getObjectListFromDB("SELECT player_id FROM player", true);
+        $players = self::getObjectListFromDB("SELECT `player_id` FROM `player`", true);
 
         if (in_array($player_id, $players)) {
 
-            $infos_player = self::getObjectFromDB("SELECT * FROM player WHERE player_id = {$player_id}");
+            $infos_player = self::getObjectFromDB("SELECT * FROM `player` WHERE `player_id` = {$player_id}");
 
             if ($infos_player['player_color'] == "4f66a2") {
                 //DECLARATION DU DECK
@@ -1005,7 +1000,7 @@ class Game extends \Table
                 $player_deck = "deckred";
             }
 
-            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$player_deck}'", true));
+            $counttroopdeck = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$player_deck}'", true));
 
             if ($counttroopdeck >= 1) {
                 $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
@@ -1016,9 +1011,9 @@ class Game extends \Table
 
                 if (in_array($base, $id_bases)) {
 
-                    $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$base}'", true));
+                    $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` ='board' AND `card_location_arg` = '{$base}'", true));
                     $card = game::$instance->troop->pickCardForLocation($player_deck, 'board', $base);
-                    self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$card['id']}'");
+                    self::DbQuery("UPDATE `troop` set `card_ordre` = $compteur_troop_sur_base + 1 WHERE `card_id` = '{$card['id']}'");
                 }
             }
         }
@@ -1044,9 +1039,9 @@ class Game extends \Table
 
         self::checkArgs($arg1);
 
-        $pending =  self::getObjectFromDB("SELECT* FROM pending order by id desc limit 1");
+        $pending =  self::getObjectFromDB("SELECT* FROM `pending` order by `id` desc limit 1");
         $this->callPending($pending, true, $arg1);
-        self::DbQuery("delete from pending where id=" . $pending['id']);
+        self::DbQuery("delete from `pending` where `id`=" . $pending['id']);
         //$this->giveExtraTime(self::getActivePlayerId());
         $this->gamestate->nextState('next');
     }
@@ -1056,9 +1051,9 @@ class Game extends \Table
 
         self::checkArgs($arg1);
 
-        $pending =  self::getObjectFromDB("SELECT* FROM pending order by id desc limit 1");
+        $pending =  self::getObjectFromDB("SELECT* FROM `pending` order by `id` desc limit 1");
         $this->callPending($pending, true, $arg1);
-        self::DbQuery("delete from pending where id=" . $pending['id']);
+        self::DbQuery("delete from `pending` where `id`=" . $pending['id']);
         //$this->giveExtraTime(self::getActivePlayerId());
         $this->gamestate->nextState('next');
     }
@@ -1078,7 +1073,7 @@ class Game extends \Table
 
     public function argPlayerTurn()
     {
-        $pending =  self::getObjectFromDB("SELECT* FROM pending order by id desc limit 1");
+        $pending =  self::getObjectFromDB("SELECT* FROM `pending` order by `id` desc limit 1");
         $arg = $this->callPending($pending, false);
 
         return $arg;
@@ -1122,7 +1117,7 @@ class Game extends \Table
     public function stPending()
     {
 
-        $pending =  self::getObjectFromDB("SELECT * FROM pending order by id desc limit 1");
+        $pending =  self::getObjectFromDB("SELECT * FROM `pending` order by `id` desc limit 1");
         if ($pending == null) {
 
             $this->gamestate->nextState('end');
@@ -1138,7 +1133,7 @@ class Game extends \Table
             } else if ($args == null || (count($args['selectable']) == 0 && count($args['buttons']) == 0)) {
                 //no args required, execute
                 $this->callPending($pending, true);
-                self::DbQuery("delete from pending where id=" . $pending['id']);
+                self::DbQuery("delete from `pending` where `id`=" . $pending['id']);
                 $this->gamestate->nextState('same');
             } else {
                 $this->gamestate->nextState('player');
@@ -1181,7 +1176,7 @@ class Game extends \Table
             switch ($state_name) {
                 default: {
                         $player_id = $this->getActivePlayerId();
-                        self::DbQuery("delete from pending where player_id = {$player_id}");
+                        self::DbQuery("delete from `pending` where `player_id` = {$player_id}");
                         $this->gamestate->nextState("zombiePass");
                         break;
                     }
@@ -1196,6 +1191,6 @@ class Game extends \Table
             return;
         }
 
-        throw new \feException("Zombie mode not supported at this game state: \"{$state_name}\".");
+        throw new VisibleSystemException("Zombie mode not supported at this game state: \"{$state_name}\".");
     }
 }

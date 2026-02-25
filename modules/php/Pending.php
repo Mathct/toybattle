@@ -1,20 +1,41 @@
 <?php
 
 namespace Bga\Games\toybattle;   // ATTENTION NOM DU JEU
-use APP_GameClass; // ATTENTION
+use Bga\GameFramework\Table;
 
 require_once 'actions/Troops.php';
 require_once 'actions/Bases.php';
 
-class Pending extends APP_GameClass
+class Pending
 {
     use TroopsTrait; // ATTENTION
     use BasesTrait; // ATTENTION
+    
+    public mixed $player_no;
+    public mixed $player_id;
+    public mixed $player_name;
+    public mixed $player_score;
+    public mixed $player_color;
+    public mixed $board_name;
+    public mixed $player_id_opponent;
+    public mixed $player_name_opponent;
+    public mixed $player_color_opponent;
+    public mixed $player_deck;
+    public mixed $player_deck_id;
+    public mixed $player_color_title;
+    public mixed $player_color_number;
+    public mixed $opponent_color_number;
+    public mixed $player_color_text;
+    public mixed $opponent_color_text;
+    public mixed $start_base;
+    public mixed $opponent_start_base;
+    public mixed $player_pref_confirm;
+    public mixed $player_pref_discard_block;
 
     public function __construct($player_id)
     {
         $this->player_id = $player_id;
-        $p = self::getObjectFromDB("SELECT * FROM player WHERE player_id = {$player_id}");
+        $p = Table::getObjectFromDB("SELECT * FROM `player` WHERE `player_id` = {$player_id}");
         $this->player_no = $p['player_no'];
         $this->player_id = $p['player_id'];
         $this->player_name = $p['player_name'];
@@ -24,9 +45,9 @@ class Pending extends APP_GameClass
         $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
         $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
-        $this->player_id_opponent = self::getUniqueValueFromDB("SELECT player_id FROM player WHERE player_id != '{$this->player_id}'");
-        $this->player_name_opponent = self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id != '{$this->player_id}'");
-        $this->player_color_opponent = self::getUniqueValueFromDB("SELECT player_color FROM player WHERE player_id != '{$this->player_id}'");
+        $this->player_id_opponent = Table::getUniqueValueFromDB("SELECT `player_id` FROM `player` WHERE `player_id` != '{$this->player_id}'");
+        $this->player_name_opponent = Table::getUniqueValueFromDB("SELECT `player_name` FROM `player` WHERE `player_id` != '{$this->player_id}'");
+        $this->player_color_opponent = Table::getUniqueValueFromDB("SELECT `player_color` FROM `player` WHERE `player_id` != '{$this->player_id}'");
 
 
         // COLOR A CHANGER SI MODIFICATION DES COULEURS DE BASE DECLAREES DANS GAMEINFOS
@@ -98,11 +119,11 @@ class Pending extends APP_GameClass
 
         /// PREFERENCE DE CONFIRMATION
 
-        $this->player_pref_confirm = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 100");
+        $this->player_pref_confirm = Table::getUniqueValueFromDB("SELECT `pgp_value` FROM `bga_user_preferences` WHERE `pgp_player`='{$this->player_id}' AND `pgp_preference_id` = 100");
 
         /// PREFERENCE DE DISCARD OR BLOCK
 
-        $this->player_pref_discard_block = self::getUniqueValueFromDB("SELECT pgp_value FROM bga_user_preferences WHERE pgp_player='{$this->player_id}' AND pgp_preference_id = 101");
+        $this->player_pref_discard_block = Table::getUniqueValueFromDB("SELECT `pgp_value` FROM `bga_user_preferences` WHERE `pgp_player`='{$this->player_id}' AND `pgp_preference_id` = 101");
     }
 
 
@@ -121,10 +142,10 @@ class Pending extends APP_GameClass
         $ret['titleyou'] = clienttranslate('${you} must choose an action');
 
 
-        $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
-        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
+        $counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$this->player_deck}'", true));
+        $counttroophand = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'", true));
 
-        $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
+        $counttroophand_noblocked = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true));
 
 
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
@@ -141,7 +162,7 @@ class Pending extends APP_GameClass
         // TEST SI TROUPES NON BLOQUEES PEUVENT ETRE PLACEES
         if ($counttroophand_noblocked >= 1) {
             $place_ok = 0;
-            $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true);
+            $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'", true);
             foreach ($list_troop as $troop) {
                 $troop_id = 'troop_' . $troop;
                 $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -153,7 +174,7 @@ class Pending extends APP_GameClass
             if ($place_ok == 1) {
                 $ret['buttons'][] = 'btn_place_troop';
 
-                $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
+                $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true);
                 foreach ($list_troop as $troop) {
                     $troop_id = 'troop_' . $troop;
                     $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -178,10 +199,10 @@ class Pending extends APP_GameClass
 
         if ((($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2") || ($varg1 == $this->player_deck_id)) && ($this->player_pref_confirm == 2)) {
 
-            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
-            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
+            $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
+            $old_troops = Table::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` ='{$this->player_id}'");
 
-            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+            $counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$this->player_deck}'", true));
 
             if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id) && ($nb_troops_hand <= 6) && ($counttroopdeck >= 2))) {
                 game::$instance->incStat(2, 'troops_drawn', $this->player_id);
@@ -330,7 +351,7 @@ class Pending extends APP_GameClass
 
 
 
-        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
+        $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true);
         foreach ($list_troop as $troop) {
             $troop_id = 'troop_' . $troop;
             $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -384,7 +405,7 @@ class Pending extends APP_GameClass
         }
 
 
-        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
+        $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true);
         foreach ($list_troop as $troop) {
             $troop_id = 'troop_' . $troop;
             $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -421,12 +442,12 @@ class Pending extends APP_GameClass
                 $explode_troop = explode("_", $parg1);
                 $explode_base = explode("_", $varg1);
 
-                $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'", true));
+                $compteur_troop_sur_base = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` ='board' AND `card_location_arg` = '{$explode_base[2]}'", true));
 
-                $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+                $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
 
                 $numbers_no_blocked = [];
-                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+                $troops_blocked = Table::getObjectListFromDB("SELECT `card_blocked` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` != 0", true);
                 for ($i = 1; $i <= $nb_troops_hand; $i++) {
                     if (!in_array($i, $troops_blocked)) {
                         $numbers_no_blocked[] = $i;
@@ -435,15 +456,15 @@ class Pending extends APP_GameClass
 
                 if (count($numbers_no_blocked) >= 1) {
                     $valeur_max = max($numbers_no_blocked);
-                    self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
+                    Table::DbQuery("UPDATE `troop` set `card_blocked` = `card_blocked` - 1 WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` > '{$valeur_max}'");
                 }
 
 
                 game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
 
-                self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
+                Table::DbQuery("UPDATE `troop` set `card_ordre` = $compteur_troop_sur_base + 1 WHERE `card_id` = '{$explode_troop[1]}'");
 
-                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+                $infos_troop = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$explode_troop[1]}'");
 
                 $type1 = $infos_troop['type'];
 
@@ -470,7 +491,7 @@ class Pending extends APP_GameClass
                 $numero_base = $explode_base[2];
                 $troop_id = $explode_troop[1];
 
-                self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
+                Table::DbQuery("INSERT INTO `checkbase` (`troop_id`, `base`) VALUES ({$troop_id}, {$numero_base})");
 
                 $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
@@ -525,12 +546,12 @@ class Pending extends APP_GameClass
             $explode_troop = explode("_", $parg1);
             $explode_base = explode("_", $parg2);
 
-            $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'", true));
+            $compteur_troop_sur_base = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` ='board' AND `card_location_arg` = '{$explode_base[2]}'", true));
 
-            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
 
             $numbers_no_blocked = [];
-            $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+            $troops_blocked = Table::getObjectListFromDB("SELECT `card_blocked` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` != 0", true);
             for ($i = 1; $i <= $nb_troops_hand; $i++) {
                 if (!in_array($i, $troops_blocked)) {
                     $numbers_no_blocked[] = $i;
@@ -539,13 +560,13 @@ class Pending extends APP_GameClass
 
             if (count($numbers_no_blocked) >= 1) {
                 $valeur_max = max($numbers_no_blocked);
-                self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
+                Table::DbQuery("UPDATE `troop` set `card_blocked` = `card_blocked` - 1 WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` > '{$valeur_max}'");
             }
 
             game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
-            self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
+            Table::DbQuery("UPDATE `troop` set `card_ordre` = $compteur_troop_sur_base + 1 WHERE `card_id` = '{$explode_troop[1]}'");
 
-            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+            $infos_troop = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$explode_troop[1]}'");
 
             $type1 = $infos_troop['type'];
 
@@ -571,7 +592,7 @@ class Pending extends APP_GameClass
             $numero_base = $explode_base[2];
             $troop_id = $explode_troop[1];
 
-            self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
+            Table::DbQuery("INSERT INTO `checkbase` (`troop_id`, `base`) VALUES ({$troop_id}, {$numero_base})");
 
 
             $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
@@ -621,9 +642,9 @@ class Pending extends APP_GameClass
 
         if ($varg1 == "btn_yes") {
 
-            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
-            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
-            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+            $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
+            $old_troops = Table::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` ='{$this->player_id}'");
+            $counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$this->player_deck}'", true));
 
             if (($parg1 == 'btn_draw_2') || (($parg1 == $this->player_deck_id) && ($nb_troops_hand <= 6) && ($counttroopdeck >= 2))) {
                 game::$instance->incStat(2, 'troops_drawn', $this->player_id);
@@ -791,15 +812,15 @@ class Pending extends APP_GameClass
                 )
             );
 
-            $star_player = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id}'");
-            $star_opponent = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id_opponent}'");
+            $star_player = Table::getUniqueValueFromDB("SELECT `player_star` FROM `player` WHERE `player_id`='{$this->player_id}'");
+            $star_opponent = Table::getUniqueValueFromDB("SELECT `player_star` FROM `player` WHERE `player_id`='{$this->player_id_opponent}'");
 
             if ($star_player > $star_opponent) {
                 $victory = 1;
                 $colorvictory = $this->player_color_text;
                 $troop_victory = 0;
 
-                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+                Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id}'");
 
                 game::$instance->notifyAllPlayers(
                     'score',
@@ -815,7 +836,7 @@ class Pending extends APP_GameClass
                 $colorvictory = $this->opponent_color_text;
                 $troop_victory = 0;
 
-                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id_opponent}'");
+                Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id_opponent}'");
 
                 game::$instance->notifyAllPlayers(
                     'score',
@@ -834,8 +855,8 @@ class Pending extends APP_GameClass
 
         if ($parg1 == "2") {
 
-            $star_player = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id}'");
-            $star_opponent = self::getUniqueValueFromDB("SELECT player_star FROM player WHERE player_id='{$this->player_id_opponent}'");
+            $star_player = Table::getUniqueValueFromDB("SELECT `player_star` FROM `player` WHERE `player_id`='{$this->player_id}'");
+            $star_opponent = Table::getUniqueValueFromDB("SELECT `player_star` FROM `player` WHERE `player_id`='{$this->player_id_opponent}'");
             $max_medals = game::$instance->_medals_to_win[game::$instance->getGameStateValue('board')];
 
             if ($star_player >= $max_medals) {
@@ -854,7 +875,7 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+                Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id}'");
 
                 game::$instance->notifyAllPlayers(
                     'score',
@@ -883,7 +904,7 @@ class Pending extends APP_GameClass
                     )
                 );
 
-                self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id_opponent}'");
+                Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id_opponent}'");
 
                 game::$instance->notifyAllPlayers(
                     'score',
@@ -921,7 +942,7 @@ class Pending extends APP_GameClass
                 )
             );
 
-            self::DbQuery("UPDATE player set player_score = 1 WHERE player_id = '{$this->player_id}'");
+            Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id}'");
 
             game::$instance->notifyAllPlayers(
                 'score',

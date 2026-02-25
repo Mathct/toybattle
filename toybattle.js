@@ -644,8 +644,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const sideleftContainer = this.createSideLeft();
       globalBigContainer.insertBefore(sideleftContainer, globalContainer);
 
+      let goodieContainer;
       if (this.board_id != 10) {
-        const goodieContainer = this.createGoodie();
+        goodieContainer = this.createGoodie();
         if (this.isCurrentPlayerRed()) {
           goodieContainer.classList.add("board-inverted");
         }
@@ -927,8 +928,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       /*  blueDiscardContainer definition 
         contains possible Troops in opacity 50 and all discarded ones TODO
     */
+      let goodieContainer;
       if (this.board_id != 10) {
-        const goodieContainer = this.createGoodie();
+        goodieContainer = this.createGoodie();
         if (this.isCurrentPlayerBlue() || this.isSpectator) {
           playmatContainer.appendChild(goodieContainer);
         }
@@ -1177,8 +1179,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         discardsContainer.appendChild(blueDiscardContainer);
       }
 
+      let goodieContainer;
       if (this.board_id != 10) {
-        const goodieContainer = this.createGoodie();
+        goodieContainer = this.createGoodie();
         if (this.isCurrentPlayerBlue() || this.isSpectator) {
           playmatContainer.appendChild(goodieContainer);
         }

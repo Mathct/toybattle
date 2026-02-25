@@ -2,6 +2,8 @@
 
 namespace Bga\Games\toybattle; // ATTENTION
 
+use Bga\GameFramework\Table;
+
 trait TroopsTrait  // ATTENTION
 {
 
@@ -23,9 +25,9 @@ trait TroopsTrait  // ATTENTION
         ///Annule l'effet de la troupe sur les bases speciales du board "station" (71)
         $numero_power = game::$instance->_bases[$this->board_name][$parg2]['power'];
 
-        if (($numero_power != 71) || (game::$instance->gamestate->table_globals[100] == 2)) {
+        if (($numero_power != 71) || (game::$instance->bga->tableOptions->get(100) == 2)) {
 
-            $force_troop = self::getUniqueValueFromDB("SELECT card_type FROM troop WHERE card_id = '{$parg1}'") % 10;
+            $force_troop = Table::getUniqueValueFromDB("SELECT `card_type` FROM `troop` WHERE `card_id` = '{$parg1}'") % 10;
 
 
             if ($force_troop == 1) {
@@ -82,8 +84,8 @@ trait TroopsTrait  // ATTENTION
 
 
 
-        $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
-        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
+        $counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$this->player_deck}'", true));
+        $counttroophand = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'", true));
 
         if (($counttroopdeck >= 2) && ($counttroophand <= 6)) {
             $ret['titleyou'] = clienttranslate('#icon# can draw 2 Troops');
@@ -113,9 +115,9 @@ trait TroopsTrait  // ATTENTION
     {
         if (($varg1 == "btn_draw_1") || ($varg1 == "btn_draw_2") || ($varg1 == $this->player_deck_id)) {
 
-            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
-            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
-            $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
+            $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
+            $old_troops = Table::getObjectListFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` ='{$this->player_id}'");
+            $counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$this->player_deck}'", true));
 
             if (($varg1 == 'btn_draw_2') || (($varg1 == $this->player_deck_id) && ($nb_troops_hand <= 6) && ($counttroopdeck >= 2))) {
                 game::$instance->incStat(2, 'troops_drawn', $this->player_id);
@@ -263,11 +265,11 @@ trait TroopsTrait  // ATTENTION
 
         // TEST SI TROUPES NON BLOQUEES PEUVENT ETRE PLACEES
 
-        $counttroophand_noblocked = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true));
+        $counttroophand_noblocked = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true));
 
         if ($counttroophand_noblocked >= 1) {
             $place_ok = 0;
-            $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
+            $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true);
             foreach ($list_troop as $troop) {
                 $troop_id = 'troop_' . $troop;
                 $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -281,7 +283,7 @@ trait TroopsTrait  // ATTENTION
                 $ret['buttons'][] = 'btn_place_troop';
                 $ret['buttons'][] = 'btn_pass';
 
-                $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'  AND card_blocked = 0", true);
+                $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'  AND `card_blocked` = 0", true);
                 foreach ($list_troop as $troop) {
                     $troop_id = 'troop_' . $troop;
                     $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -335,7 +337,7 @@ trait TroopsTrait  // ATTENTION
 
         $ret['titleyou'] = clienttranslate('#icon# must choose a Troop');
 
-        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'  AND card_blocked = 0", true);
+        $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'  AND `card_blocked` = 0", true);
         foreach ($list_troop as $troop) {
             $troop_id = 'troop_' . $troop;
             $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -397,7 +399,7 @@ trait TroopsTrait  // ATTENTION
             $ret["selectable"][] = "base_" . $board_name . "_" . $base;
         }
 
-        $list_troop = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}' AND card_blocked = 0", true);
+        $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true);
         foreach ($list_troop as $troop) {
             $troop_id = 'troop_' . $troop;
             $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);
@@ -437,12 +439,12 @@ trait TroopsTrait  // ATTENTION
                 $explode_troop = explode("_", $parg1);
                 $explode_base = explode("_", $varg1);
 
-                $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode_base[2]}'", true));
+                $compteur_troop_sur_base = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` ='board' AND `card_location_arg` = '{$explode_base[2]}'", true));
 
-                $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+                $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
 
                 $numbers_no_blocked = [];
-                $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+                $troops_blocked = Table::getObjectListFromDB("SELECT `card_blocked` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` != 0", true);
                 for ($i = 1; $i <= $nb_troops_hand; $i++) {
                     if (!in_array($i, $troops_blocked)) {
                         $numbers_no_blocked[] = $i;
@@ -451,13 +453,13 @@ trait TroopsTrait  // ATTENTION
 
                 if (count($numbers_no_blocked) >= 1) {
                     $valeur_max = max($numbers_no_blocked);
-                    self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
+                    Table::DbQuery("UPDATE `troop` set `card_blocked` = `card_blocked` - 1 WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` > '{$valeur_max}'");
                 }
 
                 game::$instance->troop->moveCard($explode_troop[1], 'board', $explode_base[2]);
-                self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode_troop[1]}'");
+                Table::DbQuery("UPDATE `troop` set `card_ordre` = $compteur_troop_sur_base + 1 WHERE `card_id` = '{$explode_troop[1]}'");
 
-                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode_troop[1]}'");
+                $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$explode_troop[1]}'");
 
                 $type1 = $infos_troop['type'];
 
@@ -487,7 +489,7 @@ trait TroopsTrait  // ATTENTION
                 $numero_base = $explode_base[2];
                 $troop_id = $explode_troop[1];
 
-                self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
+                Table::DbQuery("INSERT INTO `checkbase` (`troop_id`, `base`) VALUES ({$troop_id}, {$numero_base})");
 
                 $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
@@ -546,12 +548,12 @@ trait TroopsTrait  // ATTENTION
 
             $explode = explode("_", $parg1);
 
-            $compteur_troop_sur_base = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location ='board' AND card_location_arg = '{$explode[4]}'", true));
+            $compteur_troop_sur_base = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` ='board' AND `card_location_arg` = '{$explode[4]}'", true));
 
-            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
+            $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
 
             $numbers_no_blocked = [];
-            $troops_blocked = self::getObjectListFromDB("SELECT card_blocked FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked != 0", true);
+            $troops_blocked = Table::getObjectListFromDB("SELECT `card_blocked` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` != 0", true);
             for ($i = 1; $i <= $nb_troops_hand; $i++) {
                 if (!in_array($i, $troops_blocked)) {
                     $numbers_no_blocked[] = $i;
@@ -560,13 +562,13 @@ trait TroopsTrait  // ATTENTION
 
             if (count($numbers_no_blocked) >= 1) {
                 $valeur_max = max($numbers_no_blocked);
-                self::DbQuery("UPDATE troop set card_blocked = card_blocked - 1 WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}' AND card_blocked > '{$valeur_max}'");
+                Table::DbQuery("UPDATE `troop` set `card_blocked` = `card_blocked` - 1 WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` > '{$valeur_max}'");
             }
 
             game::$instance->troop->moveCard($explode[1], 'board', $explode[4]);
-            self::DbQuery("UPDATE troop set card_ordre = $compteur_troop_sur_base + 1 WHERE card_id = '{$explode[1]}'");
+            Table::DbQuery("UPDATE `troop` set `card_ordre` = $compteur_troop_sur_base + 1 WHERE `card_id` = '{$explode[1]}'");
 
-            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$explode[1]}'");
+            $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$explode[1]}'");
 
 
             $type1 = $infos_troop['type'];
@@ -596,7 +598,7 @@ trait TroopsTrait  // ATTENTION
             $numero_base = $explode[4];
             $troop_id = $explode[1];
 
-            self::DbQuery("INSERT INTO checkbase (troop_id, base) VALUES ({$troop_id}, {$numero_base})");
+            Table::DbQuery("INSERT INTO `checkbase` (`troop_id`, `base`) VALUES ({$troop_id}, {$numero_base})");
 
             $win = game::$instance->testZoneAndStar($numero_base, $this->board_name);
 
@@ -652,7 +654,7 @@ trait TroopsTrait  // ATTENTION
         $bases_adjacentes_mastok = game::$instance->_bases[$this->board_name][$base_mastok]['adjacents'];
 
         foreach ($bases_adjacentes_mastok as $base) {
-            $infos_troopmax = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$base}')");
+            $infos_troopmax = Table::getObjectListFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base}' AND `card_ordre` = (SELECT MAX(`card_ordre`) FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$base}')");
             if (count($infos_troopmax) != 0) {
 
                 if ($infos_troopmax[0]['type_arg'] != $this->player_id) {
@@ -695,11 +697,11 @@ trait TroopsTrait  // ATTENTION
                 game::$instance->incStat(1, 'jumbo_activated', $this->player_id);
 
                 $explode = explode("_", $varg1);
-                $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
+                $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$explode[2]}' AND `card_ordre` = (SELECT MAX(`card_ordre`) FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$explode[2]}')");
 
                 game::$instance->troop->moveCard($infos_troop['id'], 'discard', 0);
 
-                self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'");
+                Table::DbQuery("UPDATE `troop` set `card_ordre` = 1 WHERE `card_id` = '{$infos_troop['id']}'");
 
                 $type1 = $infos_troop['type'];
 
@@ -771,11 +773,11 @@ trait TroopsTrait  // ATTENTION
             game::$instance->incStat(1, 'jumbo_activated', $this->player_id);
 
             $explode = explode("_", $parg1);
-            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}' AND card_ordre = (SELECT MAX(card_ordre) FROM troop WHERE card_location = 'board' AND card_location_arg = '{$explode[2]}')");
+            $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$explode[2]}' AND `card_ordre` = (SELECT MAX(`card_ordre`) FROM `troop` WHERE `card_location` = 'board' AND `card_location_arg` = '{$explode[2]}')");
 
             game::$instance->troop->moveCard($infos_troop['id'], 'discard', 0);
 
-            self::DbQuery("UPDATE troop set card_ordre = 1 WHERE card_id = '{$infos_troop['id']}'");
+            Table::DbQuery("UPDATE `troop` set `card_ordre` = 1 WHERE `card_id` = '{$infos_troop['id']}'");
 
             $type1 = $infos_troop['type'];
 
@@ -826,7 +828,7 @@ trait TroopsTrait  // ATTENTION
             $ret['icon'] = '<span class="icon_bandeau icon_troop_5 icon_red"></span>';
         }
 
-        $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+        $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
         $count = count($troop_id_opponent_hand);
 
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
@@ -840,7 +842,7 @@ trait TroopsTrait  // ATTENTION
             $ret['buttons'][] = 'btn_pass';
 
             if ($this->player_pref_discard_block == 1) {
-                $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+                $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
                 $count = count($troop_id_opponent_hand);
 
                 for ($i = 1; $i <= $count; $i++) {
@@ -878,12 +880,12 @@ trait TroopsTrait  // ATTENTION
         if ((strpos($varg1, 'red_troop') === 0) || (strpos($varg1, 'blue_troop') === 0)) {
             game::$instance->incStat(1, 'xb42_activated', $this->player_id);
 
-            $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+            $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
             $count = count($troop_id_opponent_hand);
             $rand = bga_rand(1, $count);
             $rand_troop_id = $troop_id_opponent_hand[$rand - 1];
 
-            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$rand_troop_id}'");
+            $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$rand_troop_id}'");
 
             $explode = explode("_", $varg1);
             $selected_troop = $explode[2];
@@ -917,12 +919,12 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->incStat(1, 'xb42_activated', $this->player_id);
 
-            $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+            $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
             $count = count($troop_id_opponent_hand);
             $rand = bga_rand(1, $count);
             $rand_troop_id = $troop_id_opponent_hand[$rand - 1];
 
-            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$rand_troop_id}'");
+            $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$rand_troop_id}'");
 
             $selected_troop = 0;
 
@@ -972,7 +974,7 @@ trait TroopsTrait  // ATTENTION
 
         $ret['titleyou'] = clienttranslate('#icon# chooses a Troop to discard');
 
-        $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+        $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
         $count = count($troop_id_opponent_hand);
 
         for ($i = 1; $i <= $count; $i++) {
@@ -1002,12 +1004,12 @@ trait TroopsTrait  // ATTENTION
 
             game::$instance->incStat(1, 'xb42_activated', $this->player_id);
 
-            $troop_id_opponent_hand = self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location = 'hand' AND card_type_arg != '{$this->player_id}'", true);
+            $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
             $count = count($troop_id_opponent_hand);
             $rand = bga_rand(1, $count);
             $rand_troop_id = $troop_id_opponent_hand[$rand - 1];
 
-            $infos_troop = self::getObjectFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_id = '{$rand_troop_id}'");
+            $infos_troop = Table::getObjectFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$rand_troop_id}'");
 
             $explode = explode("_", $varg1);
             $selected_troop = $explode[2];
@@ -1060,8 +1062,8 @@ trait TroopsTrait  // ATTENTION
             $ret['icon'] = '<span class="icon_bandeau icon_troop_6 icon_red"></span>';
         }
 
-        $counttroopdeck = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='{$this->player_deck}'", true));
-        $counttroophand = count(self::getObjectListFromDB("SELECT card_id FROM troop WHERE card_location='hand' AND card_type_arg = '{$this->player_id}'", true));
+        $counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$this->player_deck}'", true));
+        $counttroophand = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'", true));
 
 
         if (($counttroopdeck >= 1) && ($counttroophand <= 7)) {
@@ -1088,8 +1090,8 @@ trait TroopsTrait  // ATTENTION
             game::$instance->incStat(1, 'troops_drawn', $this->player_id);
             game::$instance->incStat(1, 'star_activated', $this->player_id);
 
-            $nb_troops_hand = self::getUniqueValueFromDB("SELECT COUNT(card_id) FROM troop WHERE card_location = 'hand' AND card_type_arg = '{$this->player_id}'");
-            $old_troops = self::getObjectListFromDB("SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg, card_ordre ordre FROM troop WHERE card_location = 'hand' AND card_type_arg ='{$this->player_id}'");
+            $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
+            $old_troops = Table::getObjectListFromDB("SELECT `card_id` id, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` ='{$this->player_id}'");
 
             $new_troops = game::$instance->troop->pickCardsForLocation(1, $this->player_deck, 'hand');
 
