@@ -392,7 +392,16 @@ $this->_regions = [
         7 => ["value" => 7, "bases" => [19, 21, 23],          "medals" => 1],
         8 => ["value" => 8, "bases" => [18, 22, 23, 24, 25],  "medals" => 3],
     ],
-    "croisette" => [],
+    "croisette" => [
+        1 => ["value" => 1, "bases" => [11, 12, 13],     "medals" => 1],
+        2 => ["value" => 2, "bases" => [13, 15, 16],     "medals" => 1],
+        3 => ["value" => 3, "bases" => [15, 16, 18, 19], "medals" => 2],
+        4 => ["value" => 4, "bases" => [18, 19, 21],     "medals" => 1],
+        5 => ["value" => 5, "bases" => [21, 22, 23],     "medals" => 1],
+        6 => ["value" => 6, "bases" => [13, 14, 16, 17], "medals" => 2],
+        7 => ["value" => 7, "bases" => [16, 17, 19],     "medals" => 1],
+        8 => ["value" => 8, "bases" => [17, 19, 20, 21], "medals" => 2],
+    ],
 ];
 
 $this->_medals = [
@@ -539,13 +548,25 @@ $this->_medals = [
         13 => ["region" => 8, "top" => 28.4, "left" => 47.9],
         14 => ["region" => 8, "top" => 31.4, "left" => 47.9]
     ],
-    "croisette" => [],
+    "croisette" => [
+        1 => ["region" => 1, "top" => 80, "left" => 35],
+        2 => ["region" => 2, "top" => 62, "left" => 35.5],
+        3 => ["region" => 3, "top" => 46, "left" => 28.5],
+        4 => ["region" => 3, "top" => 50, "left" => 28.5],
+        5 => ["region" => 4, "top" => 34, "left" => 35.5],
+        6 => ["region" => 5, "top" => 16.5, "left" => 35],
+        7 => ["region" => 6, "top" => 60, "left" => 67],
+        8 => ["region" => 6, "top" => 64, "left" => 67],
+        9 => ["region" => 7, "top" => 47.5, "left" => 58],
+        10 => ["region" => 8, "top" => 35, "left" => 67],
+        11 => ["region" => 8, "top" => 31, "left" => 67],
+    ],
 ];
 
 
 $this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81], [11], [24, 31, 71, 81]];
 
-$this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8, 7, 20];
+$this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8, 7, 5];
 
 $this->_board_names = ["", "castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
 

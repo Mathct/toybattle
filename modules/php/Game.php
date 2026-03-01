@@ -538,7 +538,7 @@ class Game extends Table
                                     $possible_bases[] = $base_adjacente;
                                 }
                             } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
-                                if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
+                                if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
                             } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
@@ -567,7 +567,7 @@ class Game extends Table
                                             $possible_bases[] = $base_adjacente;
                                         }
                                     } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
-                                        if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
+                                        if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
                                     } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
@@ -589,7 +589,7 @@ class Game extends Table
                                         $possible_bases[] = $base_adjacente;
                                     }
                                 } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
-                                    if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7)) {
+                                    if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
                                 } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {

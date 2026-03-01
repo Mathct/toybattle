@@ -39,7 +39,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       console.log(gamedatas);
 
       this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
-      this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8, 7, 20];
+      this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8, 7, 5];
 
       this.BLUE_COLOR = "4f66a2";
       this.RED_COLOR = "d1553e";
@@ -79,7 +79,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       // delays notification to let animations finish.
       this.DELAY_JUNGLE = this.board_id == 4 ? 1000 : 1;
-      this.DELAY_BATTLEFIELD = this.board_id == 8 ? 1000 : 1;
+      this.DELAY_BATTLEFIELD = this.board_id == 8 || this.board_id == 10 ? 1000 : 1;
 
       //TODO check if spectator is always BLUE
       this.opponent_id = gamedatas.opponent_id;
@@ -136,6 +136,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           if (this.isCurrentPlayerActive()) {
             this.args.selectable.forEach((sid) => {
               const element = document.getElementById(sid); //on va recupere le div complet de l'element
+
               if (element.classList.contains("troop") || element.classList.contains("deck") || element.classList.contains("troop_x")) {
                 this.addSVGs(element, "selectable");
               } else {
@@ -606,27 +607,6 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       return isMobile == false && this.orientation === "landscape" && this.getGameUserPreference("102") == 2;
     },
 
-    setupNewLandscapeMode: function () {
-      document.getElementById("game_play_area").insertAdjacentHTML(
-        "beforeend",
-        `
-        <div id="global_big_id">
-            <div id="sideleft"></div>
-            <div id="global_id">
-                <div id="goodie_${this.board_id}"></div>
-                <div id="board_${this.board_id}"></div>
-                <div id="playmat_id">
-                    <div id="red_line"></div>
-                    <div id="red_discard"></div>
-                    <div id="blue_discard"></div>
-                    <div id="blue_line"></div>
-                </div> 
-            </div>
-            <div id="sideright"></div> 
-        </div>`,
-      );
-    },
-
     setupLandscapeMode: function () {
       const globalBigContainer = document.getElementById("global_big_id");
       const globalContainer = document.getElementById("global_id");
@@ -645,13 +625,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       globalBigContainer.insertBefore(sideleftContainer, globalContainer);
 
       let goodieContainer;
-      if (this.board_id != 10) {
-        goodieContainer = this.createGoodie();
-        if (this.isCurrentPlayerRed()) {
-          goodieContainer.classList.add("board-inverted");
-        }
-        globalContainer.appendChild(goodieContainer);
+
+      goodieContainer = this.createGoodie();
+      if (this.isCurrentPlayerRed()) {
+        goodieContainer.classList.add("board-inverted");
       }
+      globalContainer.appendChild(goodieContainer);
 
       const boardContainer = this.createBoard();
       if (this.isCurrentPlayerRed()) {
@@ -929,12 +908,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         contains possible Troops in opacity 50 and all discarded ones TODO
     */
       let goodieContainer;
-      if (this.board_id != 10) {
-        goodieContainer = this.createGoodie();
-        if (this.isCurrentPlayerBlue() || this.isSpectator) {
-          playmatContainer.appendChild(goodieContainer);
-        }
+
+      goodieContainer = this.createGoodie();
+      if (this.isCurrentPlayerBlue() || this.isSpectator) {
+        playmatContainer.appendChild(goodieContainer);
       }
+
       const blueDiscardContainer = this.createDiscard("blue");
       blueDiscardContainer.style.flexDirection = "column";
       blueDiscardContainer.style.justifyContent = "flex-end";
@@ -991,7 +970,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           });
       }
 
-      if (this.isCurrentPlayerRed() && this.board_id != 10) {
+      if (this.isCurrentPlayerRed()) {
         playmatContainer.appendChild(goodieContainer);
       }
 
@@ -1180,12 +1159,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       }
 
       let goodieContainer;
-      if (this.board_id != 10) {
-        goodieContainer = this.createGoodie();
-        if (this.isCurrentPlayerBlue() || this.isSpectator) {
-          playmatContainer.appendChild(goodieContainer);
-        }
+
+      goodieContainer = this.createGoodie();
+      if (this.isCurrentPlayerBlue() || this.isSpectator) {
+        playmatContainer.appendChild(goodieContainer);
       }
+
       /*  boardContainer definition 
         contains board and all troops
     */
@@ -1204,7 +1183,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         discardsContainer.appendChild(blueDiscardContainer);
       }
 
-      if (this.isCurrentPlayerRed() && this.board_id != 10) {
+      if (this.isCurrentPlayerRed()) {
         playmatContainer.appendChild(goodieContainer);
       }
 
@@ -1422,8 +1401,24 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           const goodieElement = document.createElement("div");
           goodieElement.id = `goodie_${goodie_id}`;
           goodieElement.classList.add("medals", "board_medal");
-
+          console.log("Gewdies", this.goodies);
           const goodie = this.goodies[medals_needed][goodie_id];
+          console.log("Gewdie", this.goodies[medals_needed][goodie_id]);
+          if (!goodie) {
+            console.info("GOODIE ERROR", {
+              timestamp: Date.now(),
+              board_id: this.board_id,
+              medals_needed,
+              medals_to_win: this.medals_to_win,
+              player_star: medals_won,
+              player_indice,
+              i,
+              goodie_id,
+              available_groups: Object.keys(this.goodies || {}),
+              available_keys: Object.keys(goodieGroup || {}),
+            });
+          }
+
           goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
           goodieContainer.appendChild(goodieElement);
         }
@@ -1521,7 +1516,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     createMedals: function () {
       const boardContainer = document.getElementById(`board_${this.board_id}`);
       const TB_medals = this.medals;
+      console.log("TB MEdals", TB_medals);
+      console.log("TB full regions", this.gamedatas.full_regions);
       Object.entries(TB_medals).forEach(([id, medal]) => {
+        console.log("medal", medal);
         if (this.gamedatas.full_regions.includes(medal.region.toString())) {
           boardContainer.insertAdjacentHTML(
             "beforeend",
@@ -1579,10 +1577,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
     setupTooltips: function () {
       // Goodie
-      if (this.board_id != 10) {
-        html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
-        this.addCustomTooltip(`goodie_${this.board_id}`, html);
-      }
+
+      html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
+      this.addCustomTooltip(`goodie_${this.board_id}`, html);
 
       // Red Deck
       html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Troops in Red deck") + "</span></div>";
@@ -2220,7 +2217,17 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     //
     /////////////////////////////////////////////////////////////////////////////////
 
-    setupNotifications: function () {
+    setupNotifications() {
+      console.log("notifications subscriptions setup");
+
+      // automatically listen to the notifications, based on the `notif_xxx` function on this class.
+      // Uncomment the logger param to see debug information in the console about notifications.
+      this.bga.notifications.setupPromiseNotifications({
+        // logger: console.log
+      });
+    },
+
+    /*   setupNotifications: function () {
       console.log("notifications subscriptions setup");
 
       const notifs = [
@@ -2250,9 +2257,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       });
 
       this.notifqueue.setIgnoreNotificationCheck("message_allplayers_without_player", (notif) => notif.args.player_id == this.player_id);
-    },
+    },*/
 
-    notif_displayNotif: function (notif) {
+    async notif_displayNotif() {
       console.log("notif_displayNotif");
       console.log(notif);
     },
@@ -2266,51 +2273,42 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
      *
      **********************************/
 
-    notif_moveTroop: function (notif) {
+    async notif_moveTroop(args) {
       console.log("notif_moveTroop");
-      console.log(notif);
+      console.log(args);
 
-      const player_color = this.players[notif.args.player_id].color;
+      const troop = args.infos_troop;
+
+      const player_color = this.players[args.player_id].color;
       const player_color_name = player_color == this.RED_COLOR ? "red" : "blue";
 
       const boardContainer = document.getElementById(`board_${this.board_id}`);
-
       const TB_bases = this.bases;
 
-      const troop = notif.args.infos_troop;
-
-      const base_css_id = notif.args.base_id;
+      const base_css_id = args.base_id;
       const base_id = base_css_id.split("_")[2];
 
-      // JS part
-      if (this.player_id == notif.args.player_id) {
-        // troop is removed from hand JS array
+      /* ---------------- JS UPDATE ---------------- */
+
+      if (this.player_id == args.player_id) {
         const index = this.my_hand.findIndex((t) => t.id === troop.id);
         if (index !== -1) {
           this.my_hand.splice(index, 1);
 
-          //remove tooltip
-          this.tooltips[`troop_${troop.id}`].destroy();
-          delete this.tooltips[`troop_${troop.id}`];
+          if (this.tooltips[`troop_${troop.id}`]) {
+            this.tooltips[`troop_${troop.id}`].destroy();
+            delete this.tooltips[`troop_${troop.id}`];
+          }
         }
       } else {
-        // remove troop from hand JS array
+        const indicesNonBloques = args.numbers_no_blocked.map((i) => i - 1);
+        const indexMax = Math.max(...indicesNonBloques);
 
         if (this.isSpectator == false || player_color == this.RED_COLOR) {
-          // Obtenir les indices ajustés pour le tableau
-          const indicesNonBloques = notif.args.numbers_no_blocked.map((index) => index - 1); // Convertir en indices de tableau
-
-          const indexMax = Math.max(...indicesNonBloques); // Trouver l'indice maximum (ajusté)
-
-          // Vérifier si l'indice est valide avant de retirer l'élément
           if (indexMax >= 0 && indexMax < this.your_hand.length) {
-            this.your_hand.splice(indexMax, 1); // Supprimer l'élément correspondant
+            this.your_hand.splice(indexMax, 1);
           }
         } else {
-          // Même logique pour my_hand
-          const indicesNonBloques = notif.args.numbers_no_blocked.map((index) => index - 1); // Convertir en indices de tableau
-          const indexMax = Math.max(...indicesNonBloques);
-
           if (indexMax >= 0 && indexMax < this.my_hand.length) {
             this.my_hand.splice(indexMax, 1);
           }
@@ -2320,144 +2318,106 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       this.troops_on_bases[base_id].push(troop);
       this.createBaseTooltip(base_id);
 
-      // animation part
-      if (this.player_id == notif.args.player_id) {
-        if (this.instantaneousMode) {
-          // Déplacement immédiat pour le mode instantané
+      /* ---------------- DOM RESOLUTION ---------------- */
 
-          const troopElement = document.getElementById(`troop_${troop.id}`);
+      let troopElement;
 
-          const troopColor = Math.floor(troop.type / 10) - 1;
-          const baseData = TB_bases[troop.location_arg];
-
-          // Positionnement immédiat sans animation
-          troopElement.style.position = "absolute";
-          troopElement.style.zIndex = troop.ordre * 10;
-          troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
-          troopElement.style.left = `${baseData.left}%`;
-
-          boardContainer.appendChild(troopElement);
-        } else {
-          /* animation for the active player */
-          const troopElement = document.getElementById(`troop_${troop.id}`);
-
-          troopElement.style.zIndex = troop.ordre * 10;
-
-          const destination_id = this.isCurrentPlayerRed() ? "red_" + notif.args.base_id : "blue_" + notif.args.base_id;
-          const destinationContainer = document.getElementById(destination_id);
-
-          const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
-          const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
-
-          let deltaX = endRect.left - startRect.left;
-          let deltaY = endRect.top - startRect.top;
-
-          console.log("deltaX", deltaX);
-          console.log("deltaY", deltaY);
-
-          if (this.checkHorizontalMode()) {
-            const deltaZ = deltaX;
-            deltaX = deltaY;
-            deltaY = -deltaZ;
-          }
-          console.log("deltaX", deltaX);
-          console.log("deltaY", deltaY);
-
-          // transformation
-          const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
-
-          // gets rotation, if defined
-          const existingTransform = window.getComputedStyle(troopElement).transform;
-
-          const newTransform = existingTransform !== "none" ? `${existingTransform} ${translateTransform}` : translateTransform;
-
-          troopElement.style.transform = newTransform;
-
-          const onTransitionEnd = () => {
-            troopElement.style.transform = existingTransform;
-            // absolute position on board
-            troopElement.style.position = "absolute";
-
-            const baseData = TB_bases[troop.location_arg];
-            const troopColor = Math.floor(troop.type / 10) - 1;
-            troopElement.style.top = troopColor == this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
-            troopElement.style.left = `${baseData.left}%`;
-
-            boardContainer.appendChild(troopElement);
-            troopElement.removeEventListener("transitionend", onTransitionEnd);
-          };
-          troopElement.addEventListener("transitionend", onTransitionEnd);
-        }
+      if (this.player_id == args.player_id) {
+        troopElement = document.getElementById(`troop_${troop.id}`);
       } else {
-        //troop becomes visible
-        const numbersNoBlocked = notif.args.numbers_no_blocked; // Par exemple [1, 2]
-        const maxValue = Math.max(...numbersNoBlocked);
-        let moving_troop_id = `${player_color_name}_troop_${maxValue}`;
+        const maxValue = Math.max(...args.numbers_no_blocked);
+        troopElement = document.getElementById(`${player_color_name}_troop_${maxValue}`);
+      }
 
-        const troopElement = document.getElementById(moving_troop_id);
+      if (!troopElement) {
+        console.warn("troopElement not found");
+        return;
+      }
 
-        const x = troop.type.toString().slice(-1);
-        troopElement.style.backgroundPositionX = `-${x}00%`;
+      /* ---------------- INSTANT MODE ---------------- */
 
-        if (this.instantaneousMode) {
-          // Déplacement immédiat pour le mode instantané
-          const baseData = TB_bases[troop.location_arg];
-          const troopColor = Math.floor(troop.type / 10) - 1;
+      if (this.instantaneousMode) {
+        const baseData = TB_bases[troop.location_arg];
+        const troopColor = Math.floor(troop.type / 10) - 1;
 
-          troopElement.style.position = "absolute";
-          troopElement.style.zIndex = troop.ordre * 10;
-          troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
-          troopElement.style.left = `${baseData.left}%`;
-          troopElement.id = `troop_${troop.id}`;
+        troopElement.style.position = "absolute";
+        troopElement.style.zIndex = troop.ordre * 10;
+        troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`;
+        troopElement.style.left = `${baseData.left}%`;
 
-          boardContainer.appendChild(troopElement);
-        } else {
-          // Animation pour les déplacements normaux
+        troopElement.id = `troop_${troop.id}`;
+        boardContainer.appendChild(troopElement);
 
-          const destination_id = this.isCurrentPlayerRed() ? "blue_" + notif.args.base_id : "red_" + notif.args.base_id;
-          const destinationContainer = document.getElementById(destination_id);
+        return; // queue continue immédiatement
+      }
 
-          const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
-          const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
+      /* ---------------- ANIMATION ---------------- */
 
-          let deltaX = endRect.left - startRect.left;
-          let deltaY = endRect.top - startRect.top;
+      await new Promise((resolve) => {
+        const destination_id =
+          this.player_id == args.player_id
+            ? this.isCurrentPlayerRed()
+              ? "red_" + args.base_id
+              : "blue_" + args.base_id
+            : this.isCurrentPlayerRed()
+              ? "blue_" + args.base_id
+              : "red_" + args.base_id;
+
+        const destinationContainer = document.getElementById(destination_id);
+
+        if (!destinationContainer) {
+          resolve();
+          return;
+        }
+
+        const startRect = this.getBoundingClientRectIgnoreZoom(troopElement);
+        const endRect = this.getBoundingClientRectIgnoreZoom(destinationContainer);
+
+        let deltaX = endRect.left - startRect.left;
+        let deltaY = endRect.top - startRect.top;
+
+        if (this.player_id != args.player_id) {
           if (this.isSpectator === false || player_color === this.RED_COLOR) {
             deltaX = -deltaX;
             deltaY = -deltaY;
           }
-
-          if (this.checkHorizontalMode()) {
-            const deltaZ = deltaX;
-            deltaX = deltaY;
-            deltaY = -deltaZ;
-          }
-
-          troopElement.style.zIndex = 1000;
-          const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
-
-          const existingTransform = window.getComputedStyle(troopElement).transform;
-          const newTransform = existingTransform !== "none" ? `${existingTransform} ${translateTransform}` : translateTransform;
-          troopElement.style.transform = newTransform;
-
-          const onTransitionEnd = () => {
-            troopElement.style.transform = existingTransform;
-            troopElement.style.zIndex = troop.ordre * 10;
-            troopElement.style.position = "absolute";
-
-            const baseData = TB_bases[troop.location_arg];
-            const troopColor = Math.floor(troop.type / 10) - 1;
-            troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`; // red troops are 2.5% down
-            troopElement.style.left = `${baseData.left}%`;
-
-            troopElement.id = `troop_${troop.id}`;
-
-            boardContainer.appendChild(troopElement);
-            troopElement.removeEventListener("transitionend", onTransitionEnd);
-          };
-          troopElement.addEventListener("transitionend", onTransitionEnd);
         }
-      }
+
+        if (this.checkHorizontalMode()) {
+          const tmp = deltaX;
+          deltaX = deltaY;
+          deltaY = -tmp;
+        }
+
+        troopElement.style.zIndex = 1000;
+
+        const translateTransform = `translate(${deltaX}px, ${deltaY}px)`;
+        const existingTransform = window.getComputedStyle(troopElement).transform;
+
+        troopElement.style.transform = existingTransform !== "none" ? `${existingTransform} ${translateTransform}` : translateTransform;
+
+        const onEnd = () => {
+          troopElement.removeEventListener("transitionend", onEnd);
+
+          troopElement.style.transform = existingTransform;
+          troopElement.style.zIndex = troop.ordre * 10;
+          troopElement.style.position = "absolute";
+
+          const baseData = TB_bases[troop.location_arg];
+          const troopColor = Math.floor(troop.type / 10) - 1;
+
+          troopElement.style.top = troopColor === this.BLUE ? `${baseData.top}%` : `${baseData.top + 2.5}%`;
+
+          troopElement.style.left = `${baseData.left}%`;
+
+          troopElement.id = `troop_${troop.id}`;
+          boardContainer.appendChild(troopElement);
+
+          resolve(); // 🔴 C’EST ÇA qui bloque la queue
+        };
+
+        troopElement.addEventListener("transitionend", onEnd);
+      });
     },
 
     /*********************************
@@ -2475,23 +2435,22 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
      *  Animation for active player
      *
      *********************************/
-    notif_drawTroopPrivate: function (notif) {
+    async notif_drawTroopPrivate(args) {
       console.log("notif_drawTroopPrivate");
-      console.log(notif);
+      console.log(args);
 
-      const player_color = this.players[notif.args.player_id].color;
+      const player_color = this.players[args.player_id].color;
       const player_color_name = player_color == this.RED_COLOR ? "red" : "blue";
 
-      const deckId = `${player_color_name}_deck`;
-      const deckContainer = document.getElementById(deckId);
+      const deckContainer = document.getElementById(`${player_color_name}_deck`);
+      const rackContainer = document.getElementById(`${player_color_name}_troops_container`);
 
-      const rackId = `${player_color_name}_troops_container`;
-      const rackContainer = document.getElementById(rackId);
+      for (const troop of args.new_troops) {
+        /* ---------- Création DOM ---------- */
 
-      const addTroopToRack = (troop, index) => {
-        /* Création de la troupe */
         const troopElement = document.createElement("div");
         troopElement.id = `troop_${troop.id}`;
+
         if (this.board_id == 9) {
           troopElement.classList.add("troop_x");
         } else {
@@ -2500,32 +2459,35 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
         const troop_type = troop.type % 10;
         const troop_color = Math.floor(troop.type / 10) - 1;
+
         troopElement.style.backgroundPosition = `-${troop_type}00% -${troop_color}00%`;
+
         troopElement.style.top = "0px";
         troopElement.style.left = "0px";
+
         deckContainer.appendChild(troopElement);
 
         this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
 
-        /* Calcul de l'index d'insertion */
+        /* ---------- Insertion logique ---------- */
+
         const newTroop = { id: troop.id, type: troop.type };
+
         let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+
         if (insertIndex === -1) {
-          this.my_hand.push(newTroop); // fin du tableau
+          this.my_hand.push(newTroop);
+          insertIndex = this.my_hand.length - 1;
         } else {
           this.my_hand.splice(insertIndex, 0, newTroop);
         }
 
-        /* Placeholder dans le rack */
-        let placeholder = document.createElement("div");
-        placeholder.classList.add("troop-placeholder");
         if (player_color == this.RED_COLOR) {
-          if (insertIndex === -1) {
-            insertIndex = 0; // Vérification
-          } else {
-            insertIndex = this.my_hand.length - insertIndex - 1;
-          }
+          insertIndex = this.my_hand.length - insertIndex - 1;
         }
+
+        const placeholder = document.createElement("div");
+        placeholder.classList.add("troop-placeholder");
 
         if (insertIndex === rackContainer.children.length) {
           rackContainer.appendChild(placeholder);
@@ -2533,64 +2495,53 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           rackContainer.insertBefore(placeholder, rackContainer.children[insertIndex]);
         }
 
+        /* ---------- Mode instantané ---------- */
+
         if (this.instantaneousMode) {
-          // Déplacement instantané
           if (player_color == this.RED_COLOR) {
             troopElement.classList.add("board-inverted");
           }
 
-          // Remplacement du placeholder par le troopElement
           rackContainer.replaceChild(troopElement, placeholder);
+          continue;
+        }
 
-          // Appel de la prochaine troupe
-          if (index + 1 < notif.args.new_troops.length) {
-            addTroopToRack(notif.args.new_troops[index + 1], index + 1);
-          }
-        } else {
-          // Animation
-          // Calcul des positions
+        /* ---------- Animation Promise ---------- */
+
+        await new Promise((resolve) => {
           const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
-          const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
           const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
 
           let deltaX = targetRect.left - startRect.left;
-          let deltaY = rackRect.top - startRect.top;
+          let deltaY = targetRect.top - startRect.top;
 
           if (this.checkHorizontalMode()) {
-            deltaX = rackRect.top - startRect.top;
-            deltaY = targetRect.left - startRect.left;
+            const tmp = deltaX;
+            deltaX = deltaY;
+            deltaY = tmp;
           }
 
-          troopElement.style.zIndex = 1000;
           troopElement.style.position = "absolute";
+          troopElement.style.zIndex = 1000;
           troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-          troopElement.style.zIndex = 100;
 
-          const onTransitionEnd = () => {
+          const onEnd = () => {
+            troopElement.removeEventListener("transitionend", onEnd);
+
             troopElement.style.transform = "";
             troopElement.style.position = "";
+
             if (player_color == this.RED_COLOR) {
               troopElement.classList.add("board-inverted");
             }
 
-            // Remplacement du placeholder par le troopElement
             rackContainer.replaceChild(troopElement, placeholder);
 
-            // Nettoyage : suppression du gestionnaire
-            troopElement.removeEventListener("transitionend", onTransitionEnd);
-
-            // Appel de la prochaine animation si nécessaire
-            if (index + 1 < notif.args.new_troops.length) {
-              addTroopToRack(notif.args.new_troops[index + 1], index + 1);
-            }
+            resolve(); // 🔴 la queue attend ici
           };
 
-          troopElement.addEventListener("transitionend", onTransitionEnd);
-        }
-      };
-
-      if (notif.args.new_troops.length > 0) {
-        addTroopToRack(notif.args.new_troops[0], 0);
+          troopElement.addEventListener("transitionend", onEnd);
+        });
       }
     },
 
@@ -2610,132 +2561,131 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
      *
      *********************************/
 
-    notif_drawTroopPublic: function (notif) {
+    async notif_drawTroopPublic(args) {
       console.log("notif_drawTroopPublic");
-      console.log(notif);
+      console.log(args);
 
-      const player_color = this.players[notif.args.player_id].color;
+      const player_color = this.players[args.player_id].color;
       const player_color_name = player_color == this.RED_COLOR ? "red" : "blue";
       const player_color_index = player_color == this.RED_COLOR ? "2" : "1";
 
-      const deckId = `${player_color_name}_deck`;
-      const deckContainer = document.getElementById(deckId);
+      const deckContainer = document.getElementById(`${player_color_name}_deck`);
+      const rackContainer = document.getElementById(`${player_color_name}_troops_container`);
 
-      const rackId = `${player_color_name}_troops_container`;
-      const rackContainer = document.getElementById(rackId);
-
+      // Deck counter
       if (player_color == this.BLUE_COLOR) {
-        this.blue_deck_counter.incValue(parseInt(-notif.args.nb_troops));
+        this.blue_deck_counter.incValue(parseInt(-args.nb_troops));
       } else {
-        this.red_deck_counter.incValue(parseInt(-notif.args.nb_troops));
+        this.red_deck_counter.incValue(parseInt(-args.nb_troops));
       }
-      // TODO EMPTY DECK
 
-      // no changes for active player
-      if (this.player_id != notif.args.player_id) {
-        const addTroopToRack = (index) => {
-          /* JS troop addition */
-          const newTroop = { type: player_color_index };
-          if (this.isSpectator === false || player_color == this.RED_COLOR) {
-            this.your_hand.push(newTroop);
-          } else {
-            this.my_hand.push(newTroop);
-          }
+      // Rien à faire pour le joueur actif
+      if (this.player_id == args.player_id) {
+        return;
+      }
 
-          /* Création de la troupe */
-          let troopElement = document.createElement("div");
-          if (this.board_id == 9) {
-            troopElement.classList.add("troop_x");
-          } else {
-            troopElement.classList.add("troop");
-          }
+      for (let i = 0; i < args.nb_troops; i++) {
+        /* ---------- JS hand update ---------- */
 
-          if (this.isCurrentPlayerRed()) {
-            troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-            troopElement.style.backgroundPosition = `-0% -0%`;
-          } else if (this.isCurrentPlayerBlue()) {
-            troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
+        const newTroop = { type: player_color_index };
+
+        if (this.isSpectator === false || player_color == this.RED_COLOR) {
+          this.your_hand.push(newTroop);
+        } else {
+          this.my_hand.push(newTroop);
+        }
+
+        /* ---------- DOM creation ---------- */
+
+        const troopElement = document.createElement("div");
+
+        if (this.board_id == 9) {
+          troopElement.classList.add("troop_x");
+        } else {
+          troopElement.classList.add("troop");
+        }
+
+        const indexBase = i + parseInt(args.nb_troops_hand) + 1;
+
+        if (this.isCurrentPlayerRed()) {
+          troopElement.id = `blue_troop_${indexBase}`;
+          troopElement.style.backgroundPosition = `-0% -0%`;
+        } else if (this.isCurrentPlayerBlue()) {
+          troopElement.id = `red_troop_${indexBase}`;
+          troopElement.style.backgroundPosition = `-0% -100%`;
+        } else if (this.isSpectator === true) {
+          if (player_color == this.RED_COLOR) {
+            troopElement.id = `red_troop_${indexBase}`;
             troopElement.style.backgroundPosition = `-0% -100%`;
-          } else if (this.isSpectator === true) {
-            // Spectator
-            if (player_color == this.RED_COLOR) {
-              troopElement.id = `red_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-              troopElement.style.backgroundPosition = `-0% -100%`;
-            } else {
-              troopElement.id = `blue_troop_${index + parseInt(notif.args.nb_troops_hand) + 1}`;
-              troopElement.style.backgroundPosition = `-0% -0%`;
-            }
+          } else {
+            troopElement.id = `blue_troop_${indexBase}`;
+            troopElement.style.backgroundPosition = `-0% -0%`;
           }
-          troopElement.style.top = "0px";
-          troopElement.style.left = "0px";
-          deckContainer.appendChild(troopElement);
+        }
 
-          /* Réserver une place dans le rack */
-          const placeholder = document.createElement("div");
-          placeholder.classList.add("troop-placeholder");
-          rackContainer.appendChild(placeholder);
+        troopElement.style.top = "0px";
+        troopElement.style.left = "0px";
 
-          if (this.instantaneousMode) {
-            // Mode instantané : remplace directement le placeholder
+        deckContainer.appendChild(troopElement);
+
+        /* ---------- Placeholder ---------- */
+
+        const placeholder = document.createElement("div");
+        placeholder.classList.add("troop-placeholder");
+        rackContainer.appendChild(placeholder);
+
+        /* ---------- Instant mode ---------- */
+
+        if (this.instantaneousMode) {
+          if (player_color == this.RED_COLOR) {
+            troopElement.classList.add("board-inverted");
+          }
+
+          rackContainer.replaceChild(troopElement, placeholder);
+          continue;
+        }
+
+        /* ---------- Animation Promise ---------- */
+
+        await new Promise((resolve) => {
+          const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
+          const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+
+          let deltaX = targetRect.left - startRect.left;
+          let deltaY = targetRect.top - startRect.top;
+
+          if (this.isSpectator === false || player_color == this.RED_COLOR) {
+            deltaX = -deltaX;
+            deltaY = -deltaY;
+          }
+
+          if (this.checkHorizontalMode()) {
+            const tmp = deltaX;
+            deltaX = deltaY;
+            deltaY = tmp;
+          }
+
+          troopElement.style.position = "absolute";
+          troopElement.style.zIndex = 1000;
+          troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+          const onEnd = () => {
+            troopElement.removeEventListener("transitionend", onEnd);
+
+            troopElement.style.transform = "";
+            troopElement.style.position = "";
+
             if (player_color == this.RED_COLOR) {
               troopElement.classList.add("board-inverted");
             }
+
             rackContainer.replaceChild(troopElement, placeholder);
 
-            // Appel de la troupe suivante
-            if (index + 1 < notif.args.nb_troops) {
-              addTroopToRack(index + 1);
-            }
-          } else {
-            // Animation
-            const startRect = this.getBoundingClientRectIgnoreZoom(deckContainer);
-            const rackRect = this.getBoundingClientRectIgnoreZoom(rackContainer);
-            const targetRect = this.getBoundingClientRectIgnoreZoom(placeholder);
+            resolve(); // 🔴 bloque la notif queue ici
+          };
 
-            let deltaX = targetRect.left - startRect.left;
-            let deltaY = rackRect.top - startRect.top;
-
-            if (this.isSpectator === false || player_color == this.RED_COLOR) {
-              deltaX = -deltaX;
-              deltaY = -deltaY;
-            }
-
-            if (this.checkHorizontalMode()) {
-              const deltaZ = deltaX;
-              deltaX = deltaY;
-              deltaY = deltaZ;
-            }
-
-            troopElement.style.zIndex = 1000;
-            troopElement.style.position = "absolute";
-            troopElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-            troopElement.style.zIndex = 100;
-
-            // Gestionnaire de transition
-            const onTransitionEnd = () => {
-              troopElement.style.transform = "";
-              troopElement.style.position = "";
-              if (player_color == this.RED_COLOR) {
-                troopElement.classList.add("board-inverted");
-              }
-
-              rackContainer.replaceChild(troopElement, placeholder);
-
-              troopElement.removeEventListener("transitionend", onTransitionEnd);
-
-              // Appel de la troupe suivante
-              if (index + 1 < notif.args.nb_troops) {
-                addTroopToRack(index + 1);
-              }
-            };
-
-            troopElement.addEventListener("transitionend", onTransitionEnd);
-          }
-        };
-
-        if (notif.args.nb_troops > 0) {
-          addTroopToRack(0);
-        }
+          troopElement.addEventListener("transitionend", onEnd);
+        });
       }
     },
 
