@@ -524,7 +524,7 @@ body.snow-mode #global_big_id {
 .medals {
     background-image: url('img/TB_Medals.png');
     background-size: 200% 100%;
-    transition: transform 0.5s ease-in-out;
+    /*transition: transform 0.5s ease-in-out;*/
 }
 
 .full_medal {
