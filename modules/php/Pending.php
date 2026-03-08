@@ -162,7 +162,7 @@ class Pending
         // TEST SI TROUPES NON BLOQUEES PEUVENT ETRE PLACEES
         if ($counttroophand_noblocked >= 1) {
             $place_ok = 0;
-            $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}'", true);
+            $list_troop = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id}' AND `card_blocked` = 0", true);
             foreach ($list_troop as $troop) {
                 $troop_id = 'troop_' . $troop;
                 $possible_base = game::$instance->getPossibleBase($this->start_base, $troop_id, $this->player_id);

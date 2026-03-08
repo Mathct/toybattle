@@ -203,6 +203,14 @@ declare class Images {
    * @param {string[]} images the filenames
    */
   preloadImages(images: string[]): void;
+
+  /**
+   * Returns the img root url, or the image url if a file name is provided.
+   * 
+   * @param {string | undefined} filename 
+   * @returns string
+   */
+  getImgUrl(filename?: string): string;
 }
 
 declare class Sounds {
