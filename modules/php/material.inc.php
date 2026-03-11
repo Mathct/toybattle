@@ -101,7 +101,7 @@ $this->_board_types = [
 
     10 => [
         "name" => clienttranslate("Croisette"),
-        "desc1" => clienttranslate("Only Troops with the indicated value can be placed on these special bases and H.Q."),
+        "desc1" => clienttranslate("Only Troops with the indicated value can be placed on these special bases."),
         "desc2" => "",
     ],
 
