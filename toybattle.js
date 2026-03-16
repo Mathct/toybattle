@@ -2465,6 +2465,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           troopElement.addEventListener("transitionend", onTransitionEnd);
         }
       }
+
+      await this.bga.gameui.wait(this.DELAY_BATTLEFIELD);
     },
 
     /*********************************
@@ -2876,6 +2878,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         };
         troopElement.addEventListener("transitionend", onTransitionEnd);
       }
+
+      await this.bga.gameui.wait(this.DELAY_JUNGLE);
     },
 
     /*********************************
@@ -3098,6 +3102,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         }
       }
       this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id));
+
+      await this.bga.gameui.wait(this.DELAY_BATTLEFIELD);
     },
 
     /*********************************
