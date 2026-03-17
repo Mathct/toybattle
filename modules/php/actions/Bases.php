@@ -3,6 +3,8 @@
 namespace Bga\Games\toybattle; // ATTENTION
 
 use Bga\GameFramework\Table;
+use Bga\GameFramework\UserException;
+use Bga\GameFramework\NotificationMessage;
 
 trait BasesTrait  // ATTENTION
 {
@@ -336,15 +338,13 @@ trait BasesTrait  // ATTENTION
             game::$instance->notifyPlayer(
                 $this->player_id,
                 'drawTroopPrivate',
-                clienttranslate('${you} draw ${log1}'),
+                '',
                 array(
-                    'you' =>    [   'log' => '<b style="color: #${color};">${you_name}</b>',
-                                        'args'=> ['you_name' => clienttranslate('You'), 'color'=>$this->player_color, 'i18n' => ['you_name'] ]
-                                    ],
+
                     'player_id' => $this->player_id,
                     'origine' => "deck",
                     'new_troops' => $new_troops,
-                    'log1' => game::$instance->getLogsType($type1),
+
 
 
 
@@ -362,23 +362,25 @@ trait BasesTrait  // ATTENTION
                     'origine' => "deck",
                     'nb_troops' => 1,
                     'nb_troops_hand' => $nb_troops_hand,
-                    'log0' => game::$instance->getLogsType($type0),
 
 
                 )
             );
 
-            game::$instance->notifyAllPlayers(
-                'message_allplayers_without_player',
-                clienttranslate('${player_name} draws ${log0}'),
-                array(
+            game::$instance->notify->all('message', clienttranslate('${player_name} draws ${log0}'), [
                     'player_name' => $this->player_name,
-                    'player_id' => $this->player_id,
                     'log0' => game::$instance->getLogsType($type0),
+                    '_private' => [
+                        $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
+                            'you' =>    [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                            ],
+                            'log1' => game::$instance->getLogsType($type1),
 
-
-                )
-            );
+                        ]),
+                    ],
+                ]);
         }
 
         game::$instance->addPending($this->player_id, "VerifBase");
@@ -837,13 +839,12 @@ trait BasesTrait  // ATTENTION
             game::$instance->notifyPlayer(
                 $this->player_id_opponent,
                 'hideTroopOnRackPrivate',
-                clienttranslate('${player_name} blocks ${log1}'),
+                '',
                 array(
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
                     'infos_troop_before' => $infos_troop_before,
                     'infos_troop_after' => $infos_troop_after,
-                    'log1' => game::$instance->getLogsType($type1),
 
 
                 )
@@ -861,17 +862,21 @@ trait BasesTrait  // ATTENTION
 
             $type0 = $this->opponent_color_number . "0";
 
-            game::$instance->notifyAllPlayers(
-                'message_allplayers_without_player',
-                clienttranslate('${player_name} blocks ${log0}'),
-                array(
+            
+            game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
                     'player_name' => $this->player_name,
-                    'player_id' => $this->player_id_opponent,
                     'log0' => game::$instance->getLogsType($type0),
+                    '_private' => [
+                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
+                            'name' => [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => $this->player_name, 'color' => $this->player_color, 'i18n' => ['you_name']]
+                            ],
+                            'log1' => game::$instance->getLogsType($type1),
 
-
-                )
-            );
+                        ]),
+                    ],
+                ]);
 
             game::$instance->addPending($this->player_id, "VerifBase");
 
@@ -913,13 +918,12 @@ trait BasesTrait  // ATTENTION
                 game::$instance->notifyPlayer(
                     $this->player_id_opponent,
                     'hideTroopOnRackPrivate',
-                    clienttranslate('${player_name} blocks ${log1}'),
+                    '',
                     array(
                         'player_name' => $this->player_name,
                         'player_id' => $this->player_id,
                         'infos_troop_before' => $infos_troop_before,
                         'infos_troop_after' => $infos_troop_after,
-                        'log1' => game::$instance->getLogsType($type1),
 
 
                     )
@@ -937,17 +941,20 @@ trait BasesTrait  // ATTENTION
 
                 $type0 = $this->opponent_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
-                    'message_allplayers_without_player',
-                    clienttranslate('${player_name} blocks ${log0}'),
-                    array(
-                        'player_name' => $this->player_name,
-                        'player_id' => $this->player_id_opponent,
-                        'log0' => game::$instance->getLogsType($type0),
+                game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
+                    'player_name' => $this->player_name,
+                    'log0' => game::$instance->getLogsType($type0),
+                    '_private' => [
+                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
+                            'name' => [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => $this->player_name, 'color' => $this->player_color, 'i18n' => ['you_name']]
+                            ],
+                            'log1' => game::$instance->getLogsType($type1),
 
-
-                    )
-                );
+                        ]),
+                    ],
+                ]);
 
 
 
@@ -1022,13 +1029,13 @@ trait BasesTrait  // ATTENTION
             game::$instance->notifyPlayer(
                 $this->player_id_opponent,
                 'hideTroopOnRackPrivate',
-                clienttranslate('${player_name} blocks ${log1}'),
+                '',
                 array(
                     'player_name' => $this->player_name,
                     'player_id' => $this->player_id,
                     'infos_troop_before' => $infos_troop_before,
                     'infos_troop_after' => $infos_troop_after,
-                    'log1' => game::$instance->getLogsType($type1),
+
 
 
                 )
@@ -1046,17 +1053,20 @@ trait BasesTrait  // ATTENTION
 
             $type0 = $this->opponent_color_number . "0";
 
-            game::$instance->notifyAllPlayers(
-                'message_allplayers_without_player',
-                clienttranslate('${player_name} blocks ${log0}'),
-                array(
+            game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
                     'player_name' => $this->player_name,
-                    'player_id' => $this->player_id_opponent,
                     'log0' => game::$instance->getLogsType($type0),
+                    '_private' => [
+                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
+                            'name' => [
+                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'args' => ['you_name' => $this->player_name, 'color' => $this->player_color, 'i18n' => ['you_name']]
+                            ],
+                            'log1' => game::$instance->getLogsType($type1),
 
-
-                )
-            );
+                        ]),
+                    ],
+                ]);
 
             game::$instance->addPending($this->player_id, "VerifBase");
         }
