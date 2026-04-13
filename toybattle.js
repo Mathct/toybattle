@@ -1399,6 +1399,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         for (let i = 1; i <= medals_won; i++) {
           if (i == medals_needed) {
             player_indice = 3;
+          } else {
+            player_indice = player.color == this.BLUE_COLOR ? 1 : 2;
           }
           const goodie_id = `${player_indice}${i}`;
 
@@ -1443,6 +1445,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         for (let i = 1; i <= medals_won; i++) {
           if (i == medals_needed) {
             player_indice = 3;
+          } else {
+            player_indice = player.color == this.BLUE_COLOR ? 1 : 2;
           }
 
           const goodie_id = `${player_indice}${i}`;
@@ -3754,12 +3758,17 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
             const indice = parseInt(medals_already_won) + index;
 
+            let goodie_id;
             if (indice === medals_needed) {
               player_indice = 3;
+              goodie_id = `3${indice}`;
+            } else if (indice < medals_needed) {
+              player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
+              goodie_id = `${player_indice}${indice}`;
             }
 
             if (indice <= medals_needed) {
-              const goodie_id = `${player_indice}${indice}`;
+              //const goodie_id = `${player_indice}${indice}`;
               const g = goodiesForLevel[goodie_id];
 
               html += `<div id="goodie_${goodie_id}" class="medals board_medal" 
@@ -3785,7 +3794,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
             const medalElement = document.getElementById(`medal_${id}`);
             const indice = parseInt(medals_already_won) + index;
 
-            if (indice === medals_needed) player_indice = 3;
+            let goodie_id;
+            if (indice === medals_needed) {
+              player_indice = 3;
+              goodie_id = `3${indice}`;
+            } else if (indice < medals_needed) {
+              player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
+              goodie_id = `${player_indice}${indice}`;
+            }
 
             const animationDelay = index * 500;
             index++;
@@ -3801,7 +3817,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
             await this.bga.gameui.wait(timeoutDelay);
 
             if (indice <= medals_needed) {
-              const goodie_id = `${player_indice}${indice}`;
+              //const goodie_id = `${player_indice}${indice}`;
               const goodie = this.goodies[goodie_infos][goodie_id];
 
               // Étape 3 : créer et insérer le goodie
@@ -3819,98 +3835,6 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
                 await this.bga.gameui.wait(timeoutDelay);
                 goodieElement.style.transform = "scale(1)";
               }
-            }
-          }
-        });
-      }
-    },
-
-    async notif_gainMedalOld(args) {
-      console.log("notif_gainMedal");
-      console.log(args);
-
-      let medals_already_won = parseInt(args.medals_already_won);
-      let index = 1;
-      const TB_medals = this.medals;
-
-      const medals_needed = parseInt(this.medals_to_win[this.board_id - 1]);
-
-      const goodieContainer = document.getElementById("goodie_" + this.board_id);
-
-      const player_color = this.players[args.player_id].color;
-
-      let player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
-
-      if (this.instantaneousMode) {
-        let html = "";
-        const goodiesForLevel = this.goodies[medals_needed];
-
-        Object.entries(TB_medals).forEach(([id, medal]) => {
-          if (args.emptied_regions.includes(medal.region)) {
-            const medalElement = document.getElementById(`medal_${id}`);
-
-            const indice = parseInt(medals_already_won) + index;
-
-            if (indice === medals_needed) {
-              player_indice = 3;
-            }
-
-            if (indice <= medals_needed) {
-              const goodie_id = `${player_indice}${indice}`;
-              const g = goodiesForLevel[goodie_id];
-
-              html += `<div id="goodie_${goodie_id}" class="medals board_medal" 
-                style="position:absolute;top:${g.top}%;left:${g.left}%;z-index:10;"></div>`;
-            }
-
-            medalElement?.remove();
-            index++;
-          }
-        });
-
-        if (html) {
-          goodieContainer.insertAdjacentHTML("beforeend", html);
-        }
-      } else {
-        const timeoutDelay = 200;
-
-        Object.entries(TB_medals).forEach(async ([id, medal]) => {
-          if (args.emptied_regions.includes(medal.region)) {
-            const medalElement = document.getElementById(`medal_${id}`);
-            const indice = parseInt(medals_already_won) + index;
-
-            if (indice === medals_needed) player_indice = 3;
-
-            const animationDelay = index * 500;
-            index++;
-
-            await this.bga.gameui.wait(animationDelay);
-
-            // Étape 1 : agrandir la médaille source
-            medalElement.style.transform = "scale(4)";
-            await this.bga.gameui.wait(timeoutDelay);
-
-            // Étape 2 : réduire pour disparition
-            medalElement.style.transform = "scale(0)";
-            await this.bga.gameui.wait(timeoutDelay);
-
-            if (indice <= medals_needed) {
-              const goodie_id = `${player_indice}${indice}`;
-              const goodie = this.goodies[medals_needed][goodie_id];
-
-              // Étape 3 : créer et insérer le goodie
-              goodieContainer.insertAdjacentHTML(
-                "beforeend",
-                `<div id="goodie_${goodie_id}" class="medals board_medal"
-                  style="position:absolute;top:${goodie.top}%;left:${goodie.left}%;z-index:10;"></div>`,
-              );
-
-              const goodieElement = document.getElementById(`goodie_${goodie_id}`);
-
-              // Étape 4 : agrandir puis revenir à la taille normale
-              goodieElement.style.transform = "scale(3)";
-              await this.bga.gameui.wait(timeoutDelay);
-              goodieElement.style.transform = "scale(1)";
             }
           }
         });
