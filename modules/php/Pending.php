@@ -14,7 +14,7 @@ class Pending
 {
     use TroopsTrait; // ATTENTION
     use BasesTrait; // ATTENTION
-    
+
     public mixed $player_no;
     public mixed $player_id;
     public mixed $player_name;
@@ -46,8 +46,8 @@ class Pending
         $this->player_score = $p['player_score'];
         $this->player_color = $p['player_color'];
 
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
-        $this->board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
+        //$tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette", "tournament"];
+        $this->board_name = game::$instance->_board_names[game::$instance->getGameStateValue('board')];
 
         $this->player_id_opponent = Table::getUniqueValueFromDB("SELECT `player_id` FROM `player` WHERE `player_id` != '{$this->player_id}'");
         $this->player_name_opponent = Table::getUniqueValueFromDB("SELECT `player_name` FROM `player` WHERE `player_id` != '{$this->player_id}'");
@@ -72,7 +72,10 @@ class Pending
             $this->opponent_color_text = "red";
 
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield') || ($this->board_name == 'christmas') || ($this->board_name == 'croisette')) {
+            if (in_array(
+                $this->board_name,
+                ["castle", "clouds", "jungle", "cemetery", "station", "battlefield", "christmas", "croisette", "tournament"]
+            )) {
                 $this->start_base = [1];
                 $this->opponent_start_base = [41];
             }
@@ -104,7 +107,10 @@ class Pending
             $this->opponent_color_text = "blue";
 
             //DECLARATION DES BASES DE DEPART
-            if (($this->board_name == 'castle') || ($this->board_name == 'clouds') || ($this->board_name == 'jungle') || ($this->board_name == 'cemetery') || ($this->board_name == 'station') || ($this->board_name == 'battlefield') || ($this->board_name == 'christmas') || ($this->board_name == 'croisette')) {
+            if (in_array(
+                $this->board_name,
+                ["castle", "clouds", "jungle", "cemetery", "station", "battlefield", "christmas", "croisette", "tournament"]
+            )) {
                 $this->start_base = [41];
                 $this->opponent_start_base = [1];
             }
@@ -215,7 +221,7 @@ class Pending
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
                 $type2 = $this->player_color_number . $new_troops[1]['type'] % 10;
 
-                game::$instance->notifyPlayer(
+                game::$instance->notify->player(
                     $this->player_id,
                     'drawTroopPrivate',
                     '',
@@ -224,13 +230,13 @@ class Pending
                         'origine' => "deck",
                         'new_troops' => $new_troops,
                         'old_troops' => $old_troops,
-                        
+
                     )
                 );
 
                 $type0 = $this->player_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'drawTroopPublic',
                     '',
                     array(
@@ -239,27 +245,25 @@ class Pending
                         'origine' => "deck",
                         'nb_troops' => 2,
                         'nb_troops_hand' => $nb_troops_hand,
-                        
+
                     )
                 );
 
-            
+
                 game::$instance->notify->all('message', clienttranslate('${player_name} draws ${log0} ${log0}'), [
                     'player_name' => $this->player_name,
                     'log0' => game::$instance->getLogsType($type0),
                     '_private' => [
                         $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1} ${_private.log2}'), [
                             'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
-                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                                'log' => '<b style="color: #${color};">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                             ],
                             'log1' => game::$instance->getLogsType($type1),
                             'log2' => game::$instance->getLogsType($type2),
                         ]),
                     ],
                 ]);
-
-
             }
 
             if (($varg1 == 'btn_draw_1') || (($varg1 == $this->player_deck_id) && ($nb_troops_hand == 7) && ($counttroopdeck >= 2)) || (($varg1 == $this->player_deck_id) && ($nb_troops_hand <= 7) && ($counttroopdeck == 1))) {
@@ -268,7 +272,7 @@ class Pending
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
-                game::$instance->notifyPlayer(
+                game::$instance->notify->player(
                     $this->player_id,
                     'drawTroopPrivate',
                     '',
@@ -284,7 +288,7 @@ class Pending
 
                 $type0 = $this->player_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'drawTroopPublic',
                     '',
                     array(
@@ -305,14 +309,13 @@ class Pending
                     '_private' => [
                         $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
                             'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
-                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                                'log' => '<b style="color: #${color};">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                             ],
                             'log1' => game::$instance->getLogsType($type1),
                         ]),
                     ],
                 ]);
-
             }
 
             game::$instance->giveExtraTime($this->player_id);
@@ -466,7 +469,7 @@ class Pending
                 $type1 = $infos_troop['type'];
 
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'moveTroop',
                     clienttranslate('${player_name} places ${log1}'),
                     array(
@@ -568,7 +571,7 @@ class Pending
             $type1 = $infos_troop['type'];
 
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'moveTroop',
                 clienttranslate('${player_name} places ${log1}'),
                 array(
@@ -656,7 +659,7 @@ class Pending
 
 
 
-                game::$instance->notifyPlayer(
+                game::$instance->notify->player(
                     $this->player_id,
                     'drawTroopPrivate',
                     '',
@@ -674,7 +677,7 @@ class Pending
 
                 $type0 = $this->player_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'drawTroopPublic',
                     '',
                     array(
@@ -695,8 +698,8 @@ class Pending
                     '_private' => [
                         $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1} ${_private.log2}'), [
                             'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
-                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                                'log' => '<b style="color: #${color};">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                             ],
                             'log1' => game::$instance->getLogsType($type1),
                             'log2' => game::$instance->getLogsType($type2),
@@ -712,7 +715,7 @@ class Pending
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
-                game::$instance->notifyPlayer(
+                game::$instance->notify->player(
                     $this->player_id,
                     'drawTroopPrivate',
                     '',
@@ -729,7 +732,7 @@ class Pending
 
                 $type0 = $this->player_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'drawTroopPublic',
                     '',
                     array(
@@ -743,22 +746,21 @@ class Pending
                     )
                 );
 
- 
-                 game::$instance->notify->all('message', clienttranslate('${player_name} draws ${log0}'), [
+
+                game::$instance->notify->all('message', clienttranslate('${player_name} draws ${log0}'), [
                     'player_name' => $this->player_name,
                     'log0' => game::$instance->getLogsType($type0),
                     '_private' => [
                         $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
                             'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
-                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                                'log' => '<b style="color: #${color};">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                             ],
                             'log1' => game::$instance->getLogsType($type1),
 
                         ]),
                     ],
                 ]);
-
             }
 
             game::$instance->giveExtraTime($this->player_id);
@@ -796,7 +798,7 @@ class Pending
 
         if ($parg1 == "1") {
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'message',
                 clienttranslate('${player_name} can\'t play anymore'),  //NE PEUT PLUS JOUER (NI DRAW NI PLACE TROOP)
                 array(
@@ -815,7 +817,7 @@ class Pending
 
                 Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id}'");
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'score',
                     '',
                     array(
@@ -831,7 +833,7 @@ class Pending
 
                 Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id_opponent}'");
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'score',
                     '',
                     array(
@@ -858,7 +860,7 @@ class Pending
                 $colorvictory = $this->player_color_text;
                 $troop_victory = 0;
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'message',
                     clienttranslate('${player_name} has won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
                     array(
@@ -870,7 +872,7 @@ class Pending
 
                 Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id}'");
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'score',
                     '',
                     array(
@@ -887,7 +889,7 @@ class Pending
                 $colorvictory = $this->opponent_color_text;
                 $troop_victory = 0;
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'message',
                     clienttranslate('${player_name} has won the <b>${max_medals}</b> necessary medals'), //A ATTEINT L OBJECTIF MEDAILLE
                     array(
@@ -899,7 +901,7 @@ class Pending
 
                 Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id_opponent}'");
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'score',
                     '',
                     array(
@@ -922,7 +924,7 @@ class Pending
             $colorvictory = $this->player_color_text;
             $troop_victory = $parg2;
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'message',
                 clienttranslate('${player_name} captured ${opponent}\'s starting base'), //A PRIS LA BASE ADVERSE
                 array(
@@ -937,7 +939,7 @@ class Pending
 
             Table::DbQuery("UPDATE `player` set `player_score` = 1 WHERE `player_id` = '{$this->player_id}'");
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'score',
                 '',
                 array(
@@ -952,7 +954,7 @@ class Pending
         }
 
 
-        game::$instance->notifyAllPlayers(
+        game::$instance->notify->all(
             'victory',
             '',
             array(
@@ -972,8 +974,8 @@ class Pending
         }
 
 
-        game::$instance->notifyAllPlayers('simplePause', '', ['time' => 1000]);
+        game::$instance->notify->all('simplePause', '', ['time' => 1000]);
 
-        game::$instance->gamestate->nextState('end');
+        //game::$instance->gamestate->nextState('end');
     }
 }

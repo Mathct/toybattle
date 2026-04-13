@@ -23,12 +23,12 @@ trait BasesTrait  // ATTENTION
 
     public function VerifBase($parg1, $parg2, $varg1, $varg2)
     {
-        
+
 
         // MODE AVEC BASES SPECIALES ET SANS POOL NI STATION 
-        if ((game::$instance->bga->tableOptions->get(100) == 1) && ($this->board_name != 'pool') && ($this->board_name != 'station') && ($this->board_name != 'carribean')) {
+        if ((game::$instance->tableOptions->get(100) == 1) && ($this->board_name != 'pool') && ($this->board_name != 'station') && ($this->board_name != 'carribean')) {
 
-            
+
             // On recupere les bases contrôlées dans l'ORDRE à vérifier
             $check = Table::getObjectListFromDB("SELECT `id`, `troop_id`, `base` FROM `checkbase` ORDER BY `id` ASC LIMIT 1");
 
@@ -77,7 +77,7 @@ trait BasesTrait  // ATTENTION
         }
 
         // MODE SANS BASES SPECIALES OU AVEC POOL OU STATION 
-        if ((game::$instance->bga->tableOptions->get(100) == 2) || ($this->board_name == 'pool') || ($this->board_name == 'station') || ($this->board_name == 'carribean')) {
+        if ((game::$instance->tableOptions->get(100) == 2) || ($this->board_name == 'pool') || ($this->board_name == 'station') || ($this->board_name == 'carribean')) {
 
             Table::DbQuery("DELETE FROM `checkbase`;");
             game::$instance->giveExtraTime($this->player_id);
@@ -99,7 +99,7 @@ trait BasesTrait  // ATTENTION
         $ret['title'] = clienttranslate('${actplayer} activates a special base');
 
         $ret['opponent'] = '<span style="color: #' . $this->player_color_opponent . ';">' . $this->player_name_opponent . '</span>';
-        
+
         $ret['icon'] = '<span class="icon_power_bandeau icon_powerbase_1"></span>';
 
         $ret["selected"][] = 'base_' . $this->board_name . '_' . $parg2;
@@ -149,17 +149,15 @@ trait BasesTrait  // ATTENTION
             $ret['buttons'][] = 'btn_continue';
         }
 
-        
+
         return $ret;
     }
 
     public function Base11_Step1($parg1, $parg2, $varg1, $varg2)
     {
-        if (($varg1 == "btn_pass")||($varg1 == "btn_continue")) {
+        if (($varg1 == "btn_pass") || ($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
-        }
-
-        else {
+        } else {
 
             if ($this->player_pref_confirm == 1) {
                 $duo_check = $parg1 . '_' . $parg2;
@@ -168,8 +166,8 @@ trait BasesTrait  // ATTENTION
 
             if ($this->player_pref_confirm == 2) {
 
-                game::$instance->incStat(1,'base_activated', $this->player_id);
-                
+                game::$instance->incStat(1, 'base_activated', $this->player_id);
+
                 $explode = explode("_", $varg1);
 
                 $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
@@ -183,7 +181,7 @@ trait BasesTrait  // ATTENTION
 
                 $type1 = $infos_troopmax[0]['type'];
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'recoverTroopFromBoard',
                     clienttranslate('${player_name} places back ${log1} from Terrain to rack'),
                     array(
@@ -212,7 +210,7 @@ trait BasesTrait  // ATTENTION
         }
     }
 
-    
+
     function argBase11_Confirm($parg1, $parg2)
     {
         $ret = array();
@@ -236,7 +234,7 @@ trait BasesTrait  // ATTENTION
     {
         if ($varg1 == "btn_yes") {
 
-            game::$instance->incStat(1,'base_activated', $this->player_id);
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
 
             $explode = explode("_", $parg1);
 
@@ -251,7 +249,7 @@ trait BasesTrait  // ATTENTION
 
             $type1 = $infos_troopmax[0]['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'recoverTroopFromBoard',
                 clienttranslate('${player_name} places back ${log1} from Terrain to rack'),
                 array(
@@ -326,7 +324,7 @@ trait BasesTrait  // ATTENTION
         if (($varg1 == "btn_draw_1") || ($varg1 == $this->player_deck_id)) {
 
             game::$instance->incStat(1, 'troops_drawn', $this->player_id);
-            game::$instance->incStat(1,'base_activated', $this->player_id);
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
 
             $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id}'");
             $old_troops = Table::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` ='{$this->player_id}'");
@@ -335,7 +333,7 @@ trait BasesTrait  // ATTENTION
 
             $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
-            game::$instance->notifyPlayer(
+            game::$instance->notify->player(
                 $this->player_id,
                 'drawTroopPrivate',
                 '',
@@ -353,7 +351,7 @@ trait BasesTrait  // ATTENTION
 
             $type0 = $this->player_color_number . "0";
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'drawTroopPublic',
                 '',
                 array(
@@ -368,19 +366,19 @@ trait BasesTrait  // ATTENTION
             );
 
             game::$instance->notify->all('message', clienttranslate('${player_name} draws ${log0}'), [
-                    'player_name' => $this->player_name,
-                    'log0' => game::$instance->getLogsType($type0),
-                    '_private' => [
-                        $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
-                            'you' =>    [
+                'player_name' => $this->player_name,
+                'log0' => game::$instance->getLogsType($type0),
+                '_private' => [
+                    $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
+                        'you' =>    [
                             'log' => '<b style="color: #${color};">${you_name}</b>',
                             'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
-                            ],
-                            'log1' => game::$instance->getLogsType($type1),
+                        ],
+                        'log1' => game::$instance->getLogsType($type1),
 
-                        ]),
-                    ],
-                ]);
+                    ]),
+                ],
+            ]);
         }
 
         game::$instance->addPending($this->player_id, "VerifBase");
@@ -420,7 +418,7 @@ trait BasesTrait  // ATTENTION
 
         if ($test == 1) {
             $ret['titleyou'] = clienttranslate('#icon# ${you} can choose an enemy troop adjacent to this base and move it one base');
-            
+
             $ret['buttons'][] = 'btn_pass';
         }
 
@@ -441,14 +439,12 @@ trait BasesTrait  // ATTENTION
     {
         if (($varg1 == "btn_pass") || ($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
-        }
-
-        else {
+        } else {
             game::$instance->addPending($this->player_id, "Base41_Step2", $varg1, $parg1);
         }
     }
 
-    
+
     public function argBase41_Step2($parg1, $parg2)
     {
         $ret = array();
@@ -490,7 +486,7 @@ trait BasesTrait  // ATTENTION
             }
 
             if ($this->player_pref_confirm == 2) {
-                game::$instance->incStat(1,'base_activated', $this->player_id);
+                game::$instance->incStat(1, 'base_activated', $this->player_id);
 
                 $explode1 = explode("_", $parg1);
                 $explode2 = explode("_", $varg1);
@@ -505,7 +501,7 @@ trait BasesTrait  // ATTENTION
 
                 $type1 = $infos_troopmax[0]['type'];
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'moveTroopBoardToBoard',
                     clienttranslate('${player_name} moves ${log1}'),
                     array(
@@ -522,11 +518,11 @@ trait BasesTrait  // ATTENTION
                 $win = game::$instance->testZoneAndStar($explode2[2], $this->board_name);
                 $win2 = game::$instance->testZoneAndStar($explode1[2], $this->board_name);
 
-                if (($win == 0)&&($win2 == 0)) {
+                if (($win == 0) && ($win2 == 0)) {
                     game::$instance->addPending($this->player_id, "VerifBase");
                 }
 
-                if (($win == 1)||($win2 == 1)) {
+                if (($win == 1) || ($win2 == 1)) {
                     game::$instance->setGameStateValue("endgame", 1); // pour progression
                     game::$instance->addPending($this->player_id, "FinGame1", 2);
                 }
@@ -567,7 +563,7 @@ trait BasesTrait  // ATTENTION
         }
 
         if ($varg1 == "btn_yes") {
-            game::$instance->incStat(1,'base_activated', $this->player_id);
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
 
             $explode = explode("_", $parg1);
 
@@ -581,7 +577,7 @@ trait BasesTrait  // ATTENTION
 
             $type1 = $infos_troopmax[0]['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'moveTroopBoardToBoard',
                 clienttranslate('${player_name} moves ${log1}'),
                 array(
@@ -595,15 +591,15 @@ trait BasesTrait  // ATTENTION
                 )
             );
 
-            
+
             $win = game::$instance->testZoneAndStar($explode[5], $this->board_name);
             $win2 = game::$instance->testZoneAndStar($explode[2], $this->board_name);
 
-            if (($win == 0)&&($win2 == 0)) {
+            if (($win == 0) && ($win2 == 0)) {
                 game::$instance->addPending($this->player_id, "VerifBase");
             }
 
-            if (($win == 1)||($win2 == 1)) {
+            if (($win == 1) || ($win2 == 1)) {
                 game::$instance->setGameStateValue("endgame", 1); // pour progression
                 game::$instance->addPending($this->player_id, "FinGame1", 2);
             }
@@ -636,7 +632,7 @@ trait BasesTrait  // ATTENTION
             foreach ($troops_discard as $troop_discard) {
                 $ret["selectable"][] = 'troop_' . $troop_discard;
             }
-            
+
             $ret['buttons'][] = 'btn_pass';
         } else {
             $ret['titleyou'] = clienttranslate('#icon# ${you} cannot place back a discarded Troop');
@@ -652,16 +648,14 @@ trait BasesTrait  // ATTENTION
     {
         if (($varg1 == "btn_pass") || ($varg1 == "btn_continue")) {
             game::$instance->addPending($this->player_id, "VerifBase");
-        }
-
-        else {
+        } else {
             if ($this->player_pref_confirm == 1) {
 
                 game::$instance->addPending($this->player_id, "Base51_Confirm", $varg1, $parg1);
             }
 
             if ($this->player_pref_confirm == 2) {
-                game::$instance->incStat(1,'base_activated', $this->player_id);
+                game::$instance->incStat(1, 'base_activated', $this->player_id);
                 $explode_troop = explode("_", $varg1);
 
                 $infos_troop = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_id` = '{$explode_troop[1]}'");
@@ -673,7 +667,7 @@ trait BasesTrait  // ATTENTION
 
                 $type1 = $infos_troop['type'];
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'recoverTroopFromDiscard',
                     clienttranslate('${player_name} places back ${log1} from discard to rack'),
                     array(
@@ -690,7 +684,7 @@ trait BasesTrait  // ATTENTION
         }
     }
 
-    
+
     public function argBase51_Confirm($parg1, $parg2)
     {
         $ret = array();
@@ -721,7 +715,7 @@ trait BasesTrait  // ATTENTION
         }
 
         if ($varg1 == "btn_yes") {
-            game::$instance->incStat(1,'base_activated', $this->player_id);
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
 
             $explode_troop = explode("_", $parg1);
 
@@ -734,7 +728,7 @@ trait BasesTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'recoverTroopFromDiscard',
                 clienttranslate('${player_name} places back ${log1} from discard to rack'),
                 array(
@@ -770,13 +764,11 @@ trait BasesTrait  // ATTENTION
 
         if ($counttroophandopponent_noblocked >= 1) {
             $ret['titleyou'] = clienttranslate('#icon# ${you} can point a Troop on #opponent#\'s rack (without looking at it)... #opponent# will not be able to place on their next turn');
-            if ($this->player_pref_discard_block == 2)
-            {
+            if ($this->player_pref_discard_block == 2) {
                 $ret['buttons'][] = 'btn_point';
             }
 
-            if ($this->player_pref_discard_block == 1)
-            {
+            if ($this->player_pref_discard_block == 1) {
                 $troop_id_opponent_hand = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
                 $count = count($troop_id_opponent_hand);
 
@@ -816,10 +808,9 @@ trait BasesTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "VerifBase");
         }
 
-        if ((strpos($varg1, 'red_troop') === 0)||(strpos($varg1, 'blue_troop') === 0)) 
-        {
+        if ((strpos($varg1, 'red_troop') === 0) || (strpos($varg1, 'blue_troop') === 0)) {
 
-            game::$instance->incStat(1,'base_activated', $this->player_id);
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
             $explode = explode("_", $varg1);
 
             $troops_noblocked = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}' AND `card_blocked` = 0", true);
@@ -836,7 +827,7 @@ trait BasesTrait  // ATTENTION
 
             $type1 = $infos_troop_before['type'];
 
-            game::$instance->notifyPlayer(
+            game::$instance->notify->player(
                 $this->player_id_opponent,
                 'hideTroopOnRackPrivate',
                 '',
@@ -850,7 +841,7 @@ trait BasesTrait  // ATTENTION
                 )
             );
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'hideTroopOnRackPublic',
                 '',
                 array(
@@ -862,104 +853,102 @@ trait BasesTrait  // ATTENTION
 
             $type0 = $this->opponent_color_number . "0";
 
-            
+
             game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
-                    'player_name' => $this->player_name,
-                    'log0' => game::$instance->getLogsType($type0),
-                    '_private' => [
-                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
-                            'name' => [
+                'player_name' => $this->player_name,
+                'log0' => game::$instance->getLogsType($type0),
+                '_private' => [
+                    $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
+                        'name' => [
                             'log' => '<b style="color: #${color};">${you_name}</b>',
                             'args' => ['you_name' => $this->player_name, 'color' => $this->player_color, 'i18n' => ['you_name']]
-                            ],
-                            'log1' => game::$instance->getLogsType($type1),
+                        ],
+                        'log1' => game::$instance->getLogsType($type1),
 
-                        ]),
-                    ],
-                ]);
+                    ]),
+                ],
+            ]);
 
             game::$instance->addPending($this->player_id, "VerifBase");
-
         }
 
         if ($varg1 == "btn_point") {
 
-            game::$instance->incStat(1,'base_activated', $this->player_id);
-           
-                $troops_noblocked = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}' AND `card_blocked` = 0", true);
-                $count = count($troops_noblocked);
-                $rand = bga_rand(1, $count);
-                $troopid_blocked = $troops_noblocked[$rand - 1];
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
 
-                $all_valeur_block = Table::getObjectListFromDB("SELECT `card_blocked` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
-                $count_all_troupe = count($all_valeur_block);
-                $possible = [];
-                for ($i = 1; $i <= $count_all_troupe; $i++) {
-                    if (!in_array($i, $all_valeur_block)) {
-                        $possible[] = $i;
-                    }
+            $troops_noblocked = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}' AND `card_blocked` = 0", true);
+            $count = count($troops_noblocked);
+            $rand = bga_rand(1, $count);
+            $troopid_blocked = $troops_noblocked[$rand - 1];
+
+            $all_valeur_block = Table::getObjectListFromDB("SELECT `card_blocked` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}'", true);
+            $count_all_troupe = count($all_valeur_block);
+            $possible = [];
+            for ($i = 1; $i <= $count_all_troupe; $i++) {
+                if (!in_array($i, $all_valeur_block)) {
+                    $possible[] = $i;
                 }
-                //$cout_possible = count($possible);
-                //$rand2 = bga_rand(1, $cout_possible);
-                //$choix_auto = $possible[$rand2 - 1];
+            }
+            //$cout_possible = count($possible);
+            //$rand2 = bga_rand(1, $cout_possible);
+            //$choix_auto = $possible[$rand2 - 1];
 
-                $choix_auto = $possible[0];
-
-
-
-                $infos_troop_before = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre, `card_blocked` blocked FROM `troop` WHERE `card_id` = '{$troopid_blocked}'");
-
-                Table::DbQuery("UPDATE `troop` set `card_blocked` = $choix_auto WHERE `card_id` = '{$troopid_blocked}'");
-
-                $infos_troop_after = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre, `card_blocked` blocked FROM `troop` WHERE `card_id` = '{$troopid_blocked}'");
-
-                $type1 = $infos_troop_before['type'];
-
-                game::$instance->notifyPlayer(
-                    $this->player_id_opponent,
-                    'hideTroopOnRackPrivate',
-                    '',
-                    array(
-                        'player_name' => $this->player_name,
-                        'player_id' => $this->player_id,
-                        'infos_troop_before' => $infos_troop_before,
-                        'infos_troop_after' => $infos_troop_after,
+            $choix_auto = $possible[0];
 
 
-                    )
-                );
 
-                game::$instance->notifyAllPlayers(
-                    'hideTroopOnRackPublic',
-                    '',
-                    array(
-                        'player_name' => $this->player_name,
-                        'player_id' => $this->player_id,
-                        'card_blocked' => $choix_auto,
-                    )
-                );
+            $infos_troop_before = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre, `card_blocked` blocked FROM `troop` WHERE `card_id` = '{$troopid_blocked}'");
 
-                $type0 = $this->opponent_color_number . "0";
+            Table::DbQuery("UPDATE `troop` set `card_blocked` = $choix_auto WHERE `card_id` = '{$troopid_blocked}'");
 
-                game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
+            $infos_troop_after = Table::getObjectFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre, `card_blocked` blocked FROM `troop` WHERE `card_id` = '{$troopid_blocked}'");
+
+            $type1 = $infos_troop_before['type'];
+
+            game::$instance->notify->player(
+                $this->player_id_opponent,
+                'hideTroopOnRackPrivate',
+                '',
+                array(
                     'player_name' => $this->player_name,
-                    'log0' => game::$instance->getLogsType($type0),
-                    '_private' => [
-                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
-                            'name' => [
+                    'player_id' => $this->player_id,
+                    'infos_troop_before' => $infos_troop_before,
+                    'infos_troop_after' => $infos_troop_after,
+
+
+                )
+            );
+
+            game::$instance->notify->all(
+                'hideTroopOnRackPublic',
+                '',
+                array(
+                    'player_name' => $this->player_name,
+                    'player_id' => $this->player_id,
+                    'card_blocked' => $choix_auto,
+                )
+            );
+
+            $type0 = $this->opponent_color_number . "0";
+
+            game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
+                'player_name' => $this->player_name,
+                'log0' => game::$instance->getLogsType($type0),
+                '_private' => [
+                    $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
+                        'name' => [
                             'log' => '<b style="color: #${color};">${you_name}</b>',
                             'args' => ['you_name' => $this->player_name, 'color' => $this->player_color, 'i18n' => ['you_name']]
-                            ],
-                            'log1' => game::$instance->getLogsType($type1),
+                        ],
+                        'log1' => game::$instance->getLogsType($type1),
 
-                        ]),
-                    ],
-                ]);
+                    ]),
+                ],
+            ]);
 
 
 
-                game::$instance->addPending($this->player_id, "VerifBase");
-            
+            game::$instance->addPending($this->player_id, "VerifBase");
         }
     }
 
@@ -1008,8 +997,8 @@ trait BasesTrait  // ATTENTION
             game::$instance->addPending($this->player_id, "Base81_Step1", $parg1);
         } else {
 
-            game::$instance->incStat(1,'base_activated', $this->player_id);
-            
+            game::$instance->incStat(1, 'base_activated', $this->player_id);
+
             $explode = explode("_", $varg1);
 
             $troops_noblocked = Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` != '{$this->player_id}' AND `card_blocked` = 0", true);
@@ -1026,7 +1015,7 @@ trait BasesTrait  // ATTENTION
 
             $type1 = $infos_troop_before['type'];
 
-            game::$instance->notifyPlayer(
+            game::$instance->notify->player(
                 $this->player_id_opponent,
                 'hideTroopOnRackPrivate',
                 '',
@@ -1041,7 +1030,7 @@ trait BasesTrait  // ATTENTION
                 )
             );
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'hideTroopOnRackPublic',
                 '',
                 array(
@@ -1054,19 +1043,19 @@ trait BasesTrait  // ATTENTION
             $type0 = $this->opponent_color_number . "0";
 
             game::$instance->notify->all('message', clienttranslate('${player_name} blocks ${log0}'), [
-                    'player_name' => $this->player_name,
-                    'log0' => game::$instance->getLogsType($type0),
-                    '_private' => [
-                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
-                            'name' => [
+                'player_name' => $this->player_name,
+                'log0' => game::$instance->getLogsType($type0),
+                '_private' => [
+                    $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.name} blocks ${_private.log1}'), [
+                        'name' => [
                             'log' => '<b style="color: #${color};">${you_name}</b>',
                             'args' => ['you_name' => $this->player_name, 'color' => $this->player_color, 'i18n' => ['you_name']]
-                            ],
-                            'log1' => game::$instance->getLogsType($type1),
+                        ],
+                        'log1' => game::$instance->getLogsType($type1),
 
-                        ]),
-                    ],
-                ]);
+                    ]),
+                ],
+            ]);
 
             game::$instance->addPending($this->player_id, "VerifBase");
         }

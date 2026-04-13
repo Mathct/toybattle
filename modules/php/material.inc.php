@@ -105,6 +105,12 @@ $this->_board_types = [
         "desc2" => "",
     ],
 
+    11 => [
+        "name" => clienttranslate("Tournament"),
+        "desc1" => clienttranslate("You may choose 1 of your Troops in the discard and place it on your rack."),
+        "desc2" => "",
+    ],
+
 ];
 
 
@@ -289,6 +295,25 @@ $this->_bases = [
         23 => ["value" => 23, "adjacents" => [22, 41],         "power" => 0, "top" => 2.9,  "left" => 30.2],
         41 => ["value" => 41, "adjacents" => [20, 21, 23],     "power" => 0, "top" => 1.4,   "left" => 64],
     ],
+    "tournament" => [
+        1  => ["value" => 1,  "adjacents" => [11, 12],         "power" => 0, "top" => 85.5,  "left" => 45.5],
+        11 => ["value" => 11, "adjacents" => [1, 13],          "power" => 0, "top" => 84.9,  "left" => 18.5],
+        12 => ["value" => 12, "adjacents" => [1, 14],          "power" => 0, "top" => 84.9,  "left" => 71.8],
+        13 => ["value" => 13, "adjacents" => [11, 15, 17, 18], "power" => 0, "top" => 70.7,  "left" => 35],
+        14 => ["value" => 14, "adjacents" => [12, 16, 18, 19], "power" => 0, "top" => 70.7,  "left" => 55.8],
+        15 => ["value" => 15, "adjacents" => [13, 17],         "power" => 51, "top" => 61.2,  "left" => 16.8],
+        16 => ["value" => 16, "adjacents" => [14, 19],         "power" => 51, "top" => 61.2,  "left" => 73.6],
+        17 => ["value" => 17, "adjacents" => [13, 15, 20, 22], "power" => 0, "top" => 43.4,  "left" => 22],
+        18 => ["value" => 18, "adjacents" => [13, 14, 22, 23], "power" => 0, "top" => 43.4,  "left" => 45.5],
+        19 => ["value" => 19, "adjacents" => [14, 16, 21, 23], "power" => 0, "top" => 43.4,  "left" => 68.5],
+        20 => ["value" => 20, "adjacents" => [17, 22],         "power" => 51, "top" => 25.6,  "left" => 16.8],
+        21 => ["value" => 21, "adjacents" => [19, 23],         "power" => 51, "top" => 25.6,  "left" => 73.8],
+        22 => ["value" => 22, "adjacents" => [17, 18, 20, 24], "power" => 0, "top" => 16.7,  "left" => 35],
+        23 => ["value" => 23, "adjacents" => [18, 19, 21, 25], "power" => 0, "top" => 16.7,  "left" => 55.5],
+        24 => ["value" => 24, "adjacents" => [22, 41],         "power" => 0, "top" => 2,   "left" => 18.4],
+        25 => ["value" => 25, "adjacents" => [23, 41],         "power" => 0, "top" => 2,   "left" => 71.2],
+        41 => ["value" => 41, "adjacents" => [24, 25],         "power" => 0, "top" => 1.4,   "left" => 45.5],
+    ],
 ];
 
 $this->_regions = [
@@ -401,6 +426,16 @@ $this->_regions = [
         6 => ["value" => 6, "bases" => [13, 14, 16, 17], "medals" => 2],
         7 => ["value" => 7, "bases" => [16, 17, 19],     "medals" => 1],
         8 => ["value" => 8, "bases" => [17, 19, 20, 21], "medals" => 2],
+    ],
+    "tournament" => [
+        1 => ["value" => 1, "bases" => [11, 12, 13, 14, 18],  "medals" => 3],
+        2 => ["value" => 2, "bases" => [13, 15, 17],          "medals" => 1],
+        3 => ["value" => 3, "bases" => [14, 16, 19],          "medals" => 1],
+        4 => ["value" => 4, "bases" => [13, 17, 18, 22],      "medals" => 2],
+        5 => ["value" => 5, "bases" => [14, 18, 19, 23],      "medals" => 2],
+        6 => ["value" => 6, "bases" => [17, 20, 22],          "medals" => 1],
+        7 => ["value" => 7, "bases" => [19, 21, 23],          "medals" => 1],
+        8 => ["value" => 8, "bases" => [18, 22, 23, 24, 25],  "medals" => 3],
     ],
 ];
 
@@ -561,14 +596,30 @@ $this->_medals = [
         10 => ["region" => 8, "top" => 35, "left" => 67],
         11 => ["region" => 8, "top" => 31, "left" => 67],
     ],
+    "tournament" => [
+        1 => ["region" => 1, "top" => 65.9, "left" => 48.6],
+        2 => ["region" => 1, "top" => 68.9, "left" => 48.6],
+        3 => ["region" => 1, "top" => 71.9, "left" => 48.6],
+        4 => ["region" => 2, "top" => 68.8, "left" => 28.7],
+        5 => ["region" => 3, "top" => 68.8, "left" => 68],
+        6 => ["region" => 4, "top" => 47.1, "left" => 37],
+        7 => ["region" => 4, "top" => 50.1, "left" => 37],
+        8 => ["region" => 5, "top" => 47.1, "left" => 60.5],
+        9 => ["region" => 5, "top" => 50.1, "left" => 60.5],
+        10 => ["region" => 6, "top" => 29, "left" => 28.7],
+        11 => ["region" => 7, "top" => 29, "left" => 68],
+        12 => ["region" => 8, "top" => 25.4, "left" => 48.6],
+        13 => ["region" => 8, "top" => 28.4, "left" => 48.6],
+        14 => ["region" => 8, "top" => 31.4, "left" => 48.6]
+    ],
 ];
 
 
-$this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81], [11], [24, 31, 71, 81]];
+$this->_powers = [[], [11], [21, 23, 26], [31],  [41], [51], [], [71], [81], [11], [24, 31, 71, 81], [51]];
 
-$this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8, 7, 5];
+$this->_medals_to_win = [-1, 7, 6, 8, 7, 7, 5, 7, 8, 7, 5, 7];
 
-$this->_board_names = ["", "castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
+$this->_board_names = ["", "castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette", "tournament"];
 
 $this->_goodies = [
     "5" => [
@@ -626,5 +677,20 @@ $this->_goodies = [
         23 => ["value" => 23, "top" => 18.5, "left" => 25.8],
         22 => ["value" => 22, "top" => 12.6, "left" => 25.8],
         21 => ["value" => 21, "top" => 6.7, "left" => 25.8]
+    ],
+    "7T" => [
+        11 => ["value" => 11, "top" => 74.6, "left" => 3.5],
+        12 => ["value" => 12, "top" => 70.2, "left" => 3.5],
+        13 => ["value" => 13, "top" => 65.8, "left" => 3.5],
+        14 => ["value" => 14, "top" => 61.4, "left" => 3.5],
+        15 => ["value" => 15, "top" => 57, "left" => 3.5],
+        16 => ["value" => 16, "top" => 52.6, "left" => 3.5],
+        37 => ["value" => 37, "top" => 48.15, "left" => 3.5],
+        26 => ["value" => 26, "top" => 43.7, "left" => 3.5],
+        25 => ["value" => 25, "top" => 39.3, "left" => 3.5],
+        24 => ["value" => 24, "top" => 34.9, "left" => 3.5],
+        23 => ["value" => 23, "top" => 30.5, "left" => 3.5],
+        22 => ["value" => 22, "top" => 26.1, "left" => 3.5],
+        21 => ["value" => 21, "top" => 21.7, "left" => 3.5]
     ]
 ];

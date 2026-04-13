@@ -83,6 +83,12 @@
                 "name": "Board of the month", 
                 "tmdisplay": "Board of the month", 
                 "description": ""
+            },
+
+            "11": {
+                "name": "Tournament", 
+                "tmdisplay": "Tournament", 
+                "description": ""
             }
     
     

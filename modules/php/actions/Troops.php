@@ -27,7 +27,7 @@ trait TroopsTrait  // ATTENTION
         ///Annule l'effet de la troupe sur les bases speciales du board "station" (71)
         $numero_power = game::$instance->_bases[$this->board_name][$parg2]['power'];
 
-        if (($numero_power != 71) || (game::$instance->bga->tableOptions->get(100) == 2)) {
+        if (($numero_power != 71) || (game::$instance->tableOptions->get(100) == 2)) {
 
             $force_troop = Table::getUniqueValueFromDB("SELECT `card_type` FROM `troop` WHERE `card_id` = '{$parg1}'") % 10;
 
@@ -130,7 +130,7 @@ trait TroopsTrait  // ATTENTION
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
                 $type2 = $this->player_color_number . $new_troops[1]['type'] % 10;
 
-                game::$instance->notifyPlayer(
+                game::$instance->notify->player(
                     $this->player_id,
                     'drawTroopPrivate',
                     '',
@@ -148,7 +148,7 @@ trait TroopsTrait  // ATTENTION
 
                 $type0 = $this->player_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'drawTroopPublic',
                     '',
                     array(
@@ -168,8 +168,8 @@ trait TroopsTrait  // ATTENTION
                     '_private' => [
                         $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1} ${_private.log2}'), [
                             'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
-                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                                'log' => '<b style="color: #${color};">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                             ],
                             'log1' => game::$instance->getLogsType($type1),
                             'log2' => game::$instance->getLogsType($type2),
@@ -186,7 +186,7 @@ trait TroopsTrait  // ATTENTION
 
                 $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
-                game::$instance->notifyPlayer(
+                game::$instance->notify->player(
                     $this->player_id,
                     'drawTroopPrivate',
                     '',
@@ -202,7 +202,7 @@ trait TroopsTrait  // ATTENTION
 
                 $type0 = $this->player_color_number . "0";
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'drawTroopPublic',
                     '',
                     array(
@@ -222,11 +222,11 @@ trait TroopsTrait  // ATTENTION
                     '_private' => [
                         $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
                             'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
-                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
+                                'log' => '<b style="color: #${color};">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                             ],
                             'log1' => game::$instance->getLogsType($type1),
-                            
+
                         ]),
                     ],
                 ]);
@@ -377,7 +377,7 @@ trait TroopsTrait  // ATTENTION
 
         $ret["selected"][] = $parg1;
 
-        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette", "tournament"];
         $board_name = $tableau_boards_name[game::$instance->getGameStateValue('board') - 1];
 
 
@@ -460,7 +460,7 @@ trait TroopsTrait  // ATTENTION
 
 
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'moveTroop',
                     clienttranslate('${player_name} places ${log1}'),
                     array(
@@ -569,7 +569,7 @@ trait TroopsTrait  // ATTENTION
             $type1 = $infos_troop['type'];
 
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'moveTroop',
                 clienttranslate('${player_name} places ${log1}'),
                 array(
@@ -700,7 +700,7 @@ trait TroopsTrait  // ATTENTION
 
                 $type1 = $infos_troop['type'];
 
-                game::$instance->notifyAllPlayers(
+                game::$instance->notify->all(
                     'discardTroopFromBoard',
                     clienttranslate('${player_name} discards ${log1} from the Terrain'),
                     array(
@@ -776,7 +776,7 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'discardTroopFromBoard',
                 clienttranslate('${player_name} discards ${log1} from the Terrain'),
                 array(
@@ -889,7 +889,7 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'discardTroopFromHand',
                 clienttranslate('${player_name} discards ${log1} from the ${opponent}\'s rack'),
                 array(
@@ -927,7 +927,7 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'discardTroopFromHand',
                 clienttranslate('${player_name} discards ${log1} from the ${opponent}\'s rack'),
                 array(
@@ -1013,7 +1013,7 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $infos_troop['type'];
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'discardTroopFromHand',
                 clienttranslate('${player_name} discards ${log1} from the ${opponent}\'s rack'),
                 array(
@@ -1092,7 +1092,7 @@ trait TroopsTrait  // ATTENTION
 
             $type1 = $this->player_color_number . $new_troops[0]['type'] % 10;
 
-            game::$instance->notifyPlayer(
+            game::$instance->notify->player(
                 $this->player_id,
                 'drawTroopPrivate',
                 '',
@@ -1109,7 +1109,7 @@ trait TroopsTrait  // ATTENTION
 
             $type0 = $this->player_color_number . "0";
 
-            game::$instance->notifyAllPlayers(
+            game::$instance->notify->all(
                 'drawTroopPublic',
                 '',
                 array(
@@ -1124,19 +1124,19 @@ trait TroopsTrait  // ATTENTION
             );
 
             game::$instance->notify->all('message', clienttranslate('${player_name} draws ${log0}'), [
-                    'player_name' => $this->player_name,
-                    'log0' => game::$instance->getLogsType($type0),
-                    '_private' => [
-                        $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
-                            'you' =>    [
+                'player_name' => $this->player_name,
+                'log0' => game::$instance->getLogsType($type0),
+                '_private' => [
+                    $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
+                        'you' =>    [
                             'log' => '<b style="color: #${color};">${you_name}</b>',
                             'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
-                            ],
-                            'log1' => game::$instance->getLogsType($type1),
-                            
-                        ]),
-                    ],
-                ]);
+                        ],
+                        'log1' => game::$instance->getLogsType($type1),
+
+                    ]),
+                ],
+            ]);
         }
 
 

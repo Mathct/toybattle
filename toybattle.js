@@ -38,8 +38,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       console.log("gamedatas");
       console.log(gamedatas);
 
-      this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
-      this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8, 7, 5];
+      this.boards = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette", "tournament"];
+      this.medals_to_win = [7, 6, 8, 7, 7, 5, 7, 8, 7, 5, 7];
 
       this.BLUE_COLOR = "4f66a2";
       this.RED_COLOR = "d1553e";
@@ -48,7 +48,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       this.TROOP_WIDTH = 66;
       this.TROOP_HEIGHT = 88;
-      this.BOARD_WIDTH = 500;
+      this.BOARD_WIDTH = gamedatas.board_name == "tournament" ? 625 : 500;
       this.BOARD_HEIGHT = 833.5;
       this.GOODIE_WIDTH = 54;
       this.GOODIE_HEIGHT = 652;
@@ -534,25 +534,6 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           this.addTooltip("help-mode-switch", "", _("Toggle Tooltips on Mobile mode."), TOOLTIP_DELAY);
           /* help mode Tisaac */
         }
-
-        /* slider */
-        /*        if(player.id == this.opponent_id) {
-            const a2BoardElement = document.getElementById('a2_board_' + player.id);
-            const initialValue = window.localStorage?.getItem("TB_zoom") ?? 100;
-            a2BoardElement.insertAdjacentHTML('beforeend', `
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24H280c13.3 0 24-10.7 24-24s-10.7-24-24-24H136z"/></svg>
-                    <input type="range" min="50" max="200" value="${initialValue}" class="slider" id="zoom_value">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM184 296c0 13.3 10.7 24 24 24s24-10.7 24-24V232h64c13.3 0 24-10.7 24-24s-10.7-24-24-24H232V120c0-13.3-10.7-24-24-24s-24 10.7-24 24v64H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h64v64z"/></svg>
-                </div>
-            `);
-            dojo.connect($("zoom_value"), "oninput", () => {
-                // debug('zoom changed', $('zoom_value').value);
-                window.localStorage.setItem("TB_zoom", $("zoom_value").value);
-                this.onScreenWidthChange();
-            });
-        }*/
-        /* slider */
       });
     },
 
@@ -624,15 +605,22 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const sideleftContainer = this.createSideLeft();
       globalBigContainer.insertBefore(sideleftContainer, globalContainer);
 
-      let goodieContainer;
+      if (this.board_name === "tournament") {
+        //this.addMedalsToBoard(boardContainer);
+      } else {
+        let goodieContainer;
 
-      goodieContainer = this.createGoodie();
-      if (this.isCurrentPlayerRed()) {
-        goodieContainer.classList.add("board-inverted");
+        goodieContainer = this.createGoodie();
+        if (this.isCurrentPlayerRed()) {
+          goodieContainer.classList.add("board-inverted");
+        }
+        globalContainer.appendChild(goodieContainer);
       }
-      globalContainer.appendChild(goodieContainer);
 
       const boardContainer = this.createBoard();
+      if (this.board_name === "tournament") {
+        this.addMedalsToBoard(boardContainer);
+      }
       if (this.isCurrentPlayerRed()) {
         boardContainer.classList.add("board-inverted");
       }
@@ -908,10 +896,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         contains possible Troops in opacity 50 and all discarded ones TODO
     */
       let goodieContainer;
-
-      goodieContainer = this.createGoodie();
-      if (this.isCurrentPlayerBlue() || this.isSpectator) {
-        playmatContainer.appendChild(goodieContainer);
+      if (this.board_name === "tournament") {
+        //this.addMedalsToBoard(boardContainer);
+      } else {
+        if (this.isCurrentPlayerBlue() || this.isSpectator) {
+          goodieContainer = this.createGoodie();
+          playmatContainer.appendChild(goodieContainer);
+        }
       }
 
       const blueDiscardContainer = this.createDiscard("blue");
@@ -935,6 +926,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     */
 
       const boardContainer = this.createBoard();
+      if (this.board_name === "tournament") {
+        this.addMedalsToBoard(boardContainer);
+      }
       playmatContainer.appendChild(boardContainer);
       this.createBases();
       this.createTroopsOnBoard();
@@ -970,8 +964,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           });
       }
 
-      if (this.isCurrentPlayerRed()) {
-        playmatContainer.appendChild(goodieContainer);
+      if (this.board_name !== "tournament") {
+        if (this.isCurrentPlayerRed()) {
+          playmatContainer.appendChild(goodieContainer);
+        }
       }
 
       /* blueLineContainer */
@@ -1159,10 +1155,13 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       }
 
       let goodieContainer;
-
-      goodieContainer = this.createGoodie();
-      if (this.isCurrentPlayerBlue() || this.isSpectator) {
-        playmatContainer.appendChild(goodieContainer);
+      if (this.board_name === "tournament") {
+        //this.addMedalsToBoard(boardContainer);
+      } else {
+        if (this.isCurrentPlayerBlue() || this.isSpectator) {
+          goodieContainer = this.createGoodie();
+          playmatContainer.appendChild(goodieContainer);
+        }
       }
 
       /*  boardContainer definition 
@@ -1170,6 +1169,9 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     */
 
       const boardContainer = this.createBoard();
+      if (this.board_name === "tournament") {
+        this.addMedalsToBoard(boardContainer);
+      }
       playmatContainer.appendChild(boardContainer);
       this.createBases();
       this.createTroopsOnBoard();
@@ -1183,8 +1185,10 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         discardsContainer.appendChild(blueDiscardContainer);
       }
 
-      if (this.isCurrentPlayerRed()) {
-        playmatContainer.appendChild(goodieContainer);
+      if (this.board_name !== "tournament") {
+        if (this.isCurrentPlayerRed()) {
+          playmatContainer.appendChild(goodieContainer);
+        }
       }
 
       const blue_discard_list = this.isCurrentPlayerRed() ? this.your_discard : this.my_discard;
@@ -1427,6 +1431,36 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       return goodieContainer;
     },
 
+    addMedalsToBoard: function (boardContainer) {
+      // tournament board
+      const medals_needed = this.medals_to_win[this.board_id - 1];
+      const goodie_infos = this.board_id == 11 ? "7T" : medals_needed;
+
+      Object.values(this.players).forEach((player) => {
+        let player_indice = player.color == this.BLUE_COLOR ? 1 : 2;
+        const medals_won = player.star;
+
+        for (let i = 1; i <= medals_won; i++) {
+          if (i == medals_needed) {
+            player_indice = 3;
+          }
+
+          const goodie_id = `${player_indice}${i}`;
+          const goodie = this.goodies[goodie_infos][goodie_id];
+
+          const medal = document.createElement("div");
+          medal.id = `goodie_${goodie_id}`;
+          medal.classList.add("medals", "board_medal");
+
+          medal.style.position = "absolute";
+          medal.style.top = `${goodie.top}%`;
+          medal.style.left = `${goodie.left}%`;
+
+          boardContainer.appendChild(medal);
+        }
+      });
+    },
+
     createSideLeft: function () {
       const sideleftContainer = document.createElement("div");
       sideleftContainer.id = `sideleft`;
@@ -1449,6 +1483,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         boardContainer.classList.add("board_x");
       } else if (this.board_id == 10) {
         boardContainer.classList.add("board_croisette");
+      } else if (this.board_id == 11) {
+        boardContainer.classList.add("board_tournament");
       } else {
         boardContainer.classList.add("board");
 
@@ -1578,8 +1614,11 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     setupTooltips: function () {
       // Goodie
 
-      html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
-      this.addCustomTooltip(`goodie_${this.board_id}`, html);
+      const el = document.getElementById(`goodie_${this.board_id}`);
+      if (el) {
+        html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
+        this.addCustomTooltip(`goodie_${this.board_id}`, html);
+      }
 
       // Red Deck
       html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Troops in Red deck") + "</span></div>";
@@ -1665,19 +1704,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     onScreenWidthChange: function () {
       const gamePlayArea = document.getElementById("game_play_area");
       const gamePlayAreaWidth = gamePlayArea.clientWidth;
-      const gamePlayAreaHeight = window.innerHeight;
-
-      console.log("gamePlayArea", gamePlayArea);
-      console.log("gamePlayAreaWidth", gamePlayAreaWidth);
-      console.log("gamePlayAreaHeight", gamePlayAreaHeight);
 
       const globalBigContainer = document.getElementById("global_big_id");
       const sideleft = document.getElementById("sideleft");
       const sideright = document.getElementById("sideright");
 
       const globalContainer = document.getElementById("global_id");
-
-      const bigglobal = this.getBoundingClientRectIgnoreZoom(globalBigContainer);
 
       const global = this.getBoundingClientRectIgnoreZoom(globalContainer);
 
@@ -1811,9 +1843,6 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           }
         }
       }
-      //const TB_zoom = window.localStorage?.getItem("TB_zoom") ?? 100;
-      //this.scale = Math.min(horizontalScale, verticalScale)*BB_zoom/100;
-      // TO DO
     },
 
     /*******************************
@@ -3695,6 +3724,108 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
      ************************************/
 
     async notif_gainMedal(args) {
+      console.log("notif_gainMedal");
+      console.log(args);
+
+      let medals_already_won = parseInt(args.medals_already_won);
+      let index = 1;
+      const TB_medals = this.medals;
+
+      const medals_needed = parseInt(this.medals_to_win[this.board_id - 1]);
+
+      // ✅ FIX ICI : bon container selon le plateau
+      const goodieContainer = this.board_name === "tournament" ? document.getElementById(`board_${this.board_id}`) : document.getElementById(`goodie_${this.board_id}`);
+
+      const player_color = this.players[args.player_id].color;
+
+      let player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
+
+      if (this.instantaneousMode) {
+        let html = "";
+
+        // ✅ FIX ICI : bonne clé pour tournament
+        const goodie_infos = this.board_name === "tournament" ? (this.board_id == 11 ? "7T" : medals_needed) : medals_needed;
+
+        const goodiesForLevel = this.goodies[goodie_infos];
+
+        Object.entries(TB_medals).forEach(([id, medal]) => {
+          if (args.emptied_regions.includes(medal.region)) {
+            const medalElement = document.getElementById(`medal_${id}`);
+
+            const indice = parseInt(medals_already_won) + index;
+
+            if (indice === medals_needed) {
+              player_indice = 3;
+            }
+
+            if (indice <= medals_needed) {
+              const goodie_id = `${player_indice}${indice}`;
+              const g = goodiesForLevel[goodie_id];
+
+              html += `<div id="goodie_${goodie_id}" class="medals board_medal" 
+            style="position:absolute;top:${g.top}%;left:${g.left}%;z-index:10;"></div>`;
+            }
+
+            medalElement?.remove();
+            index++;
+          }
+        });
+
+        if (html && goodieContainer) {
+          goodieContainer.insertAdjacentHTML("beforeend", html);
+        }
+      } else {
+        const timeoutDelay = 200;
+
+        // ✅ FIX ICI : bonne clé pour tournament
+        const goodie_infos = this.board_name === "tournament" ? (this.board_id == 11 ? "7T" : medals_needed) : medals_needed;
+
+        Object.entries(TB_medals).forEach(async ([id, medal]) => {
+          if (args.emptied_regions.includes(medal.region)) {
+            const medalElement = document.getElementById(`medal_${id}`);
+            const indice = parseInt(medals_already_won) + index;
+
+            if (indice === medals_needed) player_indice = 3;
+
+            const animationDelay = index * 500;
+            index++;
+
+            await this.bga.gameui.wait(animationDelay);
+
+            // Étape 1 : agrandir la médaille source
+            medalElement.style.transform = "scale(4)";
+            await this.bga.gameui.wait(timeoutDelay);
+
+            // Étape 2 : réduire pour disparition
+            medalElement.style.transform = "scale(0)";
+            await this.bga.gameui.wait(timeoutDelay);
+
+            if (indice <= medals_needed) {
+              const goodie_id = `${player_indice}${indice}`;
+              const goodie = this.goodies[goodie_infos][goodie_id];
+
+              // Étape 3 : créer et insérer le goodie
+              goodieContainer?.insertAdjacentHTML(
+                "beforeend",
+                `<div id="goodie_${goodie_id}" class="medals board_medal"
+              style="position:absolute;top:${goodie.top}%;left:${goodie.left}%;z-index:10;"></div>`,
+              );
+
+              const goodieElement = document.getElementById(`goodie_${goodie_id}`);
+
+              // Étape 4 : agrandir puis revenir à la taille normale
+              if (goodieElement) {
+                goodieElement.style.transform = "scale(3)";
+                await this.bga.gameui.wait(timeoutDelay);
+                goodieElement.style.transform = "scale(1)";
+              }
+            }
+          }
+        });
+      }
+    },
+
+    async notif_gainMedalOld(args) {
       console.log("notif_gainMedal");
       console.log(args);
 
