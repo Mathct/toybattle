@@ -129,11 +129,11 @@ class Pending
 
         /// PREFERENCE DE CONFIRMATION
 
-        $this->player_pref_confirm = Table::getUniqueValueFromDB("SELECT `pgp_value` FROM `bga_user_preferences` WHERE `pgp_player`='{$this->player_id}' AND `pgp_preference_id` = 100");
+        $this->player_pref_confirm = game::$instance->userPreferences->get($this->player_id, 100);
 
         /// PREFERENCE DE DISCARD OR BLOCK
 
-        $this->player_pref_discard_block = Table::getUniqueValueFromDB("SELECT `pgp_value` FROM `bga_user_preferences` WHERE `pgp_player`='{$this->player_id}' AND `pgp_preference_id` = 101");
+        $this->player_pref_discard_block = game::$instance->userPreferences->get($this->player_id, 101);
     }
 
 

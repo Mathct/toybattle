@@ -1399,31 +1399,14 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         for (let i = 1; i <= medals_won; i++) {
           if (i == medals_needed) {
             player_indice = 3;
-          } else {
-            player_indice = player.color == this.BLUE_COLOR ? 1 : 2;
           }
           const goodie_id = `${player_indice}${i}`;
 
           const goodieElement = document.createElement("div");
           goodieElement.id = `goodie_${goodie_id}`;
           goodieElement.classList.add("medals", "board_medal");
-          console.log("Gewdies", this.goodies);
+
           const goodie = this.goodies[medals_needed][goodie_id];
-          console.log("Gewdie", this.goodies[medals_needed][goodie_id]);
-          if (!goodie) {
-            console.info("GOODIE ERROR", {
-              timestamp: Date.now(),
-              board_id: this.board_id,
-              medals_needed,
-              medals_to_win: this.medals_to_win,
-              player_star: medals_won,
-              player_indice,
-              i,
-              goodie_id,
-              available_groups: Object.keys(this.goodies || {}),
-              available_keys: Object.keys(goodieGroup || {}),
-            });
-          }
 
           goodieElement.style.cssText = `position: absolute; top: ${goodie.top}%; left: ${goodie.left}%; z-index: 10;`;
           goodieContainer.appendChild(goodieElement);
@@ -3748,7 +3731,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         let html = "";
 
         // ✅ FIX ICI : bonne clé pour tournament
-        const goodie_infos = this.board_name === "tournament" ? (this.board_id == 11 ? "7T" : medals_needed) : medals_needed;
+        //const goodie_infos = this.board_name === "tournament" ? (this.board_id == 11 ? "7T" : medals_needed) : medals_needed;
+        const goodie_infos = this.board_name === "tournament" ? "7T" : medals_needed;
 
         const goodiesForLevel = this.goodies[goodie_infos];
 
@@ -3772,7 +3756,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
               const g = goodiesForLevel[goodie_id];
 
               html += `<div id="goodie_${goodie_id}" class="medals board_medal" 
-            style="position:absolute;top:${g.top}%;left:${g.left}%;z-index:10;"></div>`;
+              style="position:absolute;top:${g.top}%;left:${g.left}%;z-index:10;"></div>`;
             }
 
             medalElement?.remove();
@@ -3787,7 +3771,8 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         const timeoutDelay = 200;
 
         // ✅ FIX ICI : bonne clé pour tournament
-        const goodie_infos = this.board_name === "tournament" ? (this.board_id == 11 ? "7T" : medals_needed) : medals_needed;
+        //const goodie_infos = this.board_name === "tournament" ? (this.board_id == 11 ? "7T" : medals_needed) : medals_needed;
+        const goodie_infos = this.board_name === "tournament" ? "7T" : medals_needed;
 
         Object.entries(TB_medals).forEach(async ([id, medal]) => {
           if (args.emptied_regions.includes(medal.region)) {
@@ -3802,6 +3787,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
               player_indice = player_color == this.BLUE_COLOR ? 1 : 2;
               goodie_id = `${player_indice}${indice}`;
             }
+            console.log("player indice", player_indice);
 
             const animationDelay = index * 500;
             index++;
