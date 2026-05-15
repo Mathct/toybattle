@@ -75,7 +75,7 @@ class Game extends Table
 
         self::$instance = $this; // ATTENTION
 
-        $this->troop = $this->deckFactory->createDeck("troop");
+        $this->troop = $this->bga->deckFactory->createDeck("troop");
     }
 
     /////////////////////////////////////////////////////////////////////////////////  
@@ -238,25 +238,22 @@ class Game extends Table
 
 
         // CHOIX DU BOARD (GSV 101)
-        $table_options_101 = $this->tableOptions->get(101);
 
-        // BOARD DE 1 A 8 et 11(tournament)
-        if (in_array($table_options_101, [1, 2, 3, 4, 5, 6, 7, 8, 11])) {
-            $this->setGameStateValue('board', $table_options_101);
-            game::$instance->setStat($table_options_101, 'no_board');
+        // BOARD DE 1 A 8
+        if (($this->bga->tableOptions->get(101) >= 1) && ($this->bga->tableOptions->get(101) <= 9)) {
+            $this->setGameStateValue('board', $this->bga->tableOptions->get(101));
+            game::$instance->setStat($this->bga->tableOptions->get(101), 'no_board');
         }
 
         // BOARD RANDOM
-        if ($table_options_101 == 9) {
+        if ($this->bga->tableOptions->get(101) == 9) {
             $random = bga_rand(1, 8);
             $this->setGameStateValue('board', $random);
             game::$instance->setStat($random, 'no_board');
         }
 
-
-
         // BOARD DU MOIS
-        if ($table_options_101 == 10) {
+        if ($this->bga->tableOptions->get(101) == 10) {
             $valeurs = [1, 2, 3, 4, 5, 6, 7, 8];
             $mois_depart = "Décembre 2024";
 
@@ -292,12 +289,12 @@ class Game extends Table
 
             $board = $valeurs[$index_cible];
 
-            if (($mois_actuel == 10 || $mois_actuel = 11) && $annee_actuelle == 2025) { // A REMPLACER PAR 11 EN DEC
+            /*if (($mois_actuel == 10 || $mois_actuel == 11) && $annee_actuelle == 2025) { // A REMPLACER PAR 11 EN DEC
                 $board = 9;
-            }
-            if (($mois_actuel == 1 || $mois_actuel = 2) && $annee_actuelle == 2026) { // A REMPLACER PAR 11 EN DEC
+            }*/
+            /*if (($mois_actuel == 1 || $mois_actuel = 2) && $annee_actuelle == 2026) { // A REMPLACER PAR 11 EN DEC
                 $board = 10;
-            }
+            }*/
 
 
             $this->setGameStateValue('board', $board);
@@ -307,11 +304,9 @@ class Game extends Table
 
         // INIT DE LA BdD ZONE
 
-        //$board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette", "tournament"];
-
-        $board_selected = $this->_board_names[$this->getGameStateValue('board')];
+        $board_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
+        $board_selected = $board_name[$this->getGameStateValue('board') - 1];
         // christmas = castle
-        // tournament = castle
         $nb_zones = count($this->_regions[$board_selected]);
 
         for ($i = 1; $i <= $nb_zones; $i++) {
@@ -502,10 +497,8 @@ class Game extends Table
 
 
         // recuperation du nom du board
-        // $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette",];
-
-
-        $board_name = $this->_board_names[$this->getGameStateValue('board')];
+        $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
+        $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
         //recuperation de la force de la troupe selectionnée
         $explode_troop_id = explode("_", $troop_id);
@@ -536,19 +529,19 @@ class Game extends Table
 
                         if ($nb_troop_on_base == 0) //si la base est vide
                         {
-                            if (($base_power == 21) && (game::$instance->tableOptions->get(100) == 1)) {
+                            if (($base_power == 21) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif (($base_power == 23) && (game::$instance->tableOptions->get(100) == 1)) {
+                            } elseif (($base_power == 23) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif (($base_power == 24) && (game::$instance->tableOptions->get(100) == 1)) {
+                            } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
-                            } elseif (($base_power == 26) && (game::$instance->tableOptions->get(100) == 1)) {
+                            } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                 if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                     $possible_bases[] = $base_adjacente;
                                 }
@@ -565,19 +558,19 @@ class Game extends Table
 
                                 if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8)) {
 
-                                    if (($base_power == 21) && (game::$instance->tableOptions->get(100) == 1)) {
+                                    if (($base_power == 21) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif (($base_power == 23) && (game::$instance->tableOptions->get(100) == 1)) {
+                                    } elseif (($base_power == 23) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif (($base_power == 24) && (game::$instance->tableOptions->get(100) == 1)) {
+                                    } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
-                                    } elseif (($base_power == 26) && (game::$instance->tableOptions->get(100) == 1)) {
+                                    } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                             $possible_bases[] = $base_adjacente;
                                         }
@@ -587,19 +580,19 @@ class Game extends Table
                                 }
                             } else // si elle appartient au joueur actif, on peut s'y positionner
                             {
-                                if (($base_power == 21) && (game::$instance->tableOptions->get(100) == 1)) {
+                                if (($base_power == 21) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif (($base_power == 23) && (game::$instance->tableOptions->get(100) == 1)) {
+                                } elseif (($base_power == 23) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 3) || ($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif (($base_power == 24) && (game::$instance->tableOptions->get(100) == 1)) {
+                                } elseif (($base_power == 24) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 4) || ($troop_selected_force == 5) || ($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
-                                } elseif (($base_power == 26) && (game::$instance->tableOptions->get(100) == 1)) {
+                                } elseif (($base_power == 26) && (game::$instance->bga->tableOptions->get(100) == 1)) {
                                     if (($troop_selected_force == 6) || ($troop_selected_force == 7) || ($troop_selected_force == 8)) {
                                         $possible_bases[] = $base_adjacente;
                                     }
@@ -650,7 +643,7 @@ class Game extends Table
                 // recuperation du pouvoir de la base (pour gérer le board Pool)
                 $base_power = game::$instance->_bases[$board_name][$testotherbase]['power'];
 
-                if ((($base_power != 21) && ($base_power != 26) && ($base_power != 71)) || (game::$instance->tableOptions->get(100) == 2)) {
+                if ((($base_power != 21) && ($base_power != 26) && ($base_power != 71)) || (game::$instance->bga->tableOptions->get(100) == 2)) {
 
                     if ($nb_troop_on_base == 0) //si la base est vide
                     {
@@ -786,7 +779,7 @@ class Game extends Table
                     $txt = clienttranslate('${player_name} controls <b>${nb_region}</b> regions and takes <b>${nb_medal}</b>${log}');
                 }
 
-                game::$instance->notify->all(
+                game::$instance->notifyAllPlayers(
                     'gainMedal',
                     $txt,
                     array(
@@ -808,7 +801,7 @@ class Game extends Table
                 // attendre que les animations de medailles soient terminées
 
                 $time = 650 * $count_medals;
-                $this->notify->all('simplePause', '', ['time' => $time]);
+                $this->bga->notify->all('simplePause', '', ['time' => $time]);
 
                 // Test Fin de partie
 
@@ -835,7 +828,7 @@ class Game extends Table
             $nb_troops_hand = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$player_id}'", true));
             self::DbQuery("UPDATE `troop` set `card_blocked` = 0 WHERE `card_type_arg` = '{$player_id}' AND `card_blocked` > 0");
 
-            game::$instance->notify->all(
+            game::$instance->notifyAllPlayers(
                 'unhideTroopOnRack',
                 '',
                 array(
@@ -1010,8 +1003,8 @@ class Game extends Table
             $counttroopdeck = count(self::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$player_deck}'", true));
 
             if ($counttroopdeck >= 1) {
-                //$tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette", "tournament"];
-                $board_name =  $this->_board_names[$this->getGameStateValue('board')];
+                $tableau_boards_name = ["castle", "pool", "clouds", "jungle", "cemetery", "carribean", "station", "battlefield", "christmas", "croisette"];
+                $board_name = $tableau_boards_name[$this->getGameStateValue('board') - 1];
 
                 $all_bases = $this->_bases[$board_name];
                 $id_bases = array_map('strval', array_keys($all_bases));

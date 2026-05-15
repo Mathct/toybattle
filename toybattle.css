@@ -298,16 +298,6 @@ body.snow-mode #global_big_id {
     background-size: 100% 100%;
 }
 
-.board_tournament {
-    width: calc(1.25 * var(--board-width));
-    height: var(--board-height);
-    position: relative;
-    margin: 5px;
-    border-radius: 5px;
-    background-image: url('img/TB_Tournament_Board.jpg');
-    background-size: 100% 100%;
-}
-
 .playmat {
     display: flex;
     justify-content: space-between;
@@ -541,7 +531,6 @@ body.snow-mode #global_big_id {
     width: var(--medal-width);
     height: var(--medal-width);
     background-position: 0% 0%;
-
 }
 
 .null_medal {
@@ -556,8 +545,6 @@ body.snow-mode #global_big_id {
     background-position: 0% 0%;
     /*transform: translate(-50%, -50%);*/
     z-index: 10;
-    /*background-color: #71c09a7e;
-    border: 2px solid olive;*/
 }
 
 .selectable {

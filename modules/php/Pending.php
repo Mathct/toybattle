@@ -976,6 +976,6 @@ class Pending
 
         game::$instance->notify->all('simplePause', '', ['time' => 1000]);
 
-        //game::$instance->gamestate->nextState('end');
+        game::$instance->gamestate->nextState('end');
     }
 }
