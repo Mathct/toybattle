@@ -966,6 +966,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       if (this.board_name !== "tournament") {
         if (this.isCurrentPlayerRed()) {
+          goodieContainer = this.createGoodie();
           playmatContainer.appendChild(goodieContainer);
         }
       }
@@ -1187,6 +1188,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       if (this.board_name !== "tournament") {
         if (this.isCurrentPlayerRed()) {
+          goodieContainer = this.createGoodie();
           playmatContainer.appendChild(goodieContainer);
         }
       }
