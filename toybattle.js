@@ -276,18 +276,20 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     /////////////////////////////////////////////////////////////////////////////////
 
     divYou: function () {
-      const color = this.players[this.player_id].color;
-      const color_bg = "";
-      const you = '<span style="font-weight:bold;color:#' + color + ";" + color_bg + '">' + _("You") + "</span>";
-      return you;
+      /*const color = this.players[this.player_id].color;
+      const you = `<span class="player_name_style" style="color:#${color};">${_("You")}</span>`;
+      return you;*/
+
+      return this.bga.players.getFormattedPlayerName(this.bga.players.getCurrentPlayerId(), { replaceByYou: true });
     },
 
     divActPlayer: function () {
-      const color = this.players[this.getActivePlayerId()].color;
+      /*const color = this.players[this.getActivePlayerId()].color;
       const name = this.players[this.getActivePlayerId()].name;
-      const color_bg = "";
-      const you = '<span style="font-weight:bold;color:#' + color + ";" + color_bg + '">' + name + "</span>";
-      return you;
+      const you = `<span class="player_name_style" style="color:#${color};">${name}</span>`;
+      return you;*/
+
+      return this.bga.players.getFormattedPlayerName(this.bga.players.getActivePlayerId(), { replaceByYou: false });
     },
 
     format_string_recursive: function (log, args) {
@@ -1605,15 +1607,15 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       const el = document.getElementById(`goodie_${this.board_id}`);
       if (el) {
-        html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Medals won") + "</span></div>";
+        html = "<div class='tooltip_content'><span class='tooltip_info'>" + _("Medals won") + "</span></div>";
         this.addCustomTooltip(`goodie_${this.board_id}`, html);
       }
 
       // Red Deck
-      html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Troops in Red deck") + "</span></div>";
+      html = "<div class='tooltip_content'><span class='tooltip_info'>" + _("Troops in Red deck") + "</span></div>";
       this.addCustomTooltip(`red_deck_counter_id`, html);
       // Blue Deck
-      html = "<div class='tooltip_content'><span class='tooltip_description'>" + _("Troops in Blue deck") + "</span></div>";
+      html = "<div class='tooltip_content'><span class='tooltip_info'>" + _("Troops in Blue deck") + "</span></div>";
       this.addCustomTooltip(`blue_deck_counter_id`, html);
     },
 
@@ -2064,7 +2066,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
 
       let effect_info = troop_infos.desc2;
-      html += `<br><span class='tooltip_info'>${_(effect_info)}</span>`;
+      html += `<br><span class='tooltip_desc'>${_(effect_info)}</span>`;
 
       html += "</div></div>"; // Fermeture des div
       return html;
@@ -2129,7 +2131,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
           // Ajout des informations supplémentaires
           let effect_info = board_infos.desc2;
-          html += `<br><span class='tooltip_info'>${_(effect_info)}</span></div>`;
+          html += `<br><span class='tooltip_desc'>${_(effect_info)}</span></div>`;
 
           if (troops.length > 0) {
             html += `<hr style="border: 1px solid #7a9f34; margin: 10px 0;">`;
@@ -2159,7 +2161,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           html += `<br><span class='tooltip_desc'>${_(effect_desc)}</span>`;
 
           // Ajout des informations supplémentaires
-          html += `<br><span class='tooltip_info'>${_(effect_info)}</span></div>`;
+          html += `<br><span class='tooltip_desc'>${_(effect_info)}</span></div>`;
 
           if (troops.length > 0) {
             html += `<hr style="border: 1px solid #7a9f34; margin: 10px 0;">`;

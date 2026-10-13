@@ -371,7 +371,7 @@ trait BasesTrait  // ATTENTION
                 '_private' => [
                     $this->player_id => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1}'), [
                         'you' =>    [
-                            'log' => '<b style="color: #${color};">${you_name}</b>',
+                            'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${you_name}</b>',
                             'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color, 'i18n' => ['you_name']]
                         ],
                         'log1' => game::$instance->getLogsType($type1),
