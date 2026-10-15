@@ -27,6 +27,7 @@ trait TroopsTrait  // ATTENTION
         ///Annule l'effet de la troupe sur les bases speciales du board "station" (71)
         $numero_power = game::$instance->_bases[$this->board_name][$parg2]['power'];
 
+        // si je ne suis pas sur le 71 OU que je suis en mode débutant (sans effet de la base): effet de la troop s'applique
         if (($numero_power != 71) || (game::$instance->tableOptions->get(100) == 2)) {
 
             $force_troop = Table::getUniqueValueFromDB("SELECT `card_type` FROM `troop` WHERE `card_id` = '{$parg1}'") % 10;
@@ -56,9 +57,19 @@ trait TroopsTrait  // ATTENTION
                 game::$instance->addPending($this->player_id, "Troop6_Step1", $parg2);
             }
 
-            if ($force_troop >= 7) {
+            if ($force_troop == 7) {
                 game::$instance->addPending($this->player_id, "VerifBase");
             }
+
+            if ($force_troop == 8) {
+                game::$instance->addPending($this->player_id, "VerifBase");
+            }
+
+            if ($force_troop == 9) {
+                game::$instance->addPending($this->player_id, "Troop9_Step1", $parg2);
+            }
+
+        // si je suis sur le 71 ET que je suis en mode normal: l'effet de la troop ne s'applique pas
         } else {
             game::$instance->addPending($this->player_id, "VerifBase");
         }
@@ -1142,4 +1153,115 @@ trait TroopsTrait  // ATTENTION
 
         game::$instance->addPending($this->player_id, "VerifBase");
     }
+
+
+///////////////////////////
+///////// TROOP 9 /////////
+///////////////////////////
+
+    public function argTroop9_Step1($parg1, $parg2)
+    {
+        $ret = array();
+        $ret["selectable"] = array();
+        $ret["selected"] = array();
+        $ret['buttons'] = array();
+        $ret['title'] = clienttranslate('${actplayer} places a Troop meeple');
+        $ret['titleyou'] = clienttranslate('${you} place a Troop');
+
+        
+
+        return $ret;
+    }
+
+    public function Troop9_Step1($parg1, $parg2, $varg1, $varg2)
+    {
+        $deck_opponent = null;
+        if($this->player_deck == "deckblue") {
+            $deck_opponent = "deckred";
+        }
+        else {
+            $deck_opponent = "deckblue";
+        }
+
+        $nb_troops_hand = Table::getUniqueValueFromDB("SELECT COUNT(`card_id`) FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$this->player_id_opponent}'");
+
+        $opponent_counttroopdeck = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='{$deck_opponent}'", true));
+        $opponent_counttroophand = count(Table::getObjectListFromDB("SELECT `card_id` FROM `troop` WHERE `card_location`='hand' AND `card_type_arg` = '{$this->player_id_opponent}'", true));
+
+        if(($opponent_counttroopdeck > 0) && ($opponent_counttroophand < 8)) {
+
+            game::$instance->incStat(1, 'troops_drawn', $this->player_id_opponent);
+            //game::$instance->incStat(1, 'meeple_activated', $this->player_id_opponent);  //ATTENTION il faut rajouter la stat
+
+            $new_troops = game::$instance->troop->pickCardsForLocation(1, $deck_opponent, 'hand');
+
+            $type1 = $this->opponent_color_number . $new_troops[0]['type'] % 10;
+
+            game::$instance->notify->player(
+                $this->player_id_opponent,
+                'drawTroopPrivate',
+                '',
+                array(
+                    'player_id' => $this->player_id_opponent,
+                    'origine' => "deck",
+                    'new_troops' => $new_troops,
+
+
+
+                )
+            );
+
+            $type0 = $this->opponent_color_number . "0";
+
+            game::$instance->notify->all(
+                'drawTroopPublic',
+                '',
+                array(
+                    'player_name' => $this->player_name_opponent,
+                    'player_id' => $this->player_id_opponent,
+                    'origine' => "deck",
+                    'nb_troops' => 1,
+                    'nb_troops_hand' => $nb_troops_hand,
+
+
+                )
+            );
+
+            // message pour le joueur adversaire
+            game::$instance->notify->player($this->player_id_opponent, 'message', clienttranslate('${you} draws ${log1}'),
+                array(
+                    'you' => [
+                            'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${you_name}</b>',
+                            'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color_opponent], 'i18n' => ['you_name']
+                        ],
+                        'log1' => game::$instance->getLogsType($type1),
+
+
+                )
+            );
+
+            // message pour le joueur actif
+            game::$instance->notify->player($this->player_id, 'message', clienttranslate('${opponent_name} draws ${log0}'),
+                array(
+                    'opponent_name' => [
+                            'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${opp_name}</b>',
+                            'args' => ['opp_name' => $this->player_name_opponent, 'color' => $this->player_color_opponent]                           
+                        ],
+                    'log0' => game::$instance->getLogsType($type0),
+
+
+                )
+            );
+            
+        }
+
+        game::$instance->addPending($this->player_id, "VerifBase");
+    }
+
+
+
+
+
+
 }
+

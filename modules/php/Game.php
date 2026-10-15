@@ -174,9 +174,12 @@ class Game extends Table
 
             // 4f66a2 = bleu d1553e = rouge
 
+            // Goodie Meeple: 0 pour jouer sans, 1 pour jouer avec
+            $meeple = 1;
+
             if ($color == 'd1553e') {
                 $red = array();
-                for ($i = 1; $i <= 8; $i++) {
+                for ($i = 1; $i <= 8+$meeple; $i++) {
 
                     $red[] = array('type' => '2' . $i, 'type_arg' => $player_id, 'nbr' => 3);
                 }
@@ -186,7 +189,7 @@ class Game extends Table
 
             if ($color == '4f66a2') {
                 $blue = array();
-                for ($i = 1; $i <= 8; $i++) {
+                for ($i = 1; $i <= 8+$meeple; $i++) {
 
                     $blue[] = array('type' => '1' . $i, 'type_arg' => $player_id, 'nbr' => 3);
                 }
@@ -367,15 +370,57 @@ class Game extends Table
         $result['players'] = self::getCollectionFromDb($sql);
 
         if (!$this->isSpectator()) {
-            $result["my_hand"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$current_player_id}' ORDER BY `card_type`");
+            //$result["my_hand"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$current_player_id}' ORDER BY `card_type`");
+            // changement pour que le 9 (goodie meeple) passe avant le 8 dans l'ordre
+            $result["my_hand"] = self::getObjectListFromDB("
+                SELECT
+                    `card_id` `id`,
+                    `card_type` type,
+                    `card_blocked` blocked
+                FROM `troop`
+                WHERE `card_location` = 'hand'
+                AND `card_type_arg` = '{$current_player_id}'
+                ORDER BY
+                    CASE
+                        WHEN `card_type` IN (18, 28) THEN `card_type` + 1
+                        WHEN `card_type` IN (19, 29) THEN `card_type` - 1
+                        ELSE `card_type`
+                    END
+            ");
             $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(`card_type` / 10) type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$opponent_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$current_player_id}' ORDER BY `card_type`");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$opponent_id}' ORDER BY `card_type`");
+            //$result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$current_player_id}' ORDER BY `card_type`");
+            //$result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$opponent_id}' ORDER BY `card_type`");
+            // changement pour que le 9 (goodie meeple) passe avant le 8 dans l'ordre
+            $result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$current_player_id}' ORDER BY
+                    CASE
+                        WHEN `card_type` IN (18, 28) THEN `card_type` + 1
+                        WHEN `card_type` IN (19, 29) THEN `card_type` - 1
+                        ELSE `card_type`
+                    END");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id` , `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$opponent_id}' ORDER BY
+                    CASE
+                        WHEN `card_type` IN (18, 28) THEN `card_type` + 1
+                        WHEN `card_type` IN (19, 29) THEN `card_type` - 1
+                        ELSE `card_type`
+                    END");
         } else {
             $result["my_hand"] = self::getObjectListFromDB("SELECT 0 AS `card_id`, FLOOR(`card_type` / 10) type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$spectator_id}'");
             $result["your_hand"] = self::getObjectListFromDB("SELECT FLOOR(`card_type` / 10) type, `card_blocked` blocked FROM `troop` WHERE `card_location` = 'hand' AND `card_type_arg` = '{$no_spectator_id}'");
-            $result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type  FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$spectator_id}' ORDER BY `card_type`");
-            $result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$no_spectator_id}' ORDER BY `card_type`");
+            //$result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type  FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$spectator_id}' ORDER BY `card_type`");
+            //$result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$no_spectator_id}' ORDER BY `card_type`");
+            // changement pour que le 9 (goodie meeple) passe avant le 8 dans l'ordre
+            $result["my_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type  FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$spectator_id}' ORDER BY
+                    CASE
+                        WHEN `card_type` IN (18, 28) THEN `card_type` + 1
+                        WHEN `card_type` IN (19, 29) THEN `card_type` - 1
+                        ELSE `card_type`
+                    END");
+            $result["your_discard"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type FROM `troop` WHERE `card_location` = 'discard' AND `card_type_arg` = '{$no_spectator_id}' ORDER BY
+                    CASE
+                        WHEN `card_type` IN (18, 28) THEN `card_type` + 1
+                        WHEN `card_type` IN (19, 29) THEN `card_type` - 1
+                        ELSE `card_type`
+                    END");
         }
         $result["board_troops"] = self::getObjectListFromDB("SELECT `card_id` `id`, `card_type` type, `card_type_arg` type_arg, `card_location` location, `card_location_arg` location_arg, `card_ordre` ordre FROM `troop` WHERE `card_location` = 'board' ORDER BY `card_ordre`");
         $result["blue_blocked"] = self::getObjectListFromDB("SELECT `card_blocked` blocked FROM `troop` WHERE `card_blocked` > 0 AND `card_type_arg` = '{$spectator_id}'", true);
@@ -889,6 +934,9 @@ class Game extends Table
             if ($type == 18) {
                 return "<div class='icon_log_x icon_blue icon_troop_8' title=''></div>";
             }
+            if ($type == 19) {
+                return "<div class='icon_log_x icon_blue icon_troop_9' title=''></div>";
+            }
             if ($type == 20) {
                 return "<div class='icon_log_x icon_red icon_troop_0' title=''></div>";
             }
@@ -915,6 +963,9 @@ class Game extends Table
             }
             if ($type == 28) {
                 return "<div class='icon_log_x icon_red icon_troop_8' title=''></div>";
+            }
+            if ($type == 29) {
+                return "<div class='icon_log_x icon_red icon_troop_9' title=''></div>";
             }
             if ($type == "M") {
                 return "<div class='icon_medal_log' title=''></div>";
@@ -947,6 +998,9 @@ class Game extends Table
             if ($type == 18) {
                 return "<div class='icon_log icon_blue icon_troop_8' title=''></div>";
             }
+            if ($type == 19) {
+                return "<div class='icon_log icon_blue icon_troop_9' title=''></div>";
+            }
             if ($type == 20) {
                 return "<div class='icon_log icon_red icon_troop_0' title=''></div>";
             }
@@ -973,6 +1027,9 @@ class Game extends Table
             }
             if ($type == 28) {
                 return "<div class='icon_log icon_red icon_troop_8' title=''></div>";
+            }
+            if ($type == 29) {
+                return "<div class='icon_log icon_red icon_troop_9' title=''></div>";
             }
             if ($type == "M") {
                 return "<div class='icon_medal_log' title=''></div>";

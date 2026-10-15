@@ -2537,8 +2537,23 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         this.addCustomTooltip(troopElement.id, this.getTooltipTroopContent(troop.type, troop.id));
 
         /* Calcul de l'index d'insertion */
+        // const newTroop = { id: troop.id, type: troop.type };
+        // let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+        // if (insertIndex === -1) {
+        //   this.my_hand.push(newTroop); // fin du tableau
+        // } else {
+        //   this.my_hand.splice(insertIndex, 0, newTroop);
+        // }
+
+        /* Calcul de l'index d'insertion avec la troupe 9 qui doit passer avant la 8*/
         const newTroop = { id: troop.id, type: troop.type };
-        let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+
+        let insertIndex = this.my_hand.findIndex(
+          (t) =>
+            (t.type % 10 === 8 && newTroop.type % 10 === 9) ||
+            (t.type > newTroop.type && !(t.type % 10 === 9 && newTroop.type % 10 === 8))
+        );
+
         if (insertIndex === -1) {
           this.my_hand.push(newTroop); // fin du tableau
         } else {

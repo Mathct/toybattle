@@ -48,6 +48,12 @@ $this->_troop_types = [
         "desc1" => clienttranslate("Kwak has no effect.<br> As a <span style=\"font-weight: bold;\">joker</span>, Kwak may be placed on top of any enemy Troop, but any enemy Troop may also cover it."),
         "desc2" => "",
     ],
+
+    9 => [
+        "name" => clienttranslate("Meeple"),
+        "desc1" => clienttranslate("Your opponent may take 1 Troop from their reserve and place it on their rack."),
+        "desc2" => "",
+    ],
 ];
 
 
