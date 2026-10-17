@@ -1191,7 +1191,7 @@ trait TroopsTrait  // ATTENTION
         if(($opponent_counttroopdeck > 0) && ($opponent_counttroophand < 8)) {
 
             game::$instance->incStat(1, 'troops_drawn', $this->player_id_opponent);
-            //game::$instance->incStat(1, 'meeple_activated', $this->player_id_opponent);  //ATTENTION il faut rajouter la stat
+            game::$instance->incStat(1, 'meeple_activated', $this->player_id_opponent);
 
             $new_troops = game::$instance->troop->pickCardsForLocation(1, $deck_opponent, 'hand');
 

@@ -120,6 +120,11 @@
         "type": "int"
       },
 
+      "meeple_activated": {
+        "id": 21,
+        "name": "Meeple activations",
+        "type": "int"
+      },
 
       "base_activated": {
         "id": 20,

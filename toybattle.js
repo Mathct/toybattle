@@ -1639,7 +1639,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         <div class="troop-list">
   `;
 
-      const troopOrder = [11, 22, 13, 24, 15, 26, 17, 28];
+      const troopOrder = [11, 22, 13, 24, 15, 26, 17, 29, 18];
 
       troopOrder.forEach((type) => {
         modalContent += this.getTooltipTroopContent(type, `troop_${type}`);
@@ -2545,6 +2545,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         //   this.my_hand.splice(insertIndex, 0, newTroop);
         // }
 
+        /* Calcul de l'index d'insertion */
         /* Calcul de l'index d'insertion avec la troupe 9 qui doit passer avant la 8*/
         const newTroop = { id: troop.id, type: troop.type };
 
@@ -2816,24 +2817,62 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       this.addCustomTooltip(`troop_${troop.id}`, this.getTooltipTroopContent(troop.type, troop.id));
 
       /* check where to insert the troop */
+      // const newTroop = { id: troop.id, type: troop.type };
+      // let insertIndex;
+
+      // if ((player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue())) || (player_color == this.RED_COLOR && this.isCurrentPlayerRed())) {
+      //   insertIndex = this.my_discard.findIndex((t) => t.type > newTroop.type);
+      //   if (insertIndex === -1) {
+      //     this.my_discard.push(newTroop); // end of array
+      //   } else {
+      //     this.my_discard.splice(insertIndex, 0, newTroop);
+      //   }
+      // } else {
+      //   insertIndex = this.your_discard.findIndex((t) => t.type > newTroop.type);
+      //   if (insertIndex === -1) {
+      //     this.your_discard.push(newTroop); // end of array
+      //   } else {
+      //     this.your_discard.splice(insertIndex, 0, newTroop);
+      //   }
+      // }
+
+      /* check where to insert the troop */
+      /* Calcul de l'index d'insertion avec la troupe 9 qui doit passer avant la 8*/
       const newTroop = { id: troop.id, type: troop.type };
       let insertIndex;
 
-      if ((player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue())) || (player_color == this.RED_COLOR && this.isCurrentPlayerRed())) {
-        insertIndex = this.my_discard.findIndex((t) => t.type > newTroop.type);
+      if (
+        (player_color == this.BLUE_COLOR &&
+          (this.isSpectator == true || this.isCurrentPlayerBlue())) ||
+        (player_color == this.RED_COLOR && this.isCurrentPlayerRed())
+      ) {
+        insertIndex = this.my_discard.findIndex(
+          (t) =>
+            (t.type % 10 === 8 && newTroop.type % 10 === 9) ||
+            (t.type > newTroop.type &&
+              !(t.type % 10 === 9 && newTroop.type % 10 === 8))
+        );
+
         if (insertIndex === -1) {
-          this.my_discard.push(newTroop); // end of array
+          this.my_discard.push(newTroop);
         } else {
           this.my_discard.splice(insertIndex, 0, newTroop);
         }
       } else {
-        insertIndex = this.your_discard.findIndex((t) => t.type > newTroop.type);
+        insertIndex = this.your_discard.findIndex(
+          (t) =>
+            (t.type % 10 === 8 && newTroop.type % 10 === 9) ||
+            (t.type > newTroop.type &&
+              !(t.type % 10 === 9 && newTroop.type % 10 === 8))
+        );
+
         if (insertIndex === -1) {
-          this.your_discard.push(newTroop); // end of array
+          this.your_discard.push(newTroop);
         } else {
           this.your_discard.splice(insertIndex, 0, newTroop);
         }
       }
+
 
       /* room is reserved in the flex */
 
@@ -2959,20 +2998,52 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       }
 
       /* check where to insert the troop */
+      // const newTroop = { id: troop.id, type: troop.type };
+      // let insertIndex;
+
+      // if ((player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue())) || (player_color == this.RED_COLOR && this.isCurrentPlayerRed())) {
+      //   insertIndex = this.my_discard.findIndex((t) => t.type > newTroop.type);
+      //   if (insertIndex === -1) {
+      //     this.my_discard.push(newTroop); // end of array
+      //   } else {
+      //     this.my_discard.splice(insertIndex, 0, newTroop);
+      //   }
+      // } else {
+      //   insertIndex = this.your_discard.findIndex((t) => t.type > newTroop.type);
+      //   if (insertIndex === -1) {
+      //     this.your_discard.push(newTroop); // end of array
+      //   } else {
+      //     this.your_discard.splice(insertIndex, 0, newTroop);
+      //   }
+      // }
+
+      /* check where to insert the troop */
+      /* Calcul de l'index d'insertion avec la troupe 9 qui doit passer avant la 8*/
       const newTroop = { id: troop.id, type: troop.type };
       let insertIndex;
 
-      if ((player_color == this.BLUE_COLOR && (this.isSpectator == true || this.isCurrentPlayerBlue())) || (player_color == this.RED_COLOR && this.isCurrentPlayerRed())) {
-        insertIndex = this.my_discard.findIndex((t) => t.type > newTroop.type);
+      const findTroopIndex = (t) =>
+        (t.type % 10 === 8 && newTroop.type % 10 === 9) ||
+        (t.type > newTroop.type &&
+          !(t.type % 10 === 9 && newTroop.type % 10 === 8));
+
+      if (
+        (player_color == this.BLUE_COLOR &&
+          (this.isSpectator == true || this.isCurrentPlayerBlue())) ||
+        (player_color == this.RED_COLOR && this.isCurrentPlayerRed())
+      ) {
+        insertIndex = this.my_discard.findIndex(findTroopIndex);
+
         if (insertIndex === -1) {
-          this.my_discard.push(newTroop); // end of array
+          this.my_discard.push(newTroop);
         } else {
           this.my_discard.splice(insertIndex, 0, newTroop);
         }
       } else {
-        insertIndex = this.your_discard.findIndex((t) => t.type > newTroop.type);
+        insertIndex = this.your_discard.findIndex(findTroopIndex);
+
         if (insertIndex === -1) {
-          this.your_discard.push(newTroop); // end of array
+          this.your_discard.push(newTroop);
         } else {
           this.your_discard.splice(insertIndex, 0, newTroop);
         }
@@ -3177,8 +3248,25 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
       if (troop.type_arg == this.player_id) {
         /* check where to insert the troop */
+        // const newTroop = { id: troop.id, type: troop.type };
+        // let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+        // if (insertIndex === -1) {
+        //   this.my_hand.push(newTroop); // end of array
+        // } else {
+        //   this.my_hand.splice(insertIndex, 0, newTroop);
+        // }
+
+        /* check where to insert the troop */
+        /* Calcul de l'index d'insertion avec la troupe 9 qui doit passer avant la 8*/
         const newTroop = { id: troop.id, type: troop.type };
-        let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+
+        let insertIndex = this.my_hand.findIndex(
+          (t) =>
+            (t.type % 10 === 8 && newTroop.type % 10 === 9) ||
+            (t.type > newTroop.type &&
+              !(t.type % 10 === 9 && newTroop.type % 10 === 8))
+        );
+
         if (insertIndex === -1) {
           this.my_hand.push(newTroop); // end of array
         } else {
@@ -3376,14 +3464,34 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const rackContainer = document.getElementById(rackId);
 
       if (troop.type_arg == this.player_id) {
+
+        /* check where to insert the troop */
+        // const newTroop = { id: troop.id, type: troop.type };
+
+        // let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+        // if (insertIndex === -1) {
+        //   this.my_hand.push(newTroop); // end of array
+        // } else {
+        //   this.my_hand.splice(insertIndex, 0, newTroop);
+        // }
+
+        /* check where to insert the troop */
+        /* Calcul de l'index d'insertion avec la troupe 9 qui doit passer avant la 8*/
         const newTroop = { id: troop.id, type: troop.type };
 
-        let insertIndex = this.my_hand.findIndex((t) => t.type > newTroop.type);
+        let insertIndex = this.my_hand.findIndex(
+          (t) =>
+            (t.type % 10 === 8 && newTroop.type % 10 === 9) ||
+            (t.type > newTroop.type &&
+              !(t.type % 10 === 9 && newTroop.type % 10 === 8))
+        );
+
         if (insertIndex === -1) {
           this.my_hand.push(newTroop); // end of array
         } else {
           this.my_hand.splice(insertIndex, 0, newTroop);
         }
+
 
         let placeholder = document.createElement("div");
         placeholder.classList.add("troop-placeholder");

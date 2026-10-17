@@ -161,6 +161,7 @@ class Game extends Table
         self::initStat('player', 'jumbo_activated', 0);
         self::initStat('player', 'xb42_activated', 0);
         self::initStat('player', 'star_activated', 0);
+        self::initStat('player', 'meeple_activated', 0);
         self::initStat('player', 'base_activated', 0);
 
 
