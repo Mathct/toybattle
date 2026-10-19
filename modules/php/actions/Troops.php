@@ -1227,8 +1227,33 @@ trait TroopsTrait  // ATTENTION
                 )
             );
 
+            
+
+            $type_meeple = $this->player_color_number . '9';
+            game::$instance->notify->all('message', clienttranslate('${opponent_name} draws ${log0} thanks to ${log2}'), [
+                    'opponent_name' => [
+                            'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${opp_name}</b>',
+                            'args' => ['opp_name' => $this->player_name_opponent, 'color' => $this->player_color_opponent]                           
+                        ],
+                    'log0' => game::$instance->getLogsType($type0),
+                    'log2' => game::$instance->getLogsType($type_meeple),
+                    '_private' => [
+                        $this->player_id_opponent => new NotificationMessage(clienttranslate('${_private.you} draw ${_private.log1} thanks to ${_private.log2}'), [
+                            'you' =>    [
+                                'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${you_name}</b>',
+                                'args' => ['you_name' => clienttranslate('You'), 'color' => $this->player_color_opponent, 'i18n' => ['you_name']]
+                            ],
+                            'log1' => game::$instance->getLogsType($type1),
+                            'log2' => game::$instance->getLogsType($type_meeple),
+
+                        ]),
+                    ],
+                ]);
+
+            /*
+
             // message pour le joueur adversaire
-            game::$instance->notify->player($this->player_id_opponent, 'message', clienttranslate('${you} draws ${log1}'),
+            game::$instance->notify->player($this->player_id_opponent, 'message', clienttranslate('Meeple: ${you} draw ${log1}'),
                 array(
                     'you' => [
                             'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${you_name}</b>',
@@ -1241,7 +1266,7 @@ trait TroopsTrait  // ATTENTION
             );
 
             // message pour le joueur actif
-            game::$instance->notify->player($this->player_id, 'message', clienttranslate('${opponent_name} draws ${log0}'),
+            game::$instance->notify->player($this->player_id, 'message', clienttranslate('Meeple: ${opponent_name} draws ${log0}'),
                 array(
                     'opponent_name' => [
                             'log' => '<b style="color: #${color};text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;">${opp_name}</b>',
@@ -1252,6 +1277,8 @@ trait TroopsTrait  // ATTENTION
 
                 )
             );
+
+            */
             
         }
 
