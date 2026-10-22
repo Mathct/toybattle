@@ -616,7 +616,7 @@ class Game extends Table
                             {
                                 $troop_opponent_force = $infos_troopmax[0]['type'] % 10;
 
-                                if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8)) {
+                                if (($troop_opponent_force < $troop_selected_force) || ($troop_opponent_force == 8) || ($troop_selected_force == 8)) {
 
                                     if (($base_power == 21) && (game::$instance->tableOptions->get(100) == 1)) {
                                         if (($troop_selected_force == 1) || ($troop_selected_force == 2) || ($troop_selected_force == 8)) {
