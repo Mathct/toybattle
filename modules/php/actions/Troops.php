@@ -1165,7 +1165,7 @@ trait TroopsTrait  // ATTENTION
         $ret["selectable"] = array();
         $ret["selected"] = array();
         $ret['buttons'] = array();
-        $ret['title'] = clienttranslate('${actplayer} places a Troop meeple');
+        $ret['title'] = clienttranslate('${actplayer} places a Troop');
         $ret['titleyou'] = clienttranslate('${you} place a Troop');
 
         
