@@ -65,6 +65,7 @@ class Game extends Table
 
             "game_mode" => 100,
             "game_board" => 101,
+            "meeple" => 102,
             "board" => 10,
             "endgame" => 11,
 
@@ -175,8 +176,13 @@ class Game extends Table
 
             // 4f66a2 = bleu d1553e = rouge
 
-            // Goodie Meeple: 0 pour jouer sans, 1 pour jouer avec
             $meeple = 1;
+
+            if($this->tableOptions->get(102) == 2) {
+                $meeple = 0;
+            }
+           
+            
 
             if ($color == 'd1553e') {
                 $red = array();

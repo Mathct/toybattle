@@ -95,5 +95,27 @@
         
         "default": 10
               
+    },
+
+    "102": {
+        "name": "Meeple: Promotional Troop",
+        "values": {
+            "1": {
+                "name": "Play with Meeple", 
+                "tmdisplay": "Play with Meeple", 
+                "description": "Play with Meeple"
+            },
+
+            "2": {
+                "name": "Play without Meeple", 
+                "tmdisplay": "Play without Meeple", 
+                "description": "Play without Meeple"
+            }   
+                
+        },
+        
+        
+        "default": 1
+              
     }
 }
