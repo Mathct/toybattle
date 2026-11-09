@@ -318,6 +318,17 @@ body.snow-mode #global_big_id {
     background-size: 100% 100%;
 }
 
+.board_x_tournament {
+    width: calc(1.25 * var(--board-width));
+    height: var(--board-height);
+    position: relative;
+    margin: 5px;
+    border-radius: 5px;
+    background-image: url('img/TB_X_Tournament_Board.jpg');
+    background-size: 100% 100%;
+}
+
+
 .playmat {
     display: flex;
     justify-content: space-between;

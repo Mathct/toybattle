@@ -73,6 +73,12 @@
                 "description": ""
             },
 
+            "21": {
+                "name": "Croisette", 
+                "tmdisplay": "Croisette", 
+                "description": ""
+            },
+
             "9": {
                 "name": "Random", 
                 "tmdisplay": "Random", 
@@ -82,12 +88,6 @@
             "10": {
                 "name": "Board of the month", 
                 "tmdisplay": "Board of the month", 
-                "description": ""
-            },
-
-            "21": {
-                "name": "Croisette", 
-                "tmdisplay": "Croisette", 
                 "description": ""
             }
         },

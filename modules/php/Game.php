@@ -68,6 +68,7 @@ class Game extends Table
             "meeple" => 102,
             "board" => 10,
             "endgame" => 11,
+            "mode_noel" => 12,
 
 
 
@@ -248,12 +249,25 @@ class Game extends Table
 
 
         // CHOIX DU BOARD (GSV 101)
+
+        // ATTENTION POUR MODE NOEL:
+        $mode_noel = 0; // si =1 Chateau sera en mode Noel dans choix direct du plateau et dans le random ainsi que Tournoi dans le Board du mois
+        $this->setGameStateValue('mode_noel', $mode_noel);
+
+
         $table_options_101 = $this->tableOptions->get(101);
 
-        // BOARD DE 1 A 8 et 11(tournament)
+        // BOARD DE 1 A 8
         if (in_array($table_options_101, [1, 2, 3, 4, 5, 6, 7, 8])) {
-            $this->setGameStateValue('board', $table_options_101);
-            game::$instance->setStat($table_options_101, 'no_board');
+
+            $board = $table_options_101;
+
+            if(($board == 1)&&($mode_noel == 1)) {
+                $board = 9; // (Chateau NOEL)
+            }
+
+            $this->setGameStateValue('board', $board);
+            game::$instance->setStat($board, 'no_board');
         }
 
         // CROISETTE
@@ -265,7 +279,14 @@ class Game extends Table
 
         // BOARD RANDOM
         if ($table_options_101 == 9) {
-            $random = bga_rand(1, 8);
+            $random = bga_rand(1, 9);
+
+            if($random == 9) {
+                $random = 10; // Pour Croisette
+            }
+            if(($random == 1)&&($mode_noel == 1)) {
+                $random = 9; // (Chateau NOEL)
+            }
             $this->setGameStateValue('board', $random);
             game::$instance->setStat($random, 'no_board');
         }
@@ -315,8 +336,10 @@ class Game extends Table
             if (($mois_actuel == 1 || $mois_actuel = 2) && $annee_actuelle == 2026) { // A REMPLACER PAR 11 EN DEC
                 $board = 10;
             }
-            // tournament
+
+            // tournament est forcé pour le board du mois
             $board = 11;
+
             $this->setGameStateValue('board', $board);
             game::$instance->setStat($board, 'no_board');
         }
@@ -451,8 +474,9 @@ class Game extends Table
 
         $result["full_regions"] = self::getObjectListFromDB("SELECT `zone_id` `id` FROM `zone` WHERE `zone_star` > 0", true);
 
-
-
+        $noel = $this->getGameStateValue('mode_noel');
+        $result["mode_noel"] = $noel;
+    
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
 
         return $result;

@@ -76,6 +76,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       this.board_types = gamedatas.board_types;
       this.board_name = gamedatas.board_name;
       this.board_id = gamedatas.board_id;
+      this.mode_noel = gamedatas.mode_noel;
 
       // delays notification to let animations finish.
       this.DELAY_JUNGLE = this.board_id == 4 ? 1000 : 1;
@@ -549,7 +550,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     setupBoard: function () {
       console.log("Setting up the board");
 
-      if (this.board_id == 9) {
+      if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
         document.body.classList.add("snow-mode");
       }
 
@@ -1287,7 +1288,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
     createTroopElement: function (troop) {
       const troopElement = document.createElement("div");
       troopElement.id = `troop_${troop.id}`;
-      if (this.board_id == 9) {
+      if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
         troopElement.classList.add("troop_x");
       } else {
         troopElement.classList.add("troop");
@@ -1305,7 +1306,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const back_color = troop.type == 1 ? "blue" : "red";
       const sprite_line = troop.type == 1 ? "0" : "1";
       backTroopElement.id = `${back_color}_troop_${index + 1}`;
-      if (this.board_id == 9) {
+      if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
         backTroopElement.classList.add("troop_x");
       } else {
         backTroopElement.classList.add("troop");
@@ -1475,7 +1476,12 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       } else if (this.board_id == 10) {
         boardContainer.classList.add("board_croisette");
       } else if (this.board_id == 11) {
-        boardContainer.classList.add("board_tournament");
+        if(this.mode_noel == 1) {
+          boardContainer.classList.add("board_x_tournament");
+        }
+        else {
+          boardContainer.classList.add("board_tournament");
+        }
       } else {
         boardContainer.classList.add("board");
 
@@ -2043,7 +2049,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
       const x = "-" + (type % 10) + "00%";
       const y = "-" + Math.floor(type / 10) - 1 + "00%";
 
-      if (this.board_id == 9) {
+      if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
         // Ajout de la troop (image) à gauche Christmas
         html += `<div class="troop_container">
                <div id="tb_troop_toolt_${id}" class="troop_x" style="background-position:${x} ${y};"></div>
@@ -2176,7 +2182,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
           const x = "-" + (troop.type % 10) + "00%";
           const y = "-" + Math.floor(troop.type / 10) - 1 + "00%";
 
-          if (this.board_id == 9) {
+          if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
             // Ajout de la troop (image) à gauche Christmas
             html += `<div class="troop_container">
                     <div class="troop_x" style="background-position:${x} ${y};"></div></div>`;
@@ -2521,7 +2527,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
         /* Création de la troupe */
         const troopElement = document.createElement("div");
         troopElement.id = `troop_${troop.id}`;
-        if (this.board_id == 9) {
+        if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
           troopElement.classList.add("troop_x");
         } else {
           troopElement.classList.add("troop");
@@ -2689,7 +2695,7 @@ define(["dojo", "dojo/_base/declare", "ebg/core/gamegui", "ebg/counter"], functi
 
           /* Création de la troupe */
           let troopElement = document.createElement("div");
-          if (this.board_id == 9) {
+          if ((this.board_id == 9)||(this.board_id == 11 && this.mode_noel == 1)) {
             troopElement.classList.add("troop_x");
           } else {
             troopElement.classList.add("troop");
